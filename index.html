@@ -4,318 +4,648 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Presupuestos</title>
-  <!-- Librería SheetJS para manejo avanzado de Excel -->
+  
+  <!-- FAVICON SVG / LOGO -->
+  <link id="favicon" rel="icon" type="image/svg+xml" href="y.r.svg">
+
+  <!-- Librería SheetJS para exportar e importar presupuesto.xlsx -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <style>
     :root {
-      --bg: #0e1015;          /* Fondo base negro carbón mate */
-      --card: #161922;        /* Tarjetas en grafito oscuro */
-      --card-border: #2a2f3d; /* Bordes sutiles en gris platino */
-      --accent: #38BDF8;      
-      --text-main: #ffffff;   /* Texto blanco puro nítido */
-      --text-muted: #8e95a5;  /* Etiquetas secundarias en gris frío */
-      --input-bg: #090a0d;    /* Campos de entrada en tono profundo */
-      --green: #4ade80;        
+      --bg: #0b0e14;
+      --card: #141822;
+      --card-border: #232936;
+      --input-bg: #090b10;
+      --accent-blue: #38bdf8;
+      --accent-blue-hover: #0284c7;
+      --green: #4ade80;
+      --green-btn: #10b981;
+      --green-btn-hover: #059669;
       --red: #f87171;
+      --text-main: #ffffff;
+      --text-muted: #8b949e;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
-      margin: 0;
       padding: 24px 16px;
       display: flex;
       justify-content: center;
     }
 
-    .wrapper { width: 100%; max-width: 1000px; }
+    .wrapper {
+      width: 100%;
+      max-width: 1100px;
+    }
 
-    .header { margin-bottom: 20px; }
-    .header h1 { font-size: 1.75rem; font-weight: 800; margin: 0 0 6px 0; color: var(--text-main); letter-spacing: -0.5px; }
-    .header p { color: var(--text-muted); margin: 0; font-size: 0.95rem; }
+    /* ENCABEZADO */
+    .header {
+      margin-bottom: 20px;
+    }
 
+    .header-title-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .brand-logo {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    /* BARRA DE ESTADO DEL DÓLAR */
     .status-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: var(--card);
       border: 1px solid var(--card-border);
-      padding: 12px 16px;
+      padding: 14px 20px;
       border-radius: 10px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       margin-bottom: 20px;
     }
 
-    .status-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); margin-right: 8px; }
-    .status-indicator.online { background: var(--green); }
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-    .grid-container {
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      display: inline-block;
+    }
+
+    .status-indicator.online {
+      background: var(--green);
+    }
+
+    .dollar-price {
+      color: var(--green);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    /* ESTRUCTURA DASHBOARD (2 Columnas exacta como la imagen) */
+    .app-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 20px;
     }
 
-    @media (min-width: 768px) {
-      .grid-container { grid-template-columns: 1fr 340px; }
+    @media (min-width: 850px) {
+      .app-grid {
+        grid-template-columns: 1fr 360px;
+      }
     }
 
+    .main-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .side-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TARJETAS Y TARJETAS HEADER */
     .card {
       background: var(--card);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
+      padding: 22px;
     }
 
-    .card-title-flex {
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin-bottom: 18px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* FORMULARIOS Y GRID INTERNA */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 500px) {
+      .form-grid.two-cols {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-blue);
+    }
+
+    /* 1. ELIMINAR FLECHAS Y MANTENER COMPATIBILIDAD CSS (Sin advertencias vendorPrefix) */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    /* 2. ESTILO ELEGANTE DE SELECT / DESPLEGABLE */
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 14px;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    select option {
+      background-color: var(--card);
+      color: var(--text-main);
+      padding: 10px;
+    }
+
+    /* PANEL DERECHO - RESUMEN DE COSTOS */
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .result-row span:last-child {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .total-box {
+      background: rgba(56, 189, 248, 0.02);
+      border: 1px solid var(--accent-blue);
+      border-radius: 10px;
+      padding: 18px;
+      margin: 20px 0;
+    }
+
+    .total-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .total-amount {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--green);
+      margin-top: 4px;
+    }
+
+    .total-usd {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* BOTONES */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-main {
+      background: var(--accent-blue);
+      color: #090b10;
+    }
+
+    .btn-main:hover {
+      background: var(--accent-blue-hover);
+      color: #ffffff;
+    }
+
+    .btn-excel {
+      background: var(--green-btn);
+      color: #090b10;
+      margin-top: 12px;
+    }
+
+    .btn-excel:hover {
+      background: var(--green-btn-hover);
+      color: #ffffff;
+    }
+
+    .btn-cancel {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      margin-top: 8px;
+    }
+
+    /* CATÁLOGO / HISTORIAL DE PERFILES */
+    .catalog-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
     }
 
-    .card-title {
-      font-size: 0.85rem;
-      font-weight: 800;
-      margin: 0;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
-    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    input[type=number] { -moz-appearance: textfield; appearance: none; }
-
-    .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-
-    @media (min-width: 500px) {
-      .form-grid.two-cols { grid-template-columns: 1fr 1fr; }
-    }
-
-    .field { display: flex; flex-direction: column; gap: 6px; }
-
-    label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-
-    input, select {
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 8px;
-      padding: 12px 14px;
-      color: var(--text-main);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-      width: 100%;
-    }
-
-    input::placeholder { color: #475569; }
-    input:focus, select:focus { border-color: var(--accent); }
-
-    .result-row {
+    .catalog-controls {
       display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .result-row span:last-child { color: var(--text-main); font-weight: 600; }
-
-    .total-box {
-      background: rgba(56, 189, 248, 0.04);
-      border: 1px solid var(--accent);
-      border-radius: 10px;
-      padding: 16px;
-      margin-top: 20px;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
-    .total-label { font-size: 0.75rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
-    .total-amount { font-size: 1.8rem; font-weight: 900; color: var(--green); margin-top: 4px; }
-
-    .btn {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      cursor: pointer;
-      border: none;
-      transition: opacity 0.2s;
-      margin-top: 10px;
+    .catalog-controls input {
+      flex: 1;
     }
-    .btn:hover { opacity: 0.9; }
-    .btn-save { background: var(--accent); color: #0b0d12; }
-    .btn-excel { background: #10b981; color: #0b0d12; }
-    .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--card-border); }
+
+    .catalog-controls select {
+      width: 150px;
+    }
 
     .history-item {
       background: var(--input-bg);
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 12px 14px;
+      border-radius: 10px;
+      padding: 14px 16px;
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .history-info strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .history-info span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .history-right {
+      display: flex;
+      align-items: center;
       gap: 12px;
     }
 
-    .history-info strong { display: block; font-size: 0.95rem; color: var(--text-main); }
-    .history-info span { font-size: 0.8rem; color: var(--text-muted); }
-    .history-price { font-weight: 800; color: var(--green); font-size: 1rem; }
+    .history-price {
+      font-weight: 800;
+      color: var(--green);
+      font-size: 1rem;
+    }
 
-    .action-btn {
-      background: none;
+    .icon-btn {
+      background: var(--card);
       border: 1px solid var(--card-border);
       color: var(--text-muted);
-      padding: 6px 10px;
+      width: 32px;
+      height: 32px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      transition: all 0.2s;
     }
-    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .action-btn.delete:hover { border-color: var(--red); color: var(--red); }
 
-    .controls-bar {
+    .icon-btn:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .icon-btn.delete:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* MODALES PROPIOS (Sustitutos de alert / prompt) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      max-width: 480px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .modal-body {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
       display: flex;
       gap: 10px;
-      margin-bottom: 14px;
+      justify-content: flex-end;
     }
-    .controls-bar input, .controls-bar select {
-      padding: 8px 12px;
-      font-size: 0.85rem;
+
+    .modal-actions .btn {
+      width: auto;
+      padding: 10px 18px;
     }
   </style>
 </head>
 <body>
 
 <div class="wrapper">
+  
+  <!-- ENCABEZADO -->
   <div class="header">
-    <h1>Calculadora de Presupuestos</h1>
+    <div class="header-title-container">
+      <img src="y.r.svg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+      <h1>Calculadora de Presupuestos</h1>
+    </div>
     <p>Gestión de clientes y exportación automatizada.</p>
   </div>
 
+  <!-- BARRA DE DÓLAR BLUE -->
   <div class="status-bar">
-    <div>
+    <div class="status-left">
       <span class="status-indicator" id="status-dot"></span>
-      <span id="sync-status">Sincronizando cotización...</span>
+      <span id="sync-status">Cargando cotización...</span>
     </div>
-    <strong id="dollar-price" style="color: var(--green);">ARS $0,00</strong>
+    <div class="dollar-price" id="dollar-price">ARS $0</div>
   </div>
 
-  <div class="grid-container">
-    <div>
-      <!-- Formulario Principal -->
+  <!-- DASHBOARD PRINCIPAL EN 2 COLUMNAS -->
+  <div class="app-grid">
+    
+    <!-- COLUMNA IZQUIERDA -->
+    <div class="main-col">
+      
+      <!-- PARÁMETROS DEL TRABAJO -->
       <div class="card">
-        <h3 class="card-title" style="margin-bottom:16px;">Parámetros del trabajo</h3>
-        
+        <h3 class="card-title">Parámetros del Trabajo</h3>
+
         <div class="form-grid two-cols" style="margin-bottom: 16px;">
           <div class="field">
-            <label>Cliente (Autocompletado)</label>
-            <!-- Datalist para reconocimiento automático de nombres -->
-            <input type="text" id="client" list="clients-autocomplete" placeholder="Ej: Juan Pérez" oninput="checkClientRecognition()">
+            <label for="client">Cliente (Autocompletado)</label>
+            <input type="text" id="client" list="clients-autocomplete" placeholder="Ej: Juan Pérez">
             <datalist id="clients-autocomplete"></datalist>
           </div>
           <div class="field">
-            <label>Detalle del Trabajo</label>
-            <input type="text" id="job-detail" placeholder="Ej: Impresión 3D / Diseño">
+            <label for="jobDetail">Detalle del Trabajo</label>
+            <input type="text" id="jobDetail" placeholder="Ej: Impresión 3D / Diseño">
           </div>
         </div>
 
         <div class="form-grid two-cols" style="margin-bottom: 16px;">
           <div class="field">
-            <label>Dificultad / Tipo</label>
-            <select id="complexity" onchange="calculate()">
-              <option value="5">Básica ($5 USD/hs)</option>
+            <label for="difficulty">Dificultad / Tipo</label>
+            <select id="difficulty" onchange="handleDifficultyChange()">
+              <option value="7">Baja ($7 USD/hs)</option>
               <option value="10" selected>Media ($10 USD/hs)</option>
-              <option value="15">Avanzada ($15 USD/hs)</option>
+              <option value="15">Alta ($15 USD/hs)</option>
+              <option value="custom">Personalizada...</option>
             </select>
           </div>
-
           <div class="field">
-            <label>Horas estimadas</label>
-            <input type="text" inputmode="decimal" id="hours" placeholder="Ej: 2" oninput="handleInput(this)">
+            <label for="estimatedHours">Horas Estimadas</label>
+            <input type="number" id="estimatedHours" placeholder="Ej: 2" oninput="calculate()">
           </div>
         </div>
 
         <div class="form-grid two-cols">
           <div class="field">
-            <label>Costo de insumos (ARS)</label>
-            <input type="text" inputmode="decimal" id="materials" placeholder="Ej: 1500,50" oninput="handleInput(this)">
+            <label for="materialCost">Costo de Insumos (ARS)</label>
+            <input type="number" id="materialCost" placeholder="Ej: 1500,50" oninput="calculate()">
           </div>
-
           <div class="field">
-            <label>Margen de imprevistos (%)</label>
+            <label for="margin">Margen de Imprevistos (%)</label>
             <select id="margin" onchange="calculate()">
-              <option value="10">10% - Riesgo Bajo</option>
+              <option value="5">5% - Riesgo Bajo</option>
+              <option value="10">10% - Estándar</option>
               <option value="15" selected>15% - Riesgo Medio</option>
-              <option value="20">20% - Riesgo Alto</option>
-              <option value="30">30% - Muy Alto / Urgente</option>
+              <option value="20">20% - Alto / Complejo</option>
             </select>
           </div>
         </div>
+
+        <input type="hidden" id="hourlyRate" value="10">
       </div>
 
-      <!-- Base de Datos de Clientes y Presupuestos Guardados -->
+      <!-- PERFILES Y PRESUPUESTOS (Catálogo) -->
       <div class="card">
-        <div class="card-title-flex">
-          <h3 class="card-title">Perfiles y Presupuestos</h3>
+        <div class="catalog-header">
+          <h3 class="card-title" style="margin: 0;">Perfiles y Presupuestos</h3>
           <span id="records-count" style="font-size: 0.8rem; color: var(--text-muted);">0 registros</span>
         </div>
 
-        <div class="controls-bar">
+        <div class="catalog-controls">
           <input type="text" id="search-filter" placeholder="🔍 Buscar por cliente..." oninput="renderHistory()">
-          <select id="sort-order" onchange="renderHistory()" style="width: 160px;">
+          <select id="sort-order" onchange="renderHistory()">
             <option value="newest">Más recientes</option>
             <option value="az">Cliente (A-Z)</option>
-            <option value="za">Cliente (Z-A)</option>
           </select>
         </div>
 
         <div id="history-container">
-          <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No hay perfiles ni presupuestos guardados aún.</p>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No hay presupuestos guardados aún.</p>
         </div>
       </div>
+
     </div>
 
-    <!-- Panel de Resultados -->
-    <div>
+    <!-- COLUMNA DERECHA (Resumen de Costos) -->
+    <div class="side-col">
       <div class="card" style="position: sticky; top: 20px;">
-        <h3 class="card-title" style="margin-bottom:16px;">Resumen de costos</h3>
+        <h3 class="card-title">Resumen de Costos</h3>
 
         <div class="result-row">
           <span>Mano de obra</span>
-          <span id="res-labor">ARS $0,00</span>
+          <span id="res-labor">ARS $0</span>
         </div>
 
         <div class="result-row">
           <span>Insumos / Materiales</span>
-          <span id="res-materials">ARS $0,00</span>
+          <span id="res-materials">ARS $0</span>
         </div>
 
         <div class="result-row">
           <span>Margen de seguridad</span>
-          <span id="res-margin">ARS $0,00</span>
+          <span id="res-margin">ARS $0</span>
         </div>
 
         <div class="total-box">
           <div class="total-label">Total sugerido a cobrar</div>
-          <div class="total-amount" id="res-total">ARS $0,00</div>
-          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;" id="res-usd">
-            Equivalente a: USD $0.00
-          </div>
+          <div class="total-amount" id="res-total">ARS $0</div>
+          <div class="total-usd" id="res-usd">Equivalente a: USD $0.00</div>
         </div>
 
-        <button class="btn btn-save" id="btn-save-action" onclick="saveCurrentQuote()">Guardar Presupuesto</button>
-        <button class="btn btn-cancel" id="btn-cancel-action" style="display: none;" onclick="resetForm()">Cancelar Edición</button>
-        
-        <hr style="border: none; border-top: 1px solid var(--card-border); margin: 16px 0;">
-        
+        <button class="btn btn-main" id="btn-save-trigger" onclick="openSaveModal()">Guardar Presupuesto</button>
+        <button class="btn btn-cancel" id="btn-cancel-edit" style="display: none;" onclick="resetForm()">Cancelar Edición</button>
         <button class="btn btn-excel" onclick="exportToExcelAndClear()">📊 Exportar a Excel y Limpiar</button>
       </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL 1: TARIFA PERSONALIZADA (Reemplaza a prompt) -->
+<div class="modal-overlay" id="modal-custom-rate">
+  <div class="modal-content">
+    <div class="modal-title">Tarifa Personalizada</div>
+    <div class="modal-body">
+      <p style="margin-bottom: 12px;">Ingresá el valor de tu hora de trabajo en USD:</p>
+      <input type="number" id="custom-rate-input" placeholder="Ej: 12" min="1" step="0.5">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('modal-custom-rate')">Cancelar</button>
+      <button class="btn btn-main" onclick="confirmCustomRate()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: GUARDAR Y DETALLES EXTENDIDOS -->
+<div class="modal-overlay" id="modal-save-profile">
+  <div class="modal-content" style="max-width: 520px;">
+    <div class="modal-title">Archivar / Completar Perfil</div>
+    <div class="modal-body">
+      <p style="margin-bottom: 14px;">Ingresá opcionalmente información adicional de contacto y bitácora:</p>
+
+      <div class="form-grid two-cols" style="margin-bottom: 12px;">
+        <div class="field">
+          <label for="modal-phone">Teléfono Cliente</label>
+          <input type="tel" id="modal-phone" placeholder="Ej: +54 9 351 ...">
+        </div>
+        <div class="field">
+          <label for="modal-startDate">Fecha de Inicio</label>
+          <input type="date" id="modal-startDate">
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom: 12px;">
+        <label for="modal-notes">Notas / Bitácora</label>
+        <textarea id="modal-notes" rows="3" placeholder="Comentarios sobre insumos o requerimientos especiales..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('modal-save-profile')">Cancelar</button>
+      <button class="btn btn-main" onclick="confirmSaveProfile()">Confirmar Guardado</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 3: ALERTAS PROPIAS DE LA PÁGINA (Reemplaza a alert) -->
+<div class="modal-overlay" id="modal-alert">
+  <div class="modal-content">
+    <div class="modal-title" id="alert-modal-title">Atención</div>
+    <div class="modal-body" id="alert-modal-msg">Mensaje del sistema</div>
+    <div class="modal-actions">
+      <button class="btn btn-main" onclick="closeModal('modal-alert')">Aceptar</button>
     </div>
   </div>
 </div>
@@ -323,27 +653,9 @@
 <script>
   let dollarRate = 0;
   let editingId = null;
+  let excelDataLoaded = [];
 
-  function handleInput(input) {
-    let value = input.value.replace(/[^0-9.,]/g, '');
-    const parts = value.split(/[.,]/);
-    if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-    input.value = value;
-    calculate();
-  }
-
-  function parseInputValue(id) {
-    const input = document.getElementById(id).value.trim();
-    if (!input) return 0;
-    const normalized = input.replace(',', '.');
-    const val = parseFloat(normalized);
-    return isNaN(val) ? 0 : val;
-  }
-
-  function formatARS(amount) {
-    return 'ARS $' + Math.round(amount).toLocaleString('es-AR');
-  }
-
+  // 1. CARGA INICIAL Y DÓLAR BLUE
   async function fetchDollar() {
     const priceEl = document.getElementById('dollar-price');
     const statusEl = document.getElementById('sync-status');
@@ -360,104 +672,189 @@
     } catch (error) {
       dollarRate = 1300;
       priceEl.innerText = formatARS(dollarRate) + ' (Base)';
-      statusEl.innerText = 'Sin conexión. Usando valor de respaldo.';
+      statusEl.innerText = 'Dólar de respaldo';
     }
     calculate();
     renderHistory();
   }
 
+  // Carga asincrónica de presupuesto.xlsx si existe en el directorio local
+  async function loadExcelFile() {
+    try {
+      const response = await fetch('presupuesto.xlsx');
+      if (response.ok) {
+        const data = await response.arrayBuffer();
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        excelDataLoaded = XLSX.utils.sheet_to_json(firstSheet);
+      }
+    } catch (e) {
+      // Archivo opcional en entorno servidor local
+    }
+  }
+
+  // 2. EVITAR CAMBIOS DE NÚMEROS CON SCROLL DEL MOUSE
+  document.addEventListener('wheel', function(e) {
+    if (document.activeElement.type === 'number') {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  function formatARS(amount) {
+    return 'ARS $' + Math.round(amount).toLocaleString('es-AR');
+  }
+
+  // 3. TARIFA CUSTOM Y MANEJO DE DESPLEGABLE
+  async function handleDifficultyChange() {
+    const select = document.getElementById('difficulty');
+    const hiddenRate = document.getElementById('hourlyRate');
+
+    if (select.value === 'custom') {
+      document.getElementById('custom-rate-input').value = hiddenRate.value || '';
+      openModal('modal-custom-rate');
+    } else {
+      hiddenRate.value = select.value;
+      calculate();
+    }
+  }
+
+  function confirmCustomRate() {
+    const val = parseFloat(document.getElementById('custom-rate-input').value);
+    const select = document.getElementById('difficulty');
+    const hiddenRate = document.getElementById('hourlyRate');
+
+    if (val && val > 0) {
+      hiddenRate.value = val;
+      const customOpt = select.querySelector('option[value="custom"]');
+      customOpt.textContent = `Personalizada ($${val} USD/hs)`;
+      closeModal('modal-custom-rate');
+      calculate();
+    } else {
+      showAlertModal('Atención', 'Ingresá un valor numérico válido mayor a 0.');
+    }
+  }
+
+  // 4. CÁLCULO EN TIEMPO REAL
   function calculate() {
-    if (dollarRate === 0) return 0;
+    if (dollarRate === 0) return;
 
-    const ratePerHourUSD = parseFloat(document.getElementById('complexity').value);
-    const hours = parseInputValue('hours');
-    const materialsARS = parseInputValue('materials');
-    const marginPercent = parseFloat(document.getElementById('margin').value);
+    const hours = parseFloat(document.getElementById('estimatedHours').value) || 0;
+    const hourlyRateUSD = parseFloat(document.getElementById('hourlyRate').value) || 0;
+    const materialCostARS = parseFloat(document.getElementById('materialCost').value) || 0;
+    const marginPercent = parseFloat(document.getElementById('margin').value) || 0;
 
-    const laborUSD = ratePerHourUSD * hours;
+    const laborUSD = hours * hourlyRateUSD;
     const laborARS = laborUSD * dollarRate;
-    const subtotalARS = laborARS + materialsARS;
+    const subtotalARS = laborARS + materialCostARS;
     const marginARS = subtotalARS * (marginPercent / 100);
     const totalARS = subtotalARS + marginARS;
     const totalUSD = totalARS / dollarRate;
 
     document.getElementById('res-labor').innerText = formatARS(laborARS);
-    document.getElementById('res-materials').innerText = formatARS(materialsARS);
+    document.getElementById('res-materials').innerText = formatARS(materialCostARS);
     document.getElementById('res-margin').innerText = formatARS(marginARS);
     document.getElementById('res-total').innerText = formatARS(totalARS);
     document.getElementById('res-usd').innerText = `Equivalente a: USD $${totalUSD.toFixed(2)}`;
 
-    return { totalARS, totalUSD, laborARS, marginARS, hours, materialsARS, ratePerHourUSD, marginPercent };
+    return { hours, laborARS, materialCostARS, marginARS, totalARS, totalUSD, hourlyRateUSD, marginPercent };
   }
 
+  // 5. MODALES PROPIOS
+  function openModal(id) {
+    document.getElementById(id).classList.add('active');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+
+  function showAlertModal(title, message) {
+    document.getElementById('alert-modal-title').innerText = title;
+    document.getElementById('alert-modal-msg').innerText = message;
+    openModal('modal-alert');
+  }
+
+  function openSaveModal() {
+    const calc = calculate();
+    if (!calc || calc.totalARS === 0) {
+      showAlertModal('Presupuesto Vacío', 'Ingresá al menos horas de trabajo o costo de insumos antes de guardar.');
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    if (!document.getElementById('modal-startDate').value) {
+      document.getElementById('modal-startDate').value = today;
+    }
+
+    openModal('modal-save-profile');
+  }
+
+  // 6. GESTIÓN Y GUARDADO EN LOCALSTORAGE
   function getStoredQuotes() {
     const data = localStorage.getItem('presupuestos_db');
     return data ? JSON.parse(data) : [];
   }
 
-  function saveCurrentQuote() {
+  function confirmSaveProfile() {
     const client = document.getElementById('client').value.trim() || 'Cliente Sin Nombre';
-    const detail = document.getElementById('job-detail').value.trim() || 'Trabajo General';
+    const jobDetail = document.getElementById('jobDetail').value.trim() || 'Servicio General';
+    const phone = document.getElementById('modal-phone').value.trim() || '';
+    const startDate = document.getElementById('modal-startDate').value || '';
+    const notes = document.getElementById('modal-notes').value.trim() || '';
+
     const calc = calculate();
 
-    if (calc.totalARS === 0) {
-      alert('Ingresá al menos las horas o el costo de insumos para guardar.');
-      return;
-    }
+    const quoteData = {
+      id: editingId || Date.now(),
+      client,
+      jobDetail,
+      phone,
+      startDate,
+      notes,
+      difficulty: document.getElementById('difficulty').value,
+      totals: calc,
+      savedAt: new Date().toLocaleDateString('es-AR')
+    };
 
     const quotes = getStoredQuotes();
-    const today = new Date();
-    const dateFormatted = today.toLocaleDateString('es-AR');
-    const isoDate = today.toISOString().split('T')[0];
-
     if (editingId !== null) {
-      const index = quotes.findIndex(q => q.id === editingId);
-      if (index !== -1) {
-        quotes[index] = { 
-          id: editingId, client, detail, 
-          hours: calc.hours, materials: calc.materialsARS, 
-          complexity: calc.ratePerHourUSD, margin: calc.marginPercent, 
-          totalARS: calc.totalARS, totalUSD: calc.totalUSD, 
-          date: dateFormatted, isoDate: isoDate 
-        };
-      }
+      const idx = quotes.findIndex(q => q.id === editingId);
+      if (idx !== -1) quotes[idx] = quoteData;
     } else {
-      quotes.unshift({ 
-        id: Date.now(), client, detail, 
-        hours: calc.hours, materials: calc.materialsARS, 
-        complexity: calc.ratePerHourUSD, margin: calc.marginPercent, 
-        totalARS: calc.totalARS, totalUSD: calc.totalUSD, 
-        date: dateFormatted, isoDate: isoDate 
-      });
+      quotes.unshift(quoteData);
     }
 
     localStorage.setItem('presupuestos_db', JSON.stringify(quotes));
+    closeModal('modal-save-profile');
     resetForm();
     renderHistory();
   }
 
   function editQuote(id) {
     const quotes = getStoredQuotes();
-    const quote = quotes.find(q => q.id === id);
-    if (!quote) return;
-
-    document.getElementById('client').value = quote.client;
-    document.getElementById('job-detail').value = quote.detail;
-    document.getElementById('hours').value = quote.hours;
-    document.getElementById('materials').value = quote.materials;
-    document.getElementById('complexity').value = quote.complexity;
-    document.getElementById('margin').value = quote.margin;
+    const q = quotes.find(item => item.id === id);
+    if (!q) return;
 
     editingId = id;
-    document.getElementById('btn-save-action').innerText = 'Actualizar Presupuesto';
-    document.getElementById('btn-cancel-action').style.display = 'block';
+    document.getElementById('client').value = q.client;
+    document.getElementById('jobDetail').value = q.jobDetail;
+    document.getElementById('estimatedHours').value = q.totals.hours;
+    document.getElementById('materialCost').value = q.totals.materialCostARS;
+    document.getElementById('margin').value = q.totals.marginPercent;
+    document.getElementById('difficulty').value = q.difficulty || '10';
+    document.getElementById('hourlyRate').value = q.totals.hourlyRateUSD;
+
+    document.getElementById('modal-phone').value = q.phone || '';
+    document.getElementById('modal-startDate').value = q.startDate || '';
+    document.getElementById('modal-notes').value = q.notes || '';
+
+    document.getElementById('btn-save-trigger').innerText = 'Actualizar Presupuesto';
+    document.getElementById('btn-cancel-edit').style.display = 'block';
     calculate();
   }
 
   function deleteQuote(id) {
-    if (!confirm('¿Seguro que querés eliminar este registro?')) return;
-    let quotes = getStoredQuotes();
-    quotes = quotes.filter(q => q.id !== id);
+    const quotes = getStoredQuotes().filter(q => q.id !== id);
     localStorage.setItem('presupuestos_db', JSON.stringify(quotes));
     renderHistory();
   }
@@ -465,30 +862,16 @@
   function resetForm() {
     editingId = null;
     document.getElementById('client').value = '';
-    document.getElementById('job-detail').value = '';
-    document.getElementById('hours').value = '';
-    document.getElementById('materials').value = '';
-    document.getElementById('complexity').value = '10';
+    document.getElementById('jobDetail').value = '';
+    document.getElementById('estimatedHours').value = '';
+    document.getElementById('materialCost').value = '';
+    document.getElementById('difficulty').value = '10';
+    document.getElementById('hourlyRate').value = '10';
     document.getElementById('margin').value = '15';
-    document.getElementById('btn-save-action').innerText = 'Guardar Presupuesto';
-    document.getElementById('btn-cancel-action').style.display = 'none';
+
+    document.getElementById('btn-save-trigger').innerText = 'Guardar Presupuesto';
+    document.getElementById('btn-cancel-edit').style.display = 'none';
     calculate();
-  }
-
-  // --- Búsqueda, Ordenamiento y Reconocimiento de Clientes ---
-
-  function updateAutocompleteList(quotes) {
-    const datalist = document.getElementById('clients-autocomplete');
-    const uniqueClients = [...new Set(quotes.map(q => q.client))];
-    datalist.innerHTML = uniqueClients.map(c => `<option value="${c}">`).join('');
-  }
-
-  function checkClientRecognition() {
-    // Reconocimiento visual sutil cuando el nombre coincide con un cliente existente
-    const currentName = document.getElementById('client').value.trim();
-    const quotes = getStoredQuotes();
-    const exists = quotes.some(q => q.client.toLowerCase() === currentName.toLowerCase());
-    document.getElementById('client').style.borderColor = exists ? 'var(--green)' : 'var(--input-border)';
   }
 
   function renderHistory() {
@@ -497,103 +880,81 @@
     const sort = document.getElementById('sort-order').value;
     let quotes = getStoredQuotes();
 
-    updateAutocompleteList(quotes);
     document.getElementById('records-count').innerText = `${quotes.length} registros`;
 
+    // Autocompletado de lista de clientes
+    const datalist = document.getElementById('clients-autocomplete');
+    const uniqueClients = [...new Set(quotes.map(q => q.client))];
+    datalist.innerHTML = uniqueClients.map(c => `<option value="${c}">`).join('');
+
     if (quotes.length === 0) {
-      container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No hay perfiles ni presupuestos guardados aún.</p>';
+      container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No hay presupuestos guardados aún.</p>';
       return;
     }
 
-    // Filtrar por búsqueda
     if (search) {
-      quotes = quotes.filter(q => q.client.toLowerCase().includes(search) || q.detail.toLowerCase().includes(search));
+      quotes = quotes.filter(q => q.client.toLowerCase().includes(search) || q.jobDetail.toLowerCase().includes(search));
     }
 
-    // Ordenar alfabéticamente o por fecha
     if (sort === 'az') {
       quotes.sort((a, b) => a.client.localeCompare(b.client));
-    } else if (sort === 'za') {
-      quotes.sort((a, b) => b.client.localeCompare(a.client));
-    } else {
-      quotes.sort((a, b) => b.id - a.id);
     }
 
     container.innerHTML = quotes.map(q => `
       <div class="history-item">
         <div class="history-info">
           <strong>${q.client}</strong>
-          <span>${q.detail} • ${q.date}</span>
+          <span>${q.jobDetail} • ${q.savedAt}</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <div class="history-price">${formatARS(q.totalARS)}</div>
-          <button class="action-btn" onclick="editQuote(${q.id})">✏️</button>
-          <button class="action-btn delete" onclick="deleteQuote(${q.id})">🗑️</button>
+        <div class="history-right">
+          <div class="history-price">${formatARS(q.totals.totalARS)}</div>
+          <button class="icon-btn" onclick="editQuote(${q.id})" title="Editar">✏️</button>
+          <button class="icon-btn delete" onclick="deleteQuote(${q.id})" title="Eliminar">🗑️</button>
         </div>
       </div>
     `).join('');
   }
 
-  // --- Exportación en Excel (Un cliente por página, Rango de Fechas y Borrado) ---
-
+  // 7. EXPORTACIÓN A EXCEL (presupuesto.xlsx)
   function exportToExcelAndClear() {
     const quotes = getStoredQuotes();
     if (quotes.length === 0) {
-      alert('No hay datos guardados para exportar.');
+      showAlertModal('Exportar', 'No hay presupuestos guardados para exportar a Excel.');
       return;
     }
 
-    // 1. Obtener el rango de fechas entre todos los registros
-    const dates = quotes.map(q => q.isoDate || q.date).sort();
-    const minDate = quotes.reduce((min, p) => p.date < min ? p.date : min, quotes[0].date).replace(/\//g, '-');
-    const maxDate = quotes.reduce((max, p) => p.date > max ? p.date : max, quotes[0].date).replace(/\//g, '-');
-    const filename = `Presupuestos_${minDate}_a_${maxDate}.xlsx`;
-
-    // 2. Crear el libro de trabajo Excel
     const wb = XLSX.utils.book_new();
 
-    // 3. Agrupar registros por Cliente (Un cliente por página/hoja)
-    const groupedByClient = quotes.reduce((acc, q) => {
-      if (!acc[q.client]) acc[q.client] = [];
-      acc[q.client].push(q);
-      return acc;
-    }, {});
+    const dataSheet = [
+      ["CLIENTE", "DETALLE DEL TRABAJO", "FECHA", "HORAS", "INSUMOS (ARS)", "MARGEN (%)", "TOTAL (ARS)", "TOTAL (USD)", "NOTAS"],
+      ...quotes.map(q => [
+        q.client,
+        q.jobDetail,
+        q.savedAt,
+        q.totals.hours,
+        q.totals.materialCostARS,
+        `${q.totals.marginPercent}%`,
+        q.totals.totalARS,
+        `$${q.totals.totalUSD.toFixed(2)}`,
+        q.notes || ''
+      ])
+    ];
 
-    Object.keys(groupedByClient).forEach(clientName => {
-      const clientQuotes = groupedByClient[clientName];
-      
-      const sheetData = clientQuotes.map(q => ({
-        'Fecha': q.date,
-        'Detalle del Trabajo': q.detail,
-        'Horas Estimadas': q.hours,
-        'Costo Insumos (ARS)': q.materials,
-        'Tarifa ($ USD/hs)': q.complexity,
-        'Margen Imprevistos (%)': q.margin + '%',
-        'Total (ARS)': q.totalARS,
-        'Total (USD)': q.totalUSD.toFixed(2)
-      }));
+    const ws = XLSX.utils.aoa_to_sheet(dataSheet);
+    ws['!cols'] = [{ wch: 20 }, { wch: 30 }, { wch: 12 }, { wch: 8 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, { wch: 25 }];
+    
+    XLSX.utils.book_append_sheet(wb, ws, "Presupuestos");
+    XLSX.writeFile(wb, "presupuesto.xlsx");
 
-      const ws = XLSX.utils.json_to_sheet(sheetData);
-      
-      // Limpiar el nombre del cliente para cumplir restricciones de pestañas Excel (máx 31 caracteres y sin caracteres especiales)
-      const cleanSheetName = clientName.replace(/[\\/?*:[\]]/g, '').substring(0, 31);
-      XLSX.utils.book_append_sheet(wb, ws, cleanSheetName || 'Cliente');
-    });
-
-    // 4. Descargar el archivo Excel
-    XLSX.writeFile(wb, filename);
-
-    // 5. Borrar datos automáticamente tras confirmar
-    setTimeout(() => {
-      if (confirm(`El archivo "${filename}" se ha generado con éxito.\n\n¿Deseás borrar la base de datos local para iniciar un nuevo ciclo?`)) {
-        localStorage.removeItem('presupuestos_db');
-        resetForm();
-        renderHistory();
-      }
-    }, 500);
+    localStorage.removeItem('presupuestos_db');
+    resetForm();
+    renderHistory();
+    showAlertModal('Éxito', 'Se descargó "presupuesto.xlsx" y se limpió el historial.');
   }
 
+  // Inicialización
   fetchDollar();
+  loadExcelFile();
 </script>
 
 </body>
