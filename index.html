@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Presupuestos</title>
-  
+
   <!-- FAVICON SVG / LOGO -->
   <link id="favicon" rel="icon" type="image/svg+xml" href="y.r.svg">
 
@@ -114,7 +114,7 @@
       font-size: 1rem;
     }
 
-    /* ESTRUCTURA DASHBOARD (2 Columnas exacta como la imagen) */
+    /* ESTRUCTURA DASHBOARD */
     .app-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -138,7 +138,7 @@
       flex-direction: column;
     }
 
-    /* TARJETAS Y TARJETAS HEADER */
+    /* TARJETAS */
     .card {
       background: var(--card);
       border: 1px solid var(--card-border);
@@ -155,7 +155,7 @@
       letter-spacing: 0.8px;
     }
 
-    /* FORMULARIOS Y GRID INTERNA */
+    /* FORMULARIOS Y GRID */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -172,6 +172,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      position: relative;
     }
 
     label {
@@ -199,7 +200,7 @@
       border-color: var(--accent-blue);
     }
 
-    /* 1. ELIMINAR FLECHAS Y MANTENER COMPATIBILIDAD CSS (Sin advertencias vendorPrefix) */
+    /* ELIMINAR FLECHAS INPUT NUMÉRICO */
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -212,26 +213,91 @@
       appearance: textfield;
     }
 
-    /* 2. ESTILO ELEGANTE DE SELECT / DESPLEGABLE */
-    select {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      background-size: 14px;
-      padding-right: 36px;
-      cursor: pointer;
+    /* COMPONENTE DESPLEGABLE PERSONALIZADO (CUSTOM SELECT) */
+    .custom-select-container {
+      position: relative;
+      width: 100%;
     }
 
-    select option {
-      background-color: var(--card);
+    .custom-select-trigger {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px 14px;
       color: var(--text-main);
-      padding: 10px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+      user-select: none;
     }
 
-    /* PANEL DERECHO - RESUMEN DE COSTOS */
+    .custom-select-trigger:after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-right: 2px solid var(--text-muted);
+      border-bottom: 2px solid var(--text-muted);
+      transform: rotate(45deg);
+      transition: transform 0.2s ease;
+      margin-top: -3px;
+    }
+
+    .custom-select-container.open .custom-select-trigger {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 1px var(--accent-blue);
+    }
+
+    .custom-select-container.open .custom-select-trigger:after {
+      transform: rotate(-135deg);
+      margin-top: 3px;
+    }
+
+    .custom-select-options {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      z-index: 100;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .custom-select-container.open .custom-select-options {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .custom-option {
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .custom-option:hover {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
+    }
+
+    .custom-option.selected {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    /* RESUMEN DE COSTOS */
     .result-row {
       display: flex;
       justify-content: space-between;
@@ -319,7 +385,7 @@
       margin-top: 8px;
     }
 
-    /* CATÁLOGO / HISTORIAL DE PERFILES */
+    /* CATÁLOGO DE PRESUPUESTOS */
     .catalog-header {
       display: flex;
       justify-content: space-between;
@@ -335,10 +401,6 @@
 
     .catalog-controls input {
       flex: 1;
-    }
-
-    .catalog-controls select {
-      width: 150px;
     }
 
     .history-item {
@@ -401,7 +463,7 @@
       color: var(--red);
     }
 
-    /* MODALES PROPIOS (Sustitutos de alert / prompt) */
+    /* MODALES PROPIOS */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -465,13 +527,13 @@
   <!-- ENCABEZADO -->
   <div class="header">
     <div class="header-title-container">
-      <img src="y.r.svg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+      <img src="y.r.svg" alt="Logo YR" class="brand-logo" onerror="this.style.display='none'">
       <h1>Calculadora de Presupuestos</h1>
     </div>
     <p>Gestión de clientes y exportación automatizada.</p>
   </div>
 
-  <!-- BARRA DE DÓLAR BLUE -->
+  <!-- BARRA DE ESTADO DEL DÓLAR -->
   <div class="status-bar">
     <div class="status-left">
       <span class="status-indicator" id="status-dot"></span>
@@ -546,7 +608,7 @@
 
         <div class="catalog-controls">
           <input type="text" id="search-filter" placeholder="🔍 Buscar por cliente..." oninput="renderHistory()">
-          <select id="sort-order" onchange="renderHistory()">
+          <select id="sort-order" onchange="renderHistory()" style="width: 150px;">
             <option value="newest">Más recientes</option>
             <option value="az">Cliente (A-Z)</option>
           </select>
@@ -594,7 +656,7 @@
   </div>
 </div>
 
-<!-- MODAL 1: TARIFA PERSONALIZADA (Reemplaza a prompt) -->
+<!-- MODAL 1: TARIFA PERSONALIZADA -->
 <div class="modal-overlay" id="modal-custom-rate">
   <div class="modal-content">
     <div class="modal-title">Tarifa Personalizada</div>
@@ -639,7 +701,7 @@
   </div>
 </div>
 
-<!-- MODAL 3: ALERTAS PROPIAS DE LA PÁGINA (Reemplaza a alert) -->
+<!-- MODAL 3: ALERTAS PROPIAS -->
 <div class="modal-overlay" id="modal-alert">
   <div class="modal-content">
     <div class="modal-title" id="alert-modal-title">Atención</div>
@@ -678,7 +740,6 @@
     renderHistory();
   }
 
-  // Carga asincrónica de presupuesto.xlsx si existe en el directorio local
   async function loadExcelFile() {
     try {
       const response = await fetch('presupuesto.xlsx');
@@ -688,12 +749,10 @@
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         excelDataLoaded = XLSX.utils.sheet_to_json(firstSheet);
       }
-    } catch (e) {
-      // Archivo opcional en entorno servidor local
-    }
+    } catch (e) {}
   }
 
-  // 2. EVITAR CAMBIOS DE NÚMEROS CON SCROLL DEL MOUSE
+  // 2. EVITAR CAMBIO DE NÚMEROS CON WHEEL / SCROLL
   document.addEventListener('wheel', function(e) {
     if (document.activeElement.type === 'number') {
       e.preventDefault();
@@ -704,7 +763,88 @@
     return 'ARS $' + Math.round(amount).toLocaleString('es-AR');
   }
 
-  // 3. TARIFA CUSTOM Y MANEJO DE DESPLEGABLE
+  // 3. CONSTRUCTOR DE SELECTS PERSONALIZADOS
+  function setupCustomSelects() {
+    document.querySelectorAll('select:not(#sort-order)').forEach(selectEl => {
+      selectEl.style.display = 'none';
+
+      const container = document.createElement('div');
+      container.className = 'custom-select-container';
+      container.id = `custom-container-${selectEl.id}`;
+
+      const trigger = document.createElement('div');
+      trigger.className = 'custom-select-trigger';
+      
+      const selectedOption = selectEl.options[selectEl.selectedIndex];
+      trigger.textContent = selectedOption ? selectedOption.textContent : '';
+
+      const optionsList = document.createElement('div');
+      optionsList.className = 'custom-select-options';
+
+      Array.from(selectEl.options).forEach((opt, idx) => {
+        const optDiv = document.createElement('div');
+        optDiv.className = 'custom-option' + (idx === selectEl.selectedIndex ? ' selected' : '');
+        optDiv.dataset.value = opt.value;
+        optDiv.textContent = opt.textContent;
+
+        optDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectEl.value = opt.value;
+          trigger.textContent = opt.textContent;
+          
+          optionsList.querySelectorAll('.custom-option').forEach(el => el.classList.remove('selected'));
+          optDiv.classList.add('selected');
+          
+          container.classList.remove('open');
+          selectEl.dispatchEvent(new Event('change'));
+        });
+
+        optionsList.appendChild(optDiv);
+      });
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.custom-select-container').forEach(c => {
+          if (c !== container) c.classList.remove('open');
+        });
+        container.classList.toggle('open');
+      });
+
+      container.appendChild(trigger);
+      container.appendChild(optionsList);
+      selectEl.parentNode.insertBefore(container, selectEl);
+    });
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.custom-select-container').forEach(c => c.classList.remove('open'));
+    });
+  }
+
+  function updateCustomSelectUI(selectId) {
+    const selectEl = document.getElementById(selectId);
+    const container = document.getElementById(`custom-container-${selectId}`);
+    if (!selectEl || !container) return;
+
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    const trigger = container.querySelector('.custom-select-trigger');
+    if (selectedOption && trigger) {
+      trigger.textContent = selectedOption.textContent;
+    }
+
+    const options = container.querySelectorAll('.custom-option');
+    options.forEach(opt => {
+      const targetOpt = Array.from(selectEl.options).find(o => o.value === opt.dataset.value);
+      if (targetOpt) opt.textContent = targetOpt.textContent;
+
+      if (opt.dataset.value === selectEl.value) {
+        opt.classList.add('selected');
+      } else {
+        opt.classList.remove('selected');
+      }
+    });
+  }
+
+  // 4. LÓGICA DE TARIFA PERSONALIZADA Y DIFICULTAD
   async function handleDifficultyChange() {
     const select = document.getElementById('difficulty');
     const hiddenRate = document.getElementById('hourlyRate');
@@ -728,13 +868,14 @@
       const customOpt = select.querySelector('option[value="custom"]');
       customOpt.textContent = `Personalizada ($${val} USD/hs)`;
       closeModal('modal-custom-rate');
+      updateCustomSelectUI('difficulty');
       calculate();
     } else {
       showAlertModal('Atención', 'Ingresá un valor numérico válido mayor a 0.');
     }
   }
 
-  // 4. CÁLCULO EN TIEMPO REAL
+  // 5. CÁLCULO DE COSTOS
   function calculate() {
     if (dollarRate === 0) return;
 
@@ -759,7 +900,7 @@
     return { hours, laborARS, materialCostARS, marginARS, totalARS, totalUSD, hourlyRateUSD, marginPercent };
   }
 
-  // 5. MODALES PROPIOS
+  // 6. MANEJO DE MODALES
   function openModal(id) {
     document.getElementById(id).classList.add('active');
   }
@@ -789,7 +930,7 @@
     openModal('modal-save-profile');
   }
 
-  // 6. GESTIÓN Y GUARDADO EN LOCALSTORAGE
+  // 7. HISTORIAL Y LOCALSTORAGE
   function getStoredQuotes() {
     const data = localStorage.getItem('presupuestos_db');
     return data ? JSON.parse(data) : [];
@@ -850,6 +991,9 @@
 
     document.getElementById('btn-save-trigger').innerText = 'Actualizar Presupuesto';
     document.getElementById('btn-cancel-edit').style.display = 'block';
+
+    updateCustomSelectUI('difficulty');
+    updateCustomSelectUI('margin');
     calculate();
   }
 
@@ -871,6 +1015,9 @@
 
     document.getElementById('btn-save-trigger').innerText = 'Guardar Presupuesto';
     document.getElementById('btn-cancel-edit').style.display = 'none';
+
+    updateCustomSelectUI('difficulty');
+    updateCustomSelectUI('margin');
     calculate();
   }
 
@@ -882,7 +1029,6 @@
 
     document.getElementById('records-count').innerText = `${quotes.length} registros`;
 
-    // Autocompletado de lista de clientes
     const datalist = document.getElementById('clients-autocomplete');
     const uniqueClients = [...new Set(quotes.map(q => q.client))];
     datalist.innerHTML = uniqueClients.map(c => `<option value="${c}">`).join('');
@@ -915,7 +1061,7 @@
     `).join('');
   }
 
-  // 7. EXPORTACIÓN A EXCEL (presupuesto.xlsx)
+  // 8. EXPORTACIÓN A EXCEL
   function exportToExcelAndClear() {
     const quotes = getStoredQuotes();
     if (quotes.length === 0) {
@@ -942,7 +1088,7 @@
 
     const ws = XLSX.utils.aoa_to_sheet(dataSheet);
     ws['!cols'] = [{ wch: 20 }, { wch: 30 }, { wch: 12 }, { wch: 8 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, { wch: 25 }];
-    
+
     XLSX.utils.book_append_sheet(wb, ws, "Presupuestos");
     XLSX.writeFile(wb, "presupuesto.xlsx");
 
@@ -952,9 +1098,10 @@
     showAlertModal('Éxito', 'Se descargó "presupuesto.xlsx" y se limpió el historial.');
   }
 
-  // Inicialización
+  // Inicializar componentes y datos
   fetchDollar();
   loadExcelFile();
+  setupCustomSelects();
 </script>
 
 </body>
