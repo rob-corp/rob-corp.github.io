@@ -114,28 +114,26 @@
       font-size: 1rem;
     }
 
-    /* ESTRUCTURA DASHBOARD */
+    /* ESTRUCTURA DASHBOARD RESPONSIVE */
     .app-grid {
-      display: grid;
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 20px;
     }
 
     @media (min-width: 850px) {
       .app-grid {
+        display: grid;
         grid-template-columns: 1fr 360px;
+        grid-template-areas:
+          "params summary"
+          "catalog summary";
+        align-items: start;
       }
-    }
 
-    .main-col {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .side-col {
-      display: flex;
-      flex-direction: column;
+      .card-params { grid-area: params; }
+      .card-summary { grid-area: summary; position: sticky; top: 20px; }
+      .card-catalog { grid-area: catalog; }
     }
 
     /* TARJETAS */
@@ -463,7 +461,7 @@
       color: var(--red);
     }
 
-    /* MODALES PROPIOS */
+    /* MODALES */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -542,114 +540,107 @@
     <div class="dollar-price" id="dollar-price">ARS $0</div>
   </div>
 
-  <!-- DASHBOARD PRINCIPAL EN 2 COLUMNAS -->
+  <!-- DASHBOARD PRINCIPAL -->
   <div class="app-grid">
     
-    <!-- COLUMNA IZQUIERDA -->
-    <div class="main-col">
-      
-      <!-- PARÁMETROS DEL TRABAJO -->
-      <div class="card">
-        <h3 class="card-title">Parámetros del Trabajo</h3>
+    <!-- 1. PARÁMETROS DEL TRABAJO -->
+    <div class="card card-params">
+      <h3 class="card-title">Parámetros del Trabajo</h3>
 
-        <div class="form-grid two-cols" style="margin-bottom: 16px;">
-          <div class="field">
-            <label for="client">Cliente (Autocompletado)</label>
-            <input type="text" id="client" list="clients-autocomplete" placeholder="Ej: Juan Pérez">
-            <datalist id="clients-autocomplete"></datalist>
-          </div>
-          <div class="field">
-            <label for="jobDetail">Detalle del Trabajo</label>
-            <input type="text" id="jobDetail" placeholder="Ej: Impresión 3D / Diseño">
-          </div>
+      <div class="form-grid two-cols" style="margin-bottom: 16px;">
+        <div class="field">
+          <label for="client">Cliente (Autocompletado)</label>
+          <input type="text" id="client" list="clients-autocomplete" placeholder="Ej: Juan Pérez">
+          <datalist id="clients-autocomplete"></datalist>
         </div>
-
-        <div class="form-grid two-cols" style="margin-bottom: 16px;">
-          <div class="field">
-            <label for="difficulty">Dificultad / Tipo</label>
-            <select id="difficulty" onchange="handleDifficultyChange()">
-              <option value="7">Baja ($7 USD/hs)</option>
-              <option value="10" selected>Media ($10 USD/hs)</option>
-              <option value="15">Alta ($15 USD/hs)</option>
-              <option value="custom">Personalizada...</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="estimatedHours">Horas Estimadas</label>
-            <input type="number" id="estimatedHours" placeholder="Ej: 2" oninput="calculate()">
-          </div>
+        <div class="field">
+          <label for="jobDetail">Detalle del Trabajo</label>
+          <input type="text" id="jobDetail" placeholder="Ej: Impresión 3D / Diseño">
         </div>
-
-        <div class="form-grid two-cols">
-          <div class="field">
-            <label for="materialCost">Costo de Insumos (ARS)</label>
-            <input type="number" id="materialCost" placeholder="Ej: 1500,50" oninput="calculate()">
-          </div>
-          <div class="field">
-            <label for="margin">Margen de Imprevistos (%)</label>
-            <select id="margin" onchange="calculate()">
-              <option value="5">5% - Riesgo Bajo</option>
-              <option value="10">10% - Estándar</option>
-              <option value="15" selected>15% - Riesgo Medio</option>
-              <option value="20">20% - Alto / Complejo</option>
-            </select>
-          </div>
-        </div>
-
-        <input type="hidden" id="hourlyRate" value="10">
       </div>
 
-      <!-- PERFILES Y PRESUPUESTOS (Catálogo) -->
-      <div class="card">
-        <div class="catalog-header">
-          <h3 class="card-title" style="margin: 0;">Perfiles y Presupuestos</h3>
-          <span id="records-count" style="font-size: 0.8rem; color: var(--text-muted);">0 registros</span>
-        </div>
-
-        <div class="catalog-controls">
-          <input type="text" id="search-filter" placeholder="🔍 Buscar por cliente..." oninput="renderHistory()">
-          <select id="sort-order" onchange="renderHistory()" style="width: 150px;">
-            <option value="newest">Más recientes</option>
-            <option value="az">Cliente (A-Z)</option>
+      <div class="form-grid two-cols" style="margin-bottom: 16px;">
+        <div class="field">
+          <label for="difficulty">Dificultad / Tipo</label>
+          <select id="difficulty" onchange="handleDifficultyChange()">
+            <option value="7">Baja ($7 USD/hs)</option>
+            <option value="10" selected>Media ($10 USD/hs)</option>
+            <option value="15">Alta ($15 USD/hs)</option>
+            <option value="custom">Personalizada...</option>
           </select>
         </div>
-
-        <div id="history-container">
-          <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No hay presupuestos guardados aún.</p>
+        <div class="field">
+          <label for="estimatedHours">Horas Estimadas</label>
+          <input type="number" id="estimatedHours" placeholder="Ej: 2" oninput="calculate()">
         </div>
       </div>
 
+      <div class="form-grid two-cols">
+        <div class="field">
+          <label for="materialCost">Costo de Insumos (ARS)</label>
+          <input type="number" id="materialCost" placeholder="Ej: 1500,50" oninput="calculate()">
+        </div>
+        <div class="field">
+          <label for="margin">Margen de Imprevistos (%)</label>
+          <select id="margin" onchange="calculate()">
+            <option value="5">5% - Riesgo Bajo</option>
+            <option value="10">10% - Estándar</option>
+            <option value="15" selected>15% - Riesgo Medio</option>
+            <option value="20">20% - Alto / Complejo</option>
+          </select>
+        </div>
+      </div>
+
+      <input type="hidden" id="hourlyRate" value="10">
     </div>
 
-    <!-- COLUMNA DERECHA (Resumen de Costos) -->
-    <div class="side-col">
-      <div class="card" style="position: sticky; top: 20px;">
-        <h3 class="card-title">Resumen de Costos</h3>
+    <!-- 2. RESUMEN DE COSTOS -->
+    <div class="card card-summary">
+      <h3 class="card-title">Resumen de Costos</h3>
 
-        <div class="result-row">
-          <span>Mano de obra</span>
-          <span id="res-labor">ARS $0</span>
-        </div>
+      <div class="result-row">
+        <span>Mano de obra</span>
+        <span id="res-labor">ARS $0</span>
+      </div>
 
-        <div class="result-row">
-          <span>Insumos / Materiales</span>
-          <span id="res-materials">ARS $0</span>
-        </div>
+      <div class="result-row">
+        <span>Insumos / Materiales</span>
+        <span id="res-materials">ARS $0</span>
+      </div>
 
-        <div class="result-row">
-          <span>Margen de seguridad</span>
-          <span id="res-margin">ARS $0</span>
-        </div>
+      <div class="result-row">
+        <span>Margen de seguridad</span>
+        <span id="res-margin">ARS $0</span>
+      </div>
 
-        <div class="total-box">
-          <div class="total-label">Total sugerido a cobrar</div>
-          <div class="total-amount" id="res-total">ARS $0</div>
-          <div class="total-usd" id="res-usd">Equivalente a: USD $0.00</div>
-        </div>
+      <div class="total-box">
+        <div class="total-label">Total sugerido a cobrar</div>
+        <div class="total-amount" id="res-total">ARS $0</div>
+        <div class="total-usd" id="res-usd">Equivalente a: USD $0.00</div>
+      </div>
 
-        <button class="btn btn-main" id="btn-save-trigger" onclick="openSaveModal()">Guardar Presupuesto</button>
-        <button class="btn btn-cancel" id="btn-cancel-edit" style="display: none;" onclick="resetForm()">Cancelar Edición</button>
-        <button class="btn btn-excel" onclick="exportToExcelAndClear()">📊 Exportar a Excel y Limpiar</button>
+      <button class="btn btn-main" id="btn-save-trigger" onclick="openSaveModal()">Guardar Presupuesto</button>
+      <button class="btn btn-cancel" id="btn-cancel-edit" style="display: none;" onclick="resetForm()">Cancelar Edición</button>
+      <button class="btn btn-excel" onclick="exportToExcelAndClear()">📊 Exportar a Excel y Limpiar</button>
+    </div>
+
+    <!-- 3. PERFILES Y PRESUPUESTOS (CATÁLOGO - ABAJO EN MOBILE) -->
+    <div class="card card-catalog">
+      <div class="catalog-header">
+        <h3 class="card-title" style="margin: 0;">Perfiles y Presupuestos</h3>
+        <span id="records-count" style="font-size: 0.8rem; color: var(--text-muted);">0 registros</span>
+      </div>
+
+      <div class="catalog-controls">
+        <input type="text" id="search-filter" placeholder="🔍 Buscar por cliente..." oninput="renderHistory()">
+        <select id="sort-order" onchange="renderHistory()" style="width: 150px;">
+          <option value="newest">Más recientes</option>
+          <option value="az">Cliente (A-Z)</option>
+        </select>
+      </div>
+
+      <div id="history-container">
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No hay presupuestos guardados aún.</p>
       </div>
     </div>
 
