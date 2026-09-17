@@ -23,7 +23,42 @@
       --text-main: #ffffff;
       --text-muted: #8b949e;
     }
+/* Para navegadores basados en WebKit (Chrome, Edge, Safari) */
+textarea::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
+textarea::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: #0b0f17; /* Fondo del carril coincidente con la interfaz */
+  border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background: #222c3d; /* Color del indicador */
+  border-radius: 4px;
+  border: 1px solid #141b26;
+}
+
+textarea::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background: #35455e; /* Hover para dar retroalimentación visual */
+}
+textarea {
+  width: 100%;
+  max-height: 180px; /* Evita que crezca indefinidamente en pantallas chicas */
+  resize: vertical;  /* Permite redimensionar solo a lo alto */
+  overflow-y: auto;  /* Muestra la barra solo si el texto supera el alto máximo */
+  -webkit-overflow-scrolling: touch; /* Suaviza el desplazamiento en iOS */
+}
+/* Compatibilidad estándar para Firefox */
+textarea, body {
+  scrollbar-width: thin;
+  scrollbar-color: #222c3d #0b0f17;
+}
     * {
       box-sizing: border-box;
       margin: 0;
