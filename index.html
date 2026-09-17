@@ -198,7 +198,7 @@
       border-color: var(--accent-blue);
     }
 
-    /* ELIMINAR FLECHAS INPUT NUMÉRICO */
+    /* ELIMINAR FLECHAS INPUT NUMÉRICO Y DATALIST */
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -209,6 +209,15 @@
     input[type="number"] {
       -moz-appearance: textfield;
       appearance: textfield;
+    }
+
+    input::-webkit-calendar-picker-indicator {
+      display: none !important;
+      -webkit-appearance: none;
+    }
+
+    input[list] {
+      -moz-appearance: textfield;
     }
 
     /* COMPONENTE DESPLEGABLE PERSONALIZADO (CUSTOM SELECT) */
@@ -410,6 +419,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .history-item:hover {
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.04);
     }
 
     .history-info strong {
@@ -459,6 +475,20 @@
     .icon-btn.delete:hover {
       border-color: var(--red);
       color: var(--red);
+    }
+
+    @media (max-width: 480px) {
+      .history-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .history-right {
+        width: 100%;
+        justify-content: space-between;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
     }
 
     /* MODALES */
@@ -632,7 +662,7 @@
       </div>
 
       <div class="catalog-controls">
-        <input type="text" id="search-filter" placeholder="🔍 Buscar por cliente..." oninput="renderHistory()">
+        <input type="text" id="search-filter" placeholder="🔍 Buscar por cliente o detalle..." oninput="renderHistory()">
         <select id="sort-order" onchange="renderHistory()" style="width: 150px;">
           <option value="newest">Más recientes</option>
           <option value="az">Cliente (A-Z)</option>
@@ -707,6 +737,12 @@
   let dollarRate = 0;
   let editingId = null;
   let excelDataLoaded = [];
+
+  function escapeHTML(str) {
+    return String(str || '').replace(/[&<>"']/g, function(m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
 
   // 1. CARGA INICIAL Y DÓLAR BLUE
   async function fetchDollar() {
@@ -950,7 +986,7 @@
 
     const quotes = getStoredQuotes();
     if (editingId !== null) {
-      const idx = quotes.findIndex(q => q.id === editingId);
+      const idx = quotes.findIndex(q => q.id == editingId);
       if (idx !== -1) quotes[idx] = quoteData;
     } else {
       quotes.unshift(quoteData);
@@ -964,17 +1000,17 @@
 
   function editQuote(id) {
     const quotes = getStoredQuotes();
-    const q = quotes.find(item => item.id === id);
+    const q = quotes.find(item => item.id == id);
     if (!q) return;
 
-    editingId = id;
-    document.getElementById('client').value = q.client;
-    document.getElementById('jobDetail').value = q.jobDetail;
-    document.getElementById('estimatedHours').value = q.totals.hours;
-    document.getElementById('materialCost').value = q.totals.materialCostARS;
-    document.getElementById('margin').value = q.totals.marginPercent;
+    editingId = q.id;
+    document.getElementById('client').value = q.client || '';
+    document.getElementById('jobDetail').value = q.jobDetail || '';
+    document.getElementById('estimatedHours').value = q.totals?.hours || '';
+    document.getElementById('materialCost').value = q.totals?.materialCostARS || '';
+    document.getElementById('margin').value = q.totals?.marginPercent || '15';
     document.getElementById('difficulty').value = q.difficulty || '10';
-    document.getElementById('hourlyRate').value = q.totals.hourlyRateUSD;
+    document.getElementById('hourlyRate').value = q.totals?.hourlyRateUSD || '10';
 
     document.getElementById('modal-phone').value = q.phone || '';
     document.getElementById('modal-startDate').value = q.startDate || '';
@@ -986,11 +1022,17 @@
     updateCustomSelectUI('difficulty');
     updateCustomSelectUI('margin');
     calculate();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function deleteQuote(id) {
-    const quotes = getStoredQuotes().filter(q => q.id !== id);
+    if (!confirm('¿Seguro que querés eliminar este presupuesto?')) return;
+    const quotes = getStoredQuotes().filter(q => q.id != id);
     localStorage.setItem('presupuestos_db', JSON.stringify(quotes));
+    if (editingId == id) {
+      resetForm();
+    }
     renderHistory();
   }
 
@@ -1014,38 +1056,58 @@
 
   function renderHistory() {
     const container = document.getElementById('history-container');
-    const search = document.getElementById('search-filter').value.toLowerCase();
-    const sort = document.getElementById('sort-order').value;
-    let quotes = getStoredQuotes();
-
-    document.getElementById('records-count').innerText = `${quotes.length} registros`;
-
+    const recordsCount = document.getElementById('records-count');
     const datalist = document.getElementById('clients-autocomplete');
-    const uniqueClients = [...new Set(quotes.map(q => q.client))];
-    datalist.innerHTML = uniqueClients.map(c => `<option value="${c}">`).join('');
+    if (!container) return;
 
-    if (quotes.length === 0) {
+    const allQuotes = getStoredQuotes();
+
+    if (datalist) {
+      const uniqueClients = [...new Set(allQuotes.map(q => q.client).filter(Boolean))];
+      datalist.innerHTML = uniqueClients.map(c => `<option value="${escapeHTML(c)}">`).join('');
+    }
+
+    if (recordsCount) {
+      recordsCount.innerText = `${allQuotes.length} registros`;
+    }
+
+    if (allQuotes.length === 0) {
       container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No hay presupuestos guardados aún.</p>';
       return;
     }
 
-    if (search) {
-      quotes = quotes.filter(q => q.client.toLowerCase().includes(search) || q.jobDetail.toLowerCase().includes(search));
-    }
+    const searchInput = document.getElementById('search-filter');
+    const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const sortSelect = document.getElementById('sort-order');
+    const sort = sortSelect ? sortSelect.value : 'newest';
+
+    let filtered = allQuotes.filter(q => {
+      if (!search) return true;
+      const c = (q.client || '').toLowerCase();
+      const d = (q.jobDetail || '').toLowerCase();
+      return c.includes(search) || d.includes(search);
+    });
 
     if (sort === 'az') {
-      quotes.sort((a, b) => a.client.localeCompare(b.client));
+      filtered.sort((a, b) => (a.client || '').localeCompare(b.client || ''));
+    } else {
+      filtered.sort((a, b) => (b.id || 0) - (a.id || 0));
     }
 
-    container.innerHTML = quotes.map(q => `
-      <div class="history-item">
+    if (filtered.length === 0) {
+      container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No se encontraron coincidencias.</p>';
+      return;
+    }
+
+    container.innerHTML = filtered.map(q => `
+      <div class="history-item" onclick="editQuote(${q.id})" title="Hacé clic para cargar este presupuesto">
         <div class="history-info">
-          <strong>${q.client}</strong>
-          <span>${q.jobDetail} • ${q.savedAt}</span>
+          <strong>${escapeHTML(q.client || 'Sin cliente')}</strong>
+          <span>${escapeHTML(q.jobDetail || 'Sin detalle')} • ${q.savedAt || ''}</span>
         </div>
-        <div class="history-right">
-          <div class="history-price">${formatARS(q.totals.totalARS)}</div>
-          <button class="icon-btn" onclick="editQuote(${q.id})" title="Editar">✏️</button>
+        <div class="history-right" onclick="event.stopPropagation();">
+          <div class="history-price">${formatARS(q.totals?.totalARS || 0)}</div>
+          <button class="icon-btn" onclick="editQuote(${q.id})" title="Editar / Cargar">✏️</button>
           <button class="icon-btn delete" onclick="deleteQuote(${q.id})" title="Eliminar">🗑️</button>
         </div>
       </div>
@@ -1068,11 +1130,11 @@
         q.client,
         q.jobDetail,
         q.savedAt,
-        q.totals.hours,
-        q.totals.materialCostARS,
-        `${q.totals.marginPercent}%`,
-        q.totals.totalARS,
-        `$${q.totals.totalUSD.toFixed(2)}`,
+        q.totals?.hours || 0,
+        q.totals?.materialCostARS || 0,
+        `${q.totals?.marginPercent || 0}%`,
+        q.totals?.totalARS || 0,
+        `$${(q.totals?.totalUSD || 0).toFixed(2)}`,
         q.notes || ''
       ])
     ];
