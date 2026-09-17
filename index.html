@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Presupuestos</title>
 
-  <!-- FAVICON SVG / LOGO -->
   <link id="favicon" rel="icon" type="image/svg+xml" href="y.r.svg">
-
-  <!-- Librería SheetJS para exportar e importar presupuesto.xlsx -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
@@ -50,6 +47,11 @@
     /* ENCABEZADO */
     .header {
       margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .header-title-container {
@@ -75,6 +77,11 @@
     .header p {
       color: var(--text-muted);
       font-size: 0.92rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
     }
 
     /* BARRA DE ESTADO DEL DÓLAR */
@@ -198,7 +205,7 @@
       border-color: var(--accent-blue);
     }
 
-    /* ELIMINAR FLECHAS INPUT NUMÉRICO Y DATALIST */
+    /* ELIMINACIÓN DE FLECHAS EN NUMÉRICOS Y DATALIST */
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -211,16 +218,18 @@
       appearance: textfield;
     }
 
-    input::-webkit-calendar-picker-indicator {
+    input[list]::-webkit-calendar-picker-indicator {
       display: none !important;
-      -webkit-appearance: none;
     }
 
-    input[list] {
-      -moz-appearance: textfield;
+    /* CORRECCIÓN EXPLÍCITA PARA MOSTRAR CALENDARIO EN TYPE DATE */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      display: block !important;
+      cursor: pointer;
+      filter: invert(0.8);
     }
 
-    /* COMPONENTE DESPLEGABLE PERSONALIZADO (CUSTOM SELECT) */
+    /* COMPONENTE DESPLEGABLE PERSONALIZADO */
     .custom-select-container {
       position: relative;
       width: 100%;
@@ -389,7 +398,23 @@
       background: transparent;
       color: var(--text-muted);
       border: 1px solid var(--card-border);
-      margin-top: 8px;
+    }
+
+    .btn-cancel:hover {
+      border-color: var(--text-muted);
+      color: var(--text-main);
+    }
+
+    .btn-secondary {
+      background: var(--card-border);
+      color: var(--text-main);
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      border-radius: 6px;
+    }
+
+    .btn-secondary:hover {
+      background: #2d3546;
     }
 
     /* CATÁLOGO DE PRESUPUESTOS */
@@ -477,20 +502,6 @@
       color: var(--red);
     }
 
-    @media (max-width: 480px) {
-      .history-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-      .history-right {
-        width: 100%;
-        justify-content: space-between;
-        padding-top: 8px;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-      }
-    }
-
     /* MODALES */
     .modal-overlay {
       position: fixed;
@@ -554,11 +565,17 @@
   
   <!-- ENCABEZADO -->
   <div class="header">
-    <div class="header-title-container">
-      <img src="y.r.svg" alt="Logo YR" class="brand-logo" onerror="this.style.display='none'">
-      <h1>Calculadora de Presupuestos</h1>
+    <div>
+      <div class="header-title-container">
+        <img src="y.r.svg" alt="Logo YR" class="brand-logo" onerror="this.style.display='none'">
+        <h1>Calculadora de Presupuestos</h1>
+      </div>
+      <p>Gestión de clientes, sincronización privada y exportación.</p>
     </div>
-    <p>Gestión de clientes y exportación automatizada.</p>
+
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="openSyncModal()">🔑 Vincular / PIN</button>
+    </div>
   </div>
 
   <!-- BARRA DE ESTADO DEL DÓLAR -->
@@ -650,11 +667,11 @@
       </div>
 
       <button class="btn btn-main" id="btn-save-trigger" onclick="openSaveModal()">Guardar Presupuesto</button>
-      <button class="btn btn-cancel" id="btn-cancel-edit" style="display: none;" onclick="resetForm()">Cancelar Edición</button>
+      <button class="btn btn-cancel" id="btn-cancel-edit" style="display: none; margin-top: 8px;" onclick="resetForm()">Cancelar Edición</button>
       <button class="btn btn-excel" onclick="exportToExcelAndClear()">📊 Exportar a Excel y Limpiar</button>
     </div>
 
-    <!-- 3. PERFILES Y PRESUPUESTOS (CATÁLOGO - ABAJO EN MOBILE) -->
+    <!-- 3. CATÁLOGO DE PRESUPUESTOS Y PERFILES -->
     <div class="card card-catalog">
       <div class="catalog-header">
         <h3 class="card-title" style="margin: 0;">Perfiles y Presupuestos</h3>
@@ -692,7 +709,7 @@
   </div>
 </div>
 
-<!-- MODAL 2: GUARDAR Y DETALLES EXTENDIDOS -->
+<!-- MODAL 2: GUARDAR Y DETALLES EXTENDIDOS (CALENDARIO CORREGIDO) -->
 <div class="modal-overlay" id="modal-save-profile">
   <div class="modal-content" style="max-width: 520px;">
     <div class="modal-title">Archivar / Completar Perfil</div>
@@ -722,7 +739,48 @@
   </div>
 </div>
 
-<!-- MODAL 3: ALERTAS PROPIAS -->
+<!-- MODAL 3: CONFIRMACIÓN PROPIA DE ELIMINACIÓN -->
+<div class="modal-overlay" id="modal-confirm-delete">
+  <div class="modal-content">
+    <div class="modal-title">¿Eliminar presupuesto?</div>
+    <div class="modal-body">
+      Esta acción quitará el presupuesto del registro. ¿Querés continuar?
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('modal-confirm-delete')">Cancelar</button>
+      <button class="btn btn-main" style="background: var(--red); color: #ffffff;" onclick="confirmDeleteAction()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 4: SEGURIDAD Y SINCRONIZACIÓN ENTRE EQUIPOS -->
+<div class="modal-overlay" id="modal-sync">
+  <div class="modal-content" style="max-width: 520px;">
+    <div class="modal-title">Seguridad y Vinculación</div>
+    <div class="modal-body">
+      <div style="margin-bottom: 18px;">
+        <label style="display: block; margin-bottom: 6px;">1. PIN de Acceso Local</label>
+        <input type="password" id="pin-code-input" placeholder="Crear o ingresar PIN de 4 dígitos">
+        <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: block;">Protege la visualización de los perfiles guardados en este equipo.</span>
+      </div>
+
+      <div>
+        <label style="display: block; margin-bottom: 6px;">2. Código de Sincronización entre Equipos</label>
+        <textarea id="sync-key-input" rows="3" placeholder="Pegá aquí el Código de otro equipo para importar perfiles..."></textarea>
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <button class="btn btn-secondary" style="flex: 1;" onclick="copySyncCode()">📋 Copiar mi Código</button>
+          <button class="btn btn-secondary" style="flex: 1;" onclick="importSyncCode()">📥 Importar Código</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('modal-sync')">Cerrar</button>
+      <button class="btn btn-main" onclick="savePinSecurity()">Guardar PIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 5: AVISOS DEL SISTEMA -->
 <div class="modal-overlay" id="modal-alert">
   <div class="modal-content">
     <div class="modal-title" id="alert-modal-title">Atención</div>
@@ -736,7 +794,8 @@
 <script>
   let dollarRate = 0;
   let editingId = null;
-  let excelDataLoaded = [];
+  let pendingDeleteId = null;
+  let isUnlocked = false;
 
   function escapeHTML(str) {
     return String(str || '').replace(/[&<>"']/g, function(m) {
@@ -764,22 +823,9 @@
       statusEl.innerText = 'Dólar de respaldo';
     }
     calculate();
-    renderHistory();
+    checkSecurityAndRender();
   }
 
-  async function loadExcelFile() {
-    try {
-      const response = await fetch('presupuesto.xlsx');
-      if (response.ok) {
-        const data = await response.arrayBuffer();
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        excelDataLoaded = XLSX.utils.sheet_to_json(firstSheet);
-      }
-    } catch (e) {}
-  }
-
-  // 2. EVITAR CAMBIO DE NÚMEROS CON WHEEL / SCROLL
   document.addEventListener('wheel', function(e) {
     if (document.activeElement.type === 'number') {
       e.preventDefault();
@@ -790,7 +836,7 @@
     return 'ARS $' + Math.round(amount).toLocaleString('es-AR');
   }
 
-  // 3. CONSTRUCTOR DE SELECTS PERSONALIZADOS
+  // 2. DESPLEGABLES PERSONALIZADOS
   function setupCustomSelects() {
     document.querySelectorAll('select:not(#sort-order)').forEach(selectEl => {
       selectEl.style.display = 'none';
@@ -860,9 +906,6 @@
 
     const options = container.querySelectorAll('.custom-option');
     options.forEach(opt => {
-      const targetOpt = Array.from(selectEl.options).find(o => o.value === opt.dataset.value);
-      if (targetOpt) opt.textContent = targetOpt.textContent;
-
       if (opt.dataset.value === selectEl.value) {
         opt.classList.add('selected');
       } else {
@@ -871,7 +914,7 @@
     });
   }
 
-  // 4. LÓGICA DE TARIFA PERSONALIZADA Y DIFICULTAD
+  // 3. TARIFAS Y CÁLCULOS
   async function handleDifficultyChange() {
     const select = document.getElementById('difficulty');
     const hiddenRate = document.getElementById('hourlyRate');
@@ -902,7 +945,6 @@
     }
   }
 
-  // 5. CÁLCULO DE COSTOS
   function calculate() {
     if (dollarRate === 0) return;
 
@@ -927,7 +969,7 @@
     return { hours, laborARS, materialCostARS, marginARS, totalARS, totalUSD, hourlyRateUSD, marginPercent };
   }
 
-  // 6. MANEJO DE MODALES
+  // 4. MODALES
   function openModal(id) {
     document.getElementById(id).classList.add('active');
   }
@@ -957,10 +999,57 @@
     openModal('modal-save-profile');
   }
 
-  // 7. HISTORIAL Y LOCALSTORAGE
+  // 5. HISTORIAL, ELIMINACIÓN PROPIA Y PIN
   function getStoredQuotes() {
     const data = localStorage.getItem('presupuestos_db');
     return data ? JSON.parse(data) : [];
+  }
+
+  function checkSecurityAndRender() {
+    const savedPin = localStorage.getItem('presupuestos_pin');
+    if (savedPin && !isUnlocked) {
+      const container = document.getElementById('history-container');
+      if (container) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 20px 10px;">
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 12px;">🔒 Perfiles protegidos por PIN de acceso</p>
+            <button class="btn btn-main" style="width: auto; margin: 0 auto; padding: 8px 16px;" onclick="promptUnlock()">Desbloquear Registros</button>
+          </div>
+        `;
+      }
+      return;
+    }
+    renderHistory();
+  }
+
+  function promptUnlock() {
+    const savedPin = localStorage.getItem('presupuestos_pin');
+    const entered = prompt('Ingresá el PIN de seguridad para ver los perfiles:');
+    if (entered === savedPin) {
+      isUnlocked = true;
+      renderHistory();
+    } else if (entered !== null) {
+      showAlertModal('Acceso Denegado', 'El PIN ingresado es incorrecto.');
+    }
+  }
+
+  function openDeleteModal(id) {
+    pendingDeleteId = id;
+    openModal('modal-confirm-delete');
+  }
+
+  function confirmDeleteAction() {
+    if (pendingDeleteId === null) return;
+    const quotes = getStoredQuotes().filter(q => q.id != pendingDeleteId);
+    localStorage.setItem('presupuestos_db', JSON.stringify(quotes));
+
+    if (editingId == pendingDeleteId) {
+      resetForm();
+    }
+
+    pendingDeleteId = null;
+    closeModal('modal-confirm-delete');
+    renderHistory();
   }
 
   function confirmSaveProfile() {
@@ -1026,16 +1115,6 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function deleteQuote(id) {
-    if (!confirm('¿Seguro que querés eliminar este presupuesto?')) return;
-    const quotes = getStoredQuotes().filter(q => q.id != id);
-    localStorage.setItem('presupuestos_db', JSON.stringify(quotes));
-    if (editingId == id) {
-      resetForm();
-    }
-    renderHistory();
-  }
-
   function resetForm() {
     editingId = null;
     document.getElementById('client').value = '';
@@ -1059,6 +1138,12 @@
     const recordsCount = document.getElementById('records-count');
     const datalist = document.getElementById('clients-autocomplete');
     if (!container) return;
+
+    const savedPin = localStorage.getItem('presupuestos_pin');
+    if (savedPin && !isUnlocked) {
+      checkSecurityAndRender();
+      return;
+    }
 
     const allQuotes = getStoredQuotes();
 
@@ -1108,13 +1193,75 @@
         <div class="history-right" onclick="event.stopPropagation();">
           <div class="history-price">${formatARS(q.totals?.totalARS || 0)}</div>
           <button class="icon-btn" onclick="editQuote(${q.id})" title="Editar / Cargar">✏️</button>
-          <button class="icon-btn delete" onclick="deleteQuote(${q.id})" title="Eliminar">🗑️</button>
+          <button class="icon-btn delete" onclick="openDeleteModal(${q.id})" title="Eliminar">🗑️</button>
         </div>
       </div>
     `).join('');
   }
 
-  // 8. EXPORTACIÓN A EXCEL
+  // 6. CÓDIGO DE SINCRONIZACIÓN ENTRE EQUIPOS
+  function openSyncModal() {
+    const savedPin = localStorage.getItem('presupuestos_pin') || '';
+    document.getElementById('pin-code-input').value = savedPin;
+    openModal('modal-sync');
+  }
+
+  function savePinSecurity() {
+    const pin = document.getElementById('pin-code-input').value.trim();
+    if (pin.length > 0) {
+      localStorage.setItem('presupuestos_pin', pin);
+      isUnlocked = true;
+      showAlertModal('PIN Guardado', 'Se ha activado la protección por PIN de tus perfiles.');
+    } else {
+      localStorage.removeItem('presupuestos_pin');
+      isUnlocked = true;
+      showAlertModal('PIN Desactivado', 'Tus perfiles ya no requieren PIN en este dispositivo.');
+    }
+    closeModal('modal-sync');
+    renderHistory();
+  }
+
+  function copySyncCode() {
+    const quotes = getStoredQuotes();
+    if (quotes.length === 0) {
+      showAlertModal('Sin datos', 'No tenés presupuestos guardados para generar un código.');
+      return;
+    }
+    const jsonStr = JSON.stringify(quotes);
+    const code = btoa(unescape(encodeURIComponent(jsonStr)));
+    
+    navigator.clipboard.writeText(code).then(() => {
+      showAlertModal('Código Copiado', 'Se copió la clave de tus perfiles al portapapeles. Podés pegarla en otra computadora usando este mismo botón.');
+    }).catch(() => {
+      document.getElementById('sync-key-input').value = code;
+    });
+  }
+
+  function importSyncCode() {
+    const code = document.getElementById('sync-key-input').value.trim();
+    if (!code) {
+      showAlertModal('Código Vacío', 'Pegá un código de sincronización válido.');
+      return;
+    }
+    try {
+      const jsonStr = decodeURIComponent(escape(atob(code)));
+      const importedQuotes = JSON.parse(jsonStr);
+
+      if (Array.isArray(importedQuotes)) {
+        localStorage.setItem('presupuestos_db', JSON.stringify(importedQuotes));
+        isUnlocked = true;
+        closeModal('modal-sync');
+        renderHistory();
+        showAlertModal('Sincronización Exitosa', `Se importaron ${importedQuotes.length} perfiles correctamente.`);
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      showAlertModal('Error de Código', 'El código de sincronización no es válido o está incompleto.');
+    }
+  }
+
+  // 7. EXPORTACIÓN A EXCEL
   function exportToExcelAndClear() {
     const quotes = getStoredQuotes();
     if (quotes.length === 0) {
@@ -1151,9 +1298,8 @@
     showAlertModal('Éxito', 'Se descargó "presupuesto.xlsx" y se limpió el historial.');
   }
 
-  // Inicializar componentes y datos
+  // Inicialización
   fetchDollar();
-  loadExcelFile();
   setupCustomSelects();
 </script>
 
