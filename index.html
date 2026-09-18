@@ -23,46 +23,34 @@
       --text-main: #ffffff;
       --text-muted: #8b949e;
     }
-/* Para navegadores basados en WebKit (Chrome, Edge, Safari) */
-textarea::-webkit-scrollbar,
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
 
-textarea::-webkit-scrollbar-track,
-::-webkit-scrollbar-track {
-  background: #0b0f17; /* Fondo del carril coincidente con la interfaz */
-  border-radius: 4px;
-}
-
-textarea::-webkit-scrollbar-thumb,
-::-webkit-scrollbar-thumb {
-  background: #222c3d; /* Color del indicador */
-  border-radius: 4px;
-  border: 1px solid #141b26;
-}
-
-textarea::-webkit-scrollbar-thumb:hover,
-::-webkit-scrollbar-thumb:hover {
-  background: #35455e; /* Hover para dar retroalimentación visual */
-}
-textarea {
-  width: 100%;
-  max-height: 180px; /* Evita que crezca indefinidamente en pantallas chicas */
-  resize: vertical;  /* Permite redimensionar solo a lo alto */
-  overflow-y: auto;  /* Muestra la barra solo si el texto supera el alto máximo */
-  -webkit-overflow-scrolling: touch; /* Suaviza el desplazamiento en iOS */
-}
-/* Compatibilidad estándar para Firefox */
-textarea, body {
-  scrollbar-width: thin;
-  scrollbar-color: #222c3d #0b0f17;
-}
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: #232936 #090b10;
+    }
+
+    /* BARRA DE DESPLAZAMIENTO PERSONALIZADA (DARK THEME) */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--input-bg);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 4px;
+      border: 1px solid var(--card);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-blue);
     }
 
     body {
@@ -236,6 +224,11 @@ textarea, body {
       font-family: inherit;
     }
 
+    textarea {
+      resize: vertical;
+      max-height: 200px;
+    }
+
     input:focus, select:focus, textarea:focus {
       border-color: var(--accent-blue);
     }
@@ -257,7 +250,7 @@ textarea, body {
       display: none !important;
     }
 
-    /* CORRECCIÓN EXPLÍCITA PARA MOSTRAR CALENDARIO EN TYPE DATE */
+    /* CALENDARIO VISIBLE EN INPUT TYPE DATE */
     input[type="date"]::-webkit-calendar-picker-indicator {
       display: block !important;
       cursor: pointer;
@@ -537,7 +530,7 @@ textarea, body {
       color: var(--red);
     }
 
-    /* MODALES */
+    /* MODALES PROPIOS */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -735,7 +728,7 @@ textarea, body {
     <div class="modal-title">Tarifa Personalizada</div>
     <div class="modal-body">
       <p style="margin-bottom: 12px;">Ingresá el valor de tu hora de trabajo en USD:</p>
-      <input type="number" id="custom-rate-input" placeholder="Ej: 12" min="1" step="0.5">
+      <input type="number" id="custom-rate-input" placeholder="Ej: 12" min="1" step="0.5" onkeydown="if(event.key==='Enter') confirmCustomRate()">
     </div>
     <div class="modal-actions">
       <button class="btn btn-cancel" onclick="closeModal('modal-custom-rate')">Cancelar</button>
@@ -744,7 +737,7 @@ textarea, body {
   </div>
 </div>
 
-<!-- MODAL 2: GUARDAR Y DETALLES EXTENDIDOS (CALENDARIO CORREGIDO) -->
+<!-- MODAL 2: GUARDAR Y DETALLES EXTENDIDOS -->
 <div class="modal-overlay" id="modal-save-profile">
   <div class="modal-content" style="max-width: 520px;">
     <div class="modal-title">Archivar / Completar Perfil</div>
@@ -815,7 +808,22 @@ textarea, body {
   </div>
 </div>
 
-<!-- MODAL 5: AVISOS DEL SISTEMA -->
+<!-- MODAL 5: DESBLOQUEO POR PIN -->
+<div class="modal-overlay" id="modal-unlock-pin">
+  <div class="modal-content">
+    <div class="modal-title">Desbloquear Registros</div>
+    <div class="modal-body">
+      <p style="margin-bottom: 12px;">Ingresá tu PIN de seguridad para ver los perfiles:</p>
+      <input type="password" id="unlock-pin-input" placeholder="PIN de acceso" onkeydown="if(event.key==='Enter') confirmUnlockPin()">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal('modal-unlock-pin')">Cancelar</button>
+      <button class="btn btn-main" onclick="confirmUnlockPin()">Desbloquear</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 6: AVISOS DEL SISTEMA -->
 <div class="modal-overlay" id="modal-alert">
   <div class="modal-content">
     <div class="modal-title" id="alert-modal-title">Atención</div>
@@ -957,6 +965,7 @@ textarea, body {
     if (select.value === 'custom') {
       document.getElementById('custom-rate-input').value = hiddenRate.value || '';
       openModal('modal-custom-rate');
+      setTimeout(() => document.getElementById('custom-rate-input').focus(), 150);
     } else {
       hiddenRate.value = select.value;
       calculate();
@@ -1004,7 +1013,7 @@ textarea, body {
     return { hours, laborARS, materialCostARS, marginARS, totalARS, totalUSD, hourlyRateUSD, marginPercent };
   }
 
-  // 4. MODALES
+  // 4. CONTROL DE MODALES
   function openModal(id) {
     document.getElementById(id).classList.add('active');
   }
@@ -1058,12 +1067,20 @@ textarea, body {
   }
 
   function promptUnlock() {
+    document.getElementById('unlock-pin-input').value = '';
+    openModal('modal-unlock-pin');
+    setTimeout(() => document.getElementById('unlock-pin-input').focus(), 150);
+  }
+
+  function confirmUnlockPin() {
     const savedPin = localStorage.getItem('presupuestos_pin');
-    const entered = prompt('Ingresá el PIN de seguridad para ver los perfiles:');
+    const entered = document.getElementById('unlock-pin-input').value.trim();
+
     if (entered === savedPin) {
       isUnlocked = true;
+      closeModal('modal-unlock-pin');
       renderHistory();
-    } else if (entered !== null) {
+    } else {
       showAlertModal('Acceso Denegado', 'El PIN ingresado es incorrecto.');
     }
   }
