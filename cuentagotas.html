@@ -1,434 +1,1164 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cuentagotas de Imagen - Color Picker</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #38bdf8;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: #334155;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- TÍTULO DE LA PÁGINA (Sin subtítulos) -->
+    <title>Cuenta Gotas</title>
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    <!-- ========================================================================================= -->
+    <!-- CONFIGURACIÓN DE LOGO / FAVICON EN LA PESTAÑA DEL NAVEGADOR:                              -->
+    <!-- Para usar tu propio logo, reemplaza la URL en el atributo 'href' por la ruta de tu imagen -->
+    <!-- Ejemplos: href="logo.png", href="favicon.ico", href="assets/mi-logo.svg"                   -->
+    <!-- ========================================================================================= -->
+    <link rel="icon" id="app-favicon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%236366f1'><path d='M340.7 20.3c-20.7-20.7-54.3-20.7-75 0l-50 50c-15.6 15.6-20.3 38.6-13.3 58.7l-71.1 71.1C119.5 188.3 103 192 88.5 192c-15.7 0-31.4 6-43.4 18l-30 30c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0l30-30c12-12 18-27.7 18-43.4c0-14.5 3.7-31 9.9-42.8l71.1-71.1c20.1 7 43.1 2.3 58.7-13.3l50-50c20.7-20.7 20.7-54.3 0-75l-18.7-18.7zm-208 320l-16 16c-3.1 3.1-8.2 3.1-11.3 0l-67.9-67.9c-3.1-3.1-3.1-8.2 0-11.3l16-16 79.2 79.2z'/></svg>">
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem;
-    }
+    <!-- CSS Frameworks & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#131e2e',
+                            950: '#090d16'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        
+        /* Grid pattern background for image canvas transparency */
+        .checkerboard-bg {
+            background-color: #0f172a;
+            background-image: 
+                linear-gradient(45deg, #1e293b 25%, transparent 25%), 
+                linear-gradient(-45deg, #1e293b 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #1e293b 75%), 
+                linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
 
-    header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
+        /* Prevent touch scroll action while dragging on canvas */
+        .touch-none-canvas {
+            touch-action: none;
+        }
 
-    header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-    header p { color: var(--text-muted); font-size: 0.95rem; }
-
-    .container {
-      width: 100%;
-      max-width: 1000px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    @media (min-width: 768px) {
-      .container { grid-template-columns: 3fr 1fr; }
-    }
-
-    .drop-zone {
-      background: var(--card-bg);
-      border: 2px dashed var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      position: relative;
-      min-height: 350px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .drop-zone.dragover {
-      border-color: var(--accent);
-      background: #1e293b80;
-    }
-
-    .drop-zone input[type="file"] { display: none; }
-
-    #image-canvas {
-      max-width: 100%;
-      max-height: 60vh;
-      height: auto;
-      display: none;
-      cursor: crosshair;
-      border-radius: 6px;
-    }
-
-    .sidebar {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .color-preview-box {
-      width: 100%;
-      height: 80px;
-      border-radius: 8px;
-      border: 2px solid var(--border);
-      background-color: #ffffff;
-      transition: background-color 0.1s ease;
-    }
-
-    .color-field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-
-    .color-field label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .input-group {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .input-group input {
-      flex: 1;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.5rem 0.75rem;
-      color: var(--text);
-      font-family: monospace;
-      font-size: 0.95rem;
-    }
-
-    .btn {
-      background: var(--border);
-      color: var(--text);
-      border: none;
-      border-radius: 6px;
-      padding: 0.5rem 0.8rem;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: background 0.2s;
-    }
-
-    .btn:hover { background: #475569; }
-    .btn-primary { background: #0284c7; color: white; }
-    .btn-primary:hover { background: #0369a1; }
-
-    /* Lupa / Magnifier Overlay */
-    #magnifier {
-      position: fixed;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 3px solid white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      pointer-events: none;
-      display: none;
-      overflow: hidden;
-      z-index: 1000;
-      background: #000;
-    }
-
-    #magnifier-canvas {
-      width: 100%;
-      height: 100%;
-      image-rendering: pixelated;
-    }
-
-    .crosshair {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 10px;
-      height: 10px;
-      transform: translate(-50%, -50%);
-      border: 1.5px solid white;
-      box-shadow: 0 0 2px black;
-      pointer-events: none;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      background: #10b981;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
-    }
-    .toast.show { opacity: 1; }
-  </style>
+        /* Smooth floating toast transition */
+        .toast-enter {
+            transform: translateY(100%) scale(0.9);
+            opacity: 0;
+        }
+        .toast-show {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-indigo-500 selection:text-white flex flex-col">
 
-  <header>
-    <h1>Selector de Color & Cuentagotas</h1>
-    <p>Subí, arrastrá o pegá (Ctrl+V) una imagen para inspeccionar píxeles</p>
-  </header>
+    <!-- HEADER PRINCIPAL -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <!-- Logo Container -->
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-eye-dropper text-white text-lg"></i>
+                </div>
+                <div>
+                    <!-- Título limpio de la aplicación sin subtítulos -->
+                    <h1 class="text-xl font-extrabold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent tracking-tight">
+                        Cuenta Gotas
+                    </h1>
+                </div>
+            </div>
 
-  <div class="container">
-    <div class="drop-zone" id="drop-zone">
-      <div id="drop-text">
-        <p style="font-weight: 600; margin-bottom: 0.5rem;">Haz clic para seleccionar o arrastra una imagen aquí</p>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Soporta PNG, JPG, WEBP, SVG</p>
-      </div>
-      <input type="file" id="file-input" accept="image/*">
-      <canvas id="image-canvas"></canvas>
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Native EyeDropper API Button -->
+                <button id="btn-native-eyedropper" class="hidden sm:inline-flex items-center space-x-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition-all duration-150 active:scale-95 shadow-sm">
+                    <i class="fa-solid fa-pipette text-indigo-400"></i>
+                    <span>Cuentagotas Pantalla</span>
+                </button>
+
+                <!-- Sample Images Quick Selector Dropdown -->
+                <div class="relative inline-block text-left">
+                    <button id="btn-samples-dropdown" class="inline-flex items-center space-x-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition-all duration-150">
+                        <i class="fa-solid fa-images text-purple-400"></i>
+                        <span class="hidden sm:inline">Muestras</span>
+                        <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+                    </button>
+                    <div id="samples-menu" class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl z-50 p-2 space-y-1">
+                        <div class="text-[10px] uppercase tracking-wider font-semibold text-slate-400 px-3 py-1">Cargar Imagen de Ejemplo</div>
+                        <button data-sample="abstract" class="sample-item w-full text-left px-3 py-2 text-xs rounded-lg text-slate-300 hover:bg-indigo-600 hover:text-white flex items-center space-x-2 transition-colors">
+                            <i class="fa-solid fa-palette text-pink-400"></i>
+                            <span>Arte Abstracto Neón</span>
+                        </button>
+                        <button data-sample="nature" class="sample-item w-full text-left px-3 py-2 text-xs rounded-lg text-slate-300 hover:bg-indigo-600 hover:text-white flex items-center space-x-2 transition-colors">
+                            <i class="fa-solid fa-tree text-emerald-400"></i>
+                            <span>Paisaje Natural</span>
+                        </button>
+                        <button data-sample="architecture" class="sample-item w-full text-left px-3 py-2 text-xs rounded-lg text-slate-300 hover:bg-indigo-600 hover:text-white flex items-center space-x-2 transition-colors">
+                            <i class="fa-solid fa-city text-cyan-400"></i>
+                            <span>Arquitectura</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- URL Image Load Modal Trigger -->
+                <button id="btn-open-url-modal" class="p-2 sm:px-3 sm:py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition-all duration-150">
+                    <i class="fa-solid fa-link text-indigo-400 sm:mr-1.5"></i>
+                    <span class="hidden sm:inline">URL</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+
+        <!-- LEFT COLUMN: Canvas Workspace & Image Controls (lg: 7 cols, xl: 8 cols) -->
+        <section class="lg:col-span-7 xl:col-span-8 flex flex-col space-y-4">
+            
+            <!-- Canvas Toolbar Controls -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 shadow-md">
+                <div class="flex items-center space-x-2">
+                    <label class="cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition-all shadow-md shadow-indigo-600/20 active:scale-95">
+                        <i class="fa-solid fa-upload"></i>
+                        <span>Cargar Imagen</span>
+                        <input type="file" id="file-input" accept="image/*" class="hidden">
+                    </label>
+
+                    <button id="btn-native-eyedropper-mobile" class="sm:hidden p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs" title="Cuentagotas Pantalla">
+                        <i class="fa-solid fa-pipette text-indigo-400"></i>
+                    </button>
+                </div>
+
+                <!-- Zoom Controls -->
+                <div class="flex items-center space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+                    <span class="text-[11px] font-medium text-slate-400 px-1.5">Zoom:</span>
+                    <button data-zoom="fit" class="btn-zoom text-xs px-2 py-1 rounded-md font-medium text-slate-300 hover:bg-slate-800 bg-slate-800">Fit</button>
+                    <button data-zoom="1" class="btn-zoom text-xs px-2 py-1 rounded-md font-medium text-slate-400 hover:bg-slate-800">1x</button>
+                    <button data-zoom="2" class="btn-zoom text-xs px-2 py-1 rounded-md font-medium text-slate-400 hover:bg-slate-800">2x</button>
+                </div>
+
+                <!-- Image Details Info -->
+                <div class="hidden sm:flex items-center space-x-2 text-xs text-slate-400">
+                    <i class="fa-solid fa-image text-slate-500"></i>
+                    <span id="img-dimensions-display">0 × 0 px</span>
+                </div>
+            </div>
+
+            <!-- Image Work Area Dropzone -->
+            <div id="dropzone-area" class="relative flex-1 min-h-[320px] sm:min-h-[480px] max-h-[600px] bg-slate-900 border-2 border-dashed border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center checkerboard-bg group transition-all duration-200">
+                
+                <!-- Initial Empty State Placeholder -->
+                <div id="empty-state" class="text-center p-6 max-w-sm pointer-events-none select-none transition-opacity duration-300">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-800/80 border border-slate-700/50 mx-auto flex items-center justify-center text-indigo-400 text-2xl mb-3 shadow-xl">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <h3 class="text-sm sm:text-base font-semibold text-slate-200 mb-1">Arrastra tu imagen aquí</h3>
+                    <p class="text-xs text-slate-400 mb-3">Soporta PNG, JPG, WEBP o pega desde el portapapeles (<kbd class="px-1 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px]">Ctrl+V</kbd>)</p>
+                    <div class="inline-flex items-center space-x-1.5 text-[11px] text-indigo-400 font-medium">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>O carga una muestra del menú superior</span>
+                    </div>
+                </div>
+
+                <!-- Main Interactive Canvas Element -->
+                <canvas id="main-canvas" class="hidden max-w-full max-h-full cursor-crosshair transition-transform duration-75 origin-top-left touch-none-canvas"></canvas>
+
+                <!-- Floating Magnifier Loupe Overlay (Proximity optimized to ~15px near mouse/finger) -->
+                <div id="loupe-container" class="hidden pointer-events-none absolute w-32 h-32 sm:w-36 sm:h-36 rounded-full border-2 border-white shadow-2xl overflow-hidden z-20 bg-slate-950/90 ring-4 ring-indigo-500/30">
+                    <canvas id="loupe-canvas" width="144" height="144" class="w-full h-full block"></canvas>
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <!-- Crosshair ring and targeting lines -->
+                        <div class="w-3.5 h-3.5 border-2 border-red-500/90 rounded-sm shadow-sm bg-red-500/10"></div>
+                    </div>
+                    <div id="loupe-hex-tag" class="absolute bottom-1 left-1/2 -translate-x-1/2 bg-slate-900/95 border border-slate-700 text-[10px] font-mono font-bold text-white px-2 py-0.5 rounded-full shadow-md">
+                        #FFFFFF
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Hover Overlay -->
+                <div id="drag-overlay" class="absolute inset-0 bg-indigo-600/20 backdrop-blur-sm border-2 border-indigo-500 rounded-2xl hidden flex-col items-center justify-center space-y-2 pointer-events-none transition-all">
+                    <i class="fa-solid fa-file-circle-plus text-4xl text-indigo-300 animate-bounce"></i>
+                    <span class="text-sm font-semibold text-white">Suelta la imagen para cargar</span>
+                </div>
+            </div>
+
+            <!-- Dominant Palette Extraction Section -->
+            <div id="palette-section" class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 shadow-md">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-sm"></i>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Paleta Extraída de la Imagen</h2>
+                    </div>
+                    <button id="btn-reextract-palette" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center space-x-1 font-medium transition-colors">
+                        <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
+                        <span>Reanalizar</span>
+                    </button>
+                </div>
+
+                <!-- Palette Swatches Container -->
+                <div id="palette-container" class="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                    <div class="col-span-full text-center py-3 text-xs text-slate-500 italic">
+                        Carga una imagen para extraer sus colores dominantes.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: Color Inspector & Formatting Panel (lg: 5 cols, xl: 4 cols) -->
+        <aside class="lg:col-span-5 xl:col-span-4 flex flex-col space-y-5">
+            
+            <!-- Active Color Inspector Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                        <i class="fa-solid fa-droplet text-indigo-400"></i>
+                        Color Seleccionado
+                    </span>
+                    <span id="color-name-badge" class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-medium">
+                        Activo
+                    </span>
+                </div>
+
+                <!-- Color Preview Box + Main HEX Header -->
+                <div class="flex items-center space-x-4">
+                    <div id="active-color-swatch" class="w-16 h-16 rounded-2xl border-2 border-slate-700/80 shadow-inner flex-shrink-0 transition-all duration-300 relative group overflow-hidden cursor-pointer" style="background-color: #6366F1;">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i class="fa-solid fa-copy text-white text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">Código HEX Principal</div>
+                        <div id="active-hex-code" class="text-2xl font-mono font-extrabold text-white tracking-tight truncate cursor-pointer hover:text-indigo-400 transition-colors" title="Haz clic para copiar HEX">
+                            #6366F1
+                        </div>
+                        <div class="text-xs text-slate-400 flex items-center space-x-2 mt-0.5">
+                            <span id="active-rgb-short" class="font-mono text-[11px]">rgb(99, 102, 241)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multi-Format Color Values Grid -->
+                <div class="space-y-2 pt-1">
+                    <!-- HEX Format -->
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition-colors group">
+                        <div class="flex items-center space-x-2 min-w-0">
+                            <span class="w-12 text-[10px] font-bold text-slate-400 uppercase tracking-wider">HEX</span>
+                            <span id="fmt-hex" class="text-xs font-mono font-medium text-slate-200 truncate">#6366F1</span>
+                        </div>
+                        <button data-copy-target="fmt-hex" class="btn-copy p-1.5 text-slate-400 hover:text-indigo-400 rounded-md transition-colors" title="Copiar HEX">
+                            <i class="fa-regular fa-copy text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- RGB Format -->
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition-colors group">
+                        <div class="flex items-center space-x-2 min-w-0">
+                            <span class="w-12 text-[10px] font-bold text-slate-400 uppercase tracking-wider">RGB</span>
+                            <span id="fmt-rgb" class="text-xs font-mono font-medium text-slate-200 truncate">rgb(99, 102, 241)</span>
+                        </div>
+                        <button data-copy-target="fmt-rgb" class="btn-copy p-1.5 text-slate-400 hover:text-indigo-400 rounded-md transition-colors" title="Copiar RGB">
+                            <i class="fa-regular fa-copy text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- HSL Format -->
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition-colors group">
+                        <div class="flex items-center space-x-2 min-w-0">
+                            <span class="w-12 text-[10px] font-bold text-slate-400 uppercase tracking-wider">HSL</span>
+                            <span id="fmt-hsl" class="text-xs font-mono font-medium text-slate-200 truncate">hsl(239, 84%, 67%)</span>
+                        </div>
+                        <button data-copy-target="fmt-hsl" class="btn-copy p-1.5 text-slate-400 hover:text-indigo-400 rounded-md transition-colors" title="Copiar HSL">
+                            <i class="fa-regular fa-copy text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- HSV Format -->
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition-colors group">
+                        <div class="flex items-center space-x-2 min-w-0">
+                            <span class="w-12 text-[10px] font-bold text-slate-400 uppercase tracking-wider">HSV</span>
+                            <span id="fmt-hsv" class="text-xs font-mono font-medium text-slate-200 truncate">hsv(239, 59%, 95%)</span>
+                        </div>
+                        <button data-copy-target="fmt-hsv" class="btn-copy p-1.5 text-slate-400 hover:text-indigo-400 rounded-md transition-colors" title="Copiar HSV">
+                            <i class="fa-regular fa-copy text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- CMYK Format -->
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition-colors group">
+                        <div class="flex items-center space-x-2 min-w-0">
+                            <span class="w-12 text-[10px] font-bold text-slate-400 uppercase tracking-wider">CMYK</span>
+                            <span id="fmt-cmyk" class="text-xs font-mono font-medium text-slate-200 truncate">cmyk(59%, 58%, 0%, 5%)</span>
+                        </div>
+                        <button data-copy-target="fmt-cmyk" class="btn-copy p-1.5 text-slate-400 hover:text-indigo-400 rounded-md transition-colors" title="Copiar CMYK">
+                            <i class="fa-regular fa-copy text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- WCAG 2.1 Contrast Accessibility Widget -->
+                <div class="pt-2 border-t border-slate-800/80 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Accesibilidad WCAG 2.1</span>
+                        <span id="wcag-suggestion" class="text-xs px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-300">
+                            Texto Recomendado
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <!-- Contrast vs Black -->
+                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-5 h-5 rounded-full bg-black border border-slate-700 flex items-center justify-center text-[10px] font-bold text-white">A</span>
+                                <span id="wcag-black-ratio" class="text-xs font-mono font-bold text-slate-200">5.2:1</span>
+                            </div>
+                            <span id="wcag-black-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">AA</span>
+                        </div>
+
+                        <!-- Contrast vs White -->
+                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[10px] font-bold text-black">A</span>
+                                <span id="wcag-white-ratio" class="text-xs font-mono font-bold text-slate-200">4.1:1</span>
+                            </div>
+                            <span id="wcag-white-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">AA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color History Panel -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-clock-rotate-left text-purple-400"></i>
+                        <span>Historial Reciente</span>
+                    </span>
+                    <div class="flex items-center space-x-2">
+                        <button id="btn-export-history" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium flex items-center space-x-1">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Exportar</span>
+                        </button>
+                        <button id="btn-clear-history" class="text-[11px] text-slate-400 hover:text-red-400 font-medium transition-colors">
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+
+                <div id="history-swatches" class="grid grid-cols-6 sm:grid-cols-7 gap-2 min-h-[48px]">
+                    <!-- Swatches injected via JavaScript -->
+                </div>
+            </div>
+
+        </aside>
+    </main>
+
+    <!-- MODAL: URL Image Input -->
+    <div id="modal-url" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-link text-indigo-400"></i>
+                    <span>Cargar Imagen desde URL</span>
+                </h3>
+                <button class="btn-close-modal text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-400">
+                Pega la dirección web de una imagen (JPG, PNG, WEBP).
+            </p>
+            <input type="url" id="input-img-url" placeholder="https://ejemplo.com/imagen.jpg" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono">
+            <div class="flex justify-end space-x-2 pt-2">
+                <button class="btn-close-modal px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800">Cancelar</button>
+                <button id="btn-confirm-url" class="px-4 py-2 rounded-xl text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20">Cargar Imagen</button>
+            </div>
+        </div>
     </div>
 
-    <div class="sidebar">
-      <button id="native-eyedropper-btn" class="btn btn-primary" style="display:none;">
-        🔍 Cuentagotas Pantalla Completa
-      </button>
+    <!-- MODAL: Export Palette / History -->
+    <div id="modal-export" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-file-export text-indigo-400"></i>
+                    <span>Exportar Colores</span>
+                </h3>
+                <button class="btn-close-modal text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
 
-      <div class="color-preview-box" id="preview-box"></div>
+            <!-- Export Format Tabs -->
+            <div class="flex space-x-2 border-b border-slate-800 pb-2">
+                <button data-format="css" class="btn-export-tab px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 text-white">Variables CSS</button>
+                <button data-format="json" class="btn-export-tab px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800">JSON</button>
+                <button data-format="txt" class="btn-export-tab px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800">Lista (HEX)</button>
+            </div>
 
-      <div class="color-field">
-        <label>HEX</label>
-        <div class="input-group">
-          <input type="text" id="hex-val" readonly value="#FFFFFF">
-          <button class="btn" onclick="copyValue('hex-val')">Copiar</button>
+            <!-- Output Preview -->
+            <textarea id="export-code-preview" readonly class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-indigo-300 focus:outline-none resize-none"></textarea>
+
+            <div class="flex justify-end space-x-2 pt-2">
+                <button class="btn-close-modal px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800">Cerrar</button>
+                <button id="btn-copy-export" class="px-4 py-2 rounded-xl text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-md flex items-center space-x-1.5">
+                    <i class="fa-regular fa-copy"></i>
+                    <span>Copiar al Portapapeles</span>
+                </button>
+            </div>
         </div>
-      </div>
-
-      <div class="color-field">
-        <label>RGB</label>
-        <div class="input-group">
-          <input type="text" id="rgb-val" readonly value="rgb(255, 255, 255)">
-          <button class="btn" onclick="copyValue('rgb-val')">Copiar</button>
-        </div>
-      </div>
-
-      <div class="color-field">
-        <label>HSL</label>
-        <div class="input-group">
-          <input type="text" id="hsl-val" readonly value="hsl(0, 0%, 100%)">
-          <button class="btn" onclick="copyValue('hsl-val')">Copiar</button>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Elemento Lupa -->
-  <div id="magnifier">
-    <canvas id="magnifier-canvas" width="120" height="120"></canvas>
-    <div class="crosshair"></div>
-  </div>
+    <!-- Floating Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
-  <div id="toast" class="toast">¡Copiado al portapapeles!</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            /* State Variables */
+            let currentImage = null;
+            let activeColor = { r: 99, g: 102, b: 241, hex: '#6366F1' }; // Initial indigo
+            let colorHistory = [];
+            let dominantPalette = [];
+            let zoomLevel = 'fit'; 
+            let imageScale = 1;
 
-  <script>
-    const dropZone = document.getElementById('drop-zone');
-    const dropText = document.getElementById('drop-text');
-    const fileInput = document.getElementById('file-input');
-    const canvas = document.getElementById('image-canvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            /* Elements Reference */
+            const dropzoneArea = document.getElementById('dropzone-area');
+            const emptyState = document.getElementById('empty-state');
+            const mainCanvas = document.getElementById('main-canvas');
+            const mainCtx = mainCanvas.getContext('2d', { willReadFrequently: true });
+            
+            const loupeContainer = document.getElementById('loupe-container');
+            const loupeCanvas = document.getElementById('loupe-canvas');
+            const loupeCtx = loupeCanvas.getContext('2d');
+            const loupeHexTag = document.getElementById('loupe-hex-tag');
+            const dragOverlay = document.getElementById('drag-overlay');
 
-    const magnifier = document.getElementById('magnifier');
-    const magCanvas = document.getElementById('magnifier-canvas');
-    const magCtx = magCanvas.getContext('2d');
-    magCtx.imageSmoothingEnabled = false; // Mantiene píxeles nítidos en la lupa
+            const activeColorSwatch = document.getElementById('active-color-swatch');
+            const activeHexCode = document.getElementById('active-hex-code');
+            const activeRgbShort = document.getElementById('active-rgb-short');
+            const imgDimensionsDisplay = document.getElementById('img-dimensions-display');
 
-    const previewBox = document.getElementById('preview-box');
-    const hexInput = document.getElementById('hex-val');
-    const rgbInput = document.getElementById('rgb-val');
-    const hslInput = document.getElementById('hsl-val');
-    const nativeBtn = document.getElementById('native-eyedropper-btn');
+            const fmtHex = document.getElementById('fmt-hex');
+            const fmtRgb = document.getElementById('fmt-rgb');
+            const fmtHsl = document.getElementById('fmt-hsl');
+            const fmtHsv = document.getElementById('fmt-hsv');
+            const fmtCmyk = document.getElementById('fmt-cmyk');
 
-    let loadedImage = null;
+            const wcagSuggestion = document.getElementById('wcag-suggestion');
+            const wcagBlackRatio = document.getElementById('wcag-black-ratio');
+            const wcagBlackBadge = document.getElementById('wcag-black-badge');
+            const wcagWhiteRatio = document.getElementById('wcag-white-ratio');
+            const wcagWhiteBadge = document.getElementById('wcag-white-badge');
 
-    // Verificar soporte para EyeDropper API nativa
-    if ('EyeDropper' in window) {
-      nativeBtn.style.display = 'block';
-      nativeBtn.addEventListener('click', async () => {
-        const eyeDropper = new EyeDropper();
-        try {
-          const result = await eyeDropper.open();
-          updateColorFromHex(result.sRGBHex);
-        } catch (e) {
-          // El usuario canceló la selección
-        }
-      });
-    }
+            const historySwatches = document.getElementById('history-swatches');
+            const paletteContainer = document.getElementById('palette-container');
 
-    // Eventos de Carga de Archivo
-    dropZone.addEventListener('click', (e) => {
-      if (e.target === canvas) return;
-      fileInput.click();
-    });
+            function rgbToHex(r, g, b) {
+                return "#" + [r, g, b].map(x => {
+                    const hex = Math.min(255, Math.max(0, Math.round(x))).toString(16);
+                    return hex.length === 1 ? "0" + hex : hex;
+                }).join("").toUpperCase();
+            }
 
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length) loadImage(e.target.files[0]);
-    });
+            function hexToRgb(hex) {
+                let c = hex.replace('#', '');
+                if (c.length === 3) c = c.split('').map(x => x + x).join('');
+                const num = parseInt(c, 16);
+                return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+            }
 
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
-    });
+            function rgbToHsl(r, g, b) {
+                r /= 255; g /= 255; b /= 255;
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                let h, s, l = (max + min) / 2;
 
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                if (max === min) {
+                    h = s = 0;
+                } else {
+                    const d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) {
+                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                        case g: h = (b - r) / d + 2; break;
+                        case b: h = (r - g) / d + 4; break;
+                    }
+                    h /= 6;
+                }
+                return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+            }
 
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      if (e.dataTransfer.files.length) loadImage(e.dataTransfer.files[0]);
-    });
+            function rgbToHsv(r, g, b) {
+                r /= 255; g /= 255; b /= 255;
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                const d = max - min;
+                let h;
+                const v = max;
+                const s = max === 0 ? 0 : d / max;
 
-    // Soporte para Pegar imagen desde Clipboard (Ctrl+V)
-    document.addEventListener('paste', (e) => {
-      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-      for (const item of items) {
-        if (item.type.indexOf('image') !== -1) {
-          const blob = item.getAsFile();
-          loadImage(blob);
-          break;
-        }
-      }
-    });
+                if (max === min) {
+                    h = 0;
+                } else {
+                    switch (max) {
+                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                        case g: h = (b - r) / d + 2; break;
+                        case b: h = (r - g) / d + 4; break;
+                    }
+                    h /= 6;
+                }
+                return { h: Math.round(h * 360), s: Math.round(s * 100), v: Math.round(v * 100) };
+            }
 
-    function loadImage(file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          loadedImage = img;
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
+            function rgbToCmyk(r, g, b) {
+                let c = 1 - (r / 255);
+                let m = 1 - (g / 255);
+                let y = 1 - (b / 255);
+                let k = Math.min(c, Math.min(m, y));
 
-          dropText.style.display = 'none';
-          canvas.style.display = 'block';
-        };
-        img.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
+                if (k === 1) return { c: 0, m: 0, y: 0, k: 100 };
 
-    // Inspección de Color y Lupa
-    canvas.addEventListener('mousemove', (e) => {
-      if (!loadedImage) return;
+                c = Math.round(((c - k) / (1 - k)) * 100);
+                m = Math.round(((m - k) / (1 - k)) * 100);
+                y = Math.round(((y - k) / (1 - k)) * 100);
+                k = Math.round(k * 100);
 
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
+                return { c, m, y, k };
+            }
 
-      const x = Math.floor((e.clientX - rect.left) * scaleX);
-      const y = Math.floor((e.clientY - rect.top) * scaleY);
+            function getLuminance(r, g, b) {
+                const a = [r, g, b].map(v => {
+                    v /= 255;
+                    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+                });
+                return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+            }
 
-      // Posicionar Lupa
-      magnifier.style.display = 'block';
-      magnifier.style.left = `${e.clientX - 60}px`;
-      magnifier.style.top = `${e.clientY - 60}px`;
+            function getContrastRatio(lum1, lum2) {
+                const brightest = Math.max(lum1, lum2);
+                const darkest = Math.min(lum1, lum2);
+                return (brightest + 0.05) / (darkest + 0.05);
+            }
 
-      // Renderizar vista previa ampliada (área de 11x11 píxeles)
-      const zoomSize = 11;
-      magCtx.clearRect(0, 0, magCanvas.width, magCanvas.height);
-      magCtx.drawImage(
-        canvas,
-        Math.max(0, x - Math.floor(zoomSize / 2)),
-        Math.max(0, y - Math.floor(zoomSize / 2)),
-        zoomSize, zoomSize,
-        0, 0, magCanvas.width, magCanvas.height
-      );
+            function updateActiveColor(r, g, b, addToHist = true) {
+                const hex = rgbToHex(r, g, b);
+                activeColor = { r, g, b, hex };
 
-      // Extraer datos del píxel bajo el puntero
-      const pixel = ctx.getImageData(x, y, 1, 1).data;
-      updateColorDisplay(pixel[0], pixel[1], pixel[2]);
-    });
+                activeColorSwatch.style.backgroundColor = hex;
+                activeHexCode.textContent = hex;
+                activeRgbShort.textContent = `rgb(${r}, ${g}, ${b})`;
 
-    canvas.addEventListener('mouseleave', () => {
-      magnifier.style.display = 'none';
-    });
+                fmtHex.textContent = hex;
+                fmtRgb.textContent = `rgb(${r}, ${g}, ${b})`;
+                
+                const hsl = rgbToHsl(r, g, b);
+                fmtHsl.textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
 
-    // Actualización de UI e Interpretación de Formatos
-    function updateColorDisplay(r, g, b) {
-      const hex = rgbToHex(r, g, b);
-      const hsl = rgbToHsl(r, g, b);
+                const hsv = rgbToHsv(r, g, b);
+                fmtHsv.textContent = `hsv(${hsv.h}, ${hsv.s}%, ${hsv.v}%)`;
 
-      previewBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-      hexInput.value = hex.toUpperCase();
-      rgbInput.value = `rgb(${r}, ${g}, ${b})`;
-      hslInput.value = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
-    }
+                const cmyk = rgbToCmyk(r, g, b);
+                fmtCmyk.textContent = `cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`;
 
-    function updateColorFromHex(hex) {
-      const r = parseInt(hex.slice(1, 3), 16);
-      const g = parseInt(hex.slice(3, 5), 16);
-      const b = parseInt(hex.slice(5, 7), 16);
-      updateColorDisplay(r, g, b);
-    }
+                // Accessibility WCAG Calculations
+                const lum = getLuminance(r, g, b);
+                const contrastBlack = getContrastRatio(lum, 0); 
+                const contrastWhite = getContrastRatio(lum, 1); 
 
-    // Funciones Matemáticas de Conversión
-    function rgbToHex(r, g, b) {
-      return "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-    }
+                wcagBlackRatio.textContent = `${contrastBlack.toFixed(1)}:1`;
+                wcagWhiteRatio.textContent = `${contrastWhite.toFixed(1)}:1`;
 
-    function rgbToHsl(r, g, b) {
-      r /= 255; g /= 255; b /= 255;
-      const max = Math.max(r, g, b), min = Math.min(r, g, b);
-      let h, s, l = (max + min) / 2;
+                updateWcagBadge(wcagBlackBadge, contrastBlack);
+                updateWcagBadge(wcagWhiteBadge, contrastWhite);
 
-      if (max === min) {
-        h = s = 0;
-      } else {
-        const d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch (max) {
-          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-          case g: h = (b - r) / d + 2; break;
-          case b: h = (r - g) / d + 4; break;
-        }
-        h /= 6;
-      }
-      return {
-        h: Math.round(h * 360),
-        s: Math.round(s * 100),
-        l: Math.round(l * 100)
-      };
-    }
+                if (contrastWhite > contrastBlack) {
+                    wcagSuggestion.textContent = "Usar Texto Blanco";
+                    wcagSuggestion.className = "text-xs px-2 py-0.5 rounded font-bold bg-white text-black shadow-sm";
+                } else {
+                    wcagSuggestion.textContent = "Usar Texto Negro";
+                    wcagSuggestion.className = "text-xs px-2 py-0.5 rounded font-bold bg-black text-white shadow-sm border border-slate-700";
+                }
 
-    function copyValue(elementId) {
-      const input = document.getElementById(elementId);
-      navigator.clipboard.writeText(input.value);
-      showToast();
-    }
+                if (addToHist) {
+                    pushToHistory(hex);
+                }
+            }
 
-    function showToast() {
-      const toast = document.getElementById('toast');
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2000);
-    }
-  </script>
+            function updateWcagBadge(element, ratio) {
+                if (ratio >= 7.0) {
+                    element.textContent = "AAA";
+                    element.className = "text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                } else if (ratio >= 4.5) {
+                    element.textContent = "AA";
+                    element.className = "text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                } else if (ratio >= 3.0) {
+                    element.textContent = "AA Large";
+                    element.className = "text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30";
+                } else {
+                    element.textContent = "Falló";
+                    element.className = "text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30";
+                }
+            }
+
+            function loadHistory() {
+                try {
+                    const saved = localStorage.getItem('cuentagotas_history');
+                    colorHistory = saved ? JSON.parse(saved) : ['#6366F1', '#EC4899', '#10B981', '#F59E0B', '#3B82F6'];
+                } catch (e) {
+                    colorHistory = ['#6366F1', '#EC4899', '#10B981', '#F59E0B'];
+                }
+                renderHistory();
+            }
+
+            function pushToHistory(hex) {
+                if (colorHistory[0] === hex) return;
+                colorHistory = [hex, ...colorHistory.filter(c => c !== hex)].slice(0, 14);
+                try {
+                    localStorage.setItem('cuentagotas_history', JSON.stringify(colorHistory));
+                } catch (e) {}
+                renderHistory();
+            }
+
+            function renderHistory() {
+                historySwatches.innerHTML = '';
+                colorHistory.forEach(hex => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-8 h-8 rounded-lg border border-slate-700/80 shadow-sm transition-transform hover:scale-110 active:scale-95 focus:outline-none";
+                    btn.style.backgroundColor = hex;
+                    btn.title = hex;
+
+                    btn.addEventListener('click', () => {
+                        const rgb = hexToRgb(hex);
+                        updateActiveColor(rgb.r, rgb.g, rgb.b, false);
+                        showToast(`Color ${hex} seleccionado`);
+                    });
+
+                    historySwatches.appendChild(btn);
+                });
+            }
+
+            document.getElementById('btn-clear-history').addEventListener('click', () => {
+                colorHistory = [];
+                localStorage.removeItem('cuentagotas_history');
+                renderHistory();
+                showToast("Historial borrado");
+            });
+
+            function loadImage(src) {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = () => {
+                    currentImage = img;
+                    emptyState.classList.add('hidden');
+                    mainCanvas.classList.remove('hidden');
+
+                    imgDimensionsDisplay.textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+
+                    renderMainCanvas();
+                    extractDominantPalette();
+                    showToast("Imagen cargada con éxito");
+                };
+                img.onerror = () => {
+                    generateFallbackCanvasPattern();
+                    showToast("Patrón alternativo generado por restricción de imagen", "warning");
+                };
+                img.src = src;
+            }
+
+            function renderMainCanvas() {
+                if (!currentImage) return;
+
+                const containerWidth = dropzoneArea.clientWidth;
+                const containerHeight = dropzoneArea.clientHeight;
+
+                let drawWidth = currentImage.naturalWidth;
+                let drawHeight = currentImage.naturalHeight;
+
+                if (zoomLevel === 'fit') {
+                    const scaleX = containerWidth / drawWidth;
+                    const scaleY = containerHeight / drawHeight;
+                    imageScale = Math.min(scaleX, scaleY, 1);
+                } else {
+                    imageScale = parseFloat(zoomLevel);
+                }
+
+                mainCanvas.width = drawWidth;
+                mainCanvas.height = drawHeight;
+
+                mainCanvas.style.width = `${drawWidth * imageScale}px`;
+                mainCanvas.style.height = `${drawHeight * imageScale}px`;
+
+                mainCtx.drawImage(currentImage, 0, 0, drawWidth, drawHeight);
+            }
+
+            // Optimized Proximity Loupe Positioning (~15px offset with screen edge bounds detection)
+            function updateLoupePositionAndDraw(clientX, clientY) {
+                if (!currentImage) return;
+
+                const rect = mainCanvas.getBoundingClientRect();
+                const mouseX = clientX - rect.left;
+                const mouseY = clientY - rect.top;
+
+                if (mouseX < 0 || mouseX >= rect.width || mouseY < 0 || mouseY >= rect.height) {
+                    loupeContainer.classList.add('hidden');
+                    return;
+                }
+
+                loupeContainer.classList.remove('hidden');
+
+                const dropzoneRect = dropzoneArea.getBoundingClientRect();
+                const relativeX = clientX - dropzoneRect.left;
+                const relativeY = clientY - dropzoneRect.top;
+
+                // Loupe Size is 128px (Mobile) to 144px (Desktop)
+                const loupeSize = window.innerWidth < 640 ? 128 : 144;
+                const loupeRadius = loupeSize / 2;
+
+                // Close offset distance: ~15px relative to cursor
+                let loupeX = relativeX + 15; 
+                let loupeY = relativeY - loupeSize - 15; // Floats slightly above cursor
+
+                // Edge Detection flips loupe position if hitting boundaries
+                if (loupeY < 10) {
+                    loupeY = relativeY + 20; // Flip below cursor if too close to top
+                }
+                if (loupeX + loupeSize > dropzoneRect.width - 10) {
+                    loupeX = relativeX - loupeSize - 15; // Flip left if near right edge
+                }
+                if (loupeX < 10) {
+                    loupeX = 10;
+                }
+
+                loupeContainer.style.transform = `translate(${loupeX}px, ${loupeY}px)`;
+
+                // Calculate image intrinsic pixel coords
+                const imgX = Math.floor(mouseX / imageScale);
+                const imgY = Math.floor(mouseY / imageScale);
+
+                // Draw magnified pixels on loupe canvas
+                const gridRadius = 5;
+                loupeCtx.imageSmoothingEnabled = false;
+                loupeCtx.fillStyle = '#0f172a';
+                loupeCtx.fillRect(0, 0, loupeCanvas.width, loupeCanvas.height);
+
+                loupeCtx.drawImage(
+                    mainCanvas,
+                    imgX - gridRadius, imgY - gridRadius, 11, 11,
+                    0, 0, 144, 144
+                );
+
+                // Draw Grid
+                loupeCtx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+                loupeCtx.lineWidth = 1;
+                for (let i = 0; i <= 144; i += 13) {
+                    loupeCtx.beginPath(); loupeCtx.moveTo(i, 0); loupeCtx.lineTo(i, 144); loupeCtx.stroke();
+                    loupeCtx.beginPath(); loupeCtx.moveTo(0, i); loupeCtx.lineTo(144, i); loupeCtx.stroke();
+                }
+
+                // Sample hovered color
+                try {
+                    const pixel = mainCtx.getImageData(imgX, imgY, 1, 1).data;
+                    const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+                    loupeHexTag.textContent = hex;
+                    return { r: pixel[0], g: pixel[1], b: pixel[2], hex };
+                } catch (err) {
+                    return null;
+                }
+            }
+
+            // Mouse Interaction Handlers
+            mainCanvas.addEventListener('mousemove', (e) => {
+                updateLoupePositionAndDraw(e.clientX, e.clientY);
+            });
+
+            mainCanvas.addEventListener('mouseleave', () => {
+                loupeContainer.classList.add('hidden');
+            });
+
+            mainCanvas.addEventListener('click', (e) => {
+                const sampled = updateLoupePositionAndDraw(e.clientX, e.clientY);
+                if (sampled) {
+                    updateActiveColor(sampled.r, sampled.g, sampled.b);
+                    showToast(`Color ${sampled.hex} capturado`);
+                }
+            });
+
+            // Mobile Touch Interaction Handlers (Smooth drag & pick on mobile screens)
+            function handleTouch(e) {
+                if (e.touches && e.touches.length > 0) {
+                    const touch = e.touches[0];
+                    const sampled = updateLoupePositionAndDraw(touch.clientX, touch.clientY);
+                    if (sampled && e.type === 'touchmove') {
+                        updateActiveColor(sampled.r, sampled.g, sampled.b, false); // live preview
+                    }
+                }
+            }
+
+            mainCanvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handleTouch(e);
+            }, { passive: false });
+
+            mainCanvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                handleTouch(e);
+            }, { passive: false });
+
+            mainCanvas.addEventListener('touchend', (e) => {
+                loupeContainer.classList.add('hidden');
+                if (e.changedTouches && e.changedTouches.length > 0) {
+                    const touch = e.changedTouches[0];
+                    const rect = mainCanvas.getBoundingClientRect();
+                    const imgX = Math.floor((touch.clientX - rect.left) / imageScale);
+                    const imgY = Math.floor((touch.clientY - rect.top) / imageScale);
+                    try {
+                        const pixel = mainCtx.getImageData(imgX, imgY, 1, 1).data;
+                        updateActiveColor(pixel[0], pixel[1], pixel[2], true);
+                        showToast(`Color capturado`);
+                    } catch (err) {}
+                }
+            });
+
+            async function triggerNativeEyeDropper() {
+                if (!('EyeDropper' in window)) {
+                    showToast("Navegador no soporta EyeDropper API de pantalla", "error");
+                    return;
+                }
+                try {
+                    const eyeDropper = new EyeDropper();
+                    const result = await eyeDropper.open();
+                    const rgb = hexToRgb(result.sRGBHex);
+                    updateActiveColor(rgb.r, rgb.g, rgb.b);
+                    showToast(`Color ${result.sRGBHex} capturado`);
+                } catch (e) {}
+            }
+
+            document.getElementById('btn-native-eyedropper').addEventListener('click', triggerNativeEyeDropper);
+            document.getElementById('btn-native-eyedropper-mobile').addEventListener('click', triggerNativeEyeDropper);
+
+            function extractDominantPalette() {
+                if (!currentImage) return;
+
+                const hiddenCanvas = document.createElement('canvas');
+                hiddenCanvas.width = 100;
+                hiddenCanvas.height = 100;
+                const hCtx = hiddenCanvas.getContext('2d');
+                hCtx.drawImage(currentImage, 0, 0, 100, 100);
+
+                const imgData = hCtx.getImageData(0, 0, 100, 100).data;
+                const colorBuckets = {};
+
+                for (let i = 0; i < imgData.length; i += 16) {
+                    const r = Math.round(imgData[i] / 24) * 24;
+                    const g = Math.round(imgData[i + 1] / 24) * 24;
+                    const b = Math.round(imgData[i + 2] / 24) * 24;
+                    const alpha = imgData[i + 3];
+
+                    if (alpha < 128) continue;
+
+                    const hex = rgbToHex(r, g, b);
+                    colorBuckets[hex] = (colorBuckets[hex] || 0) + 1;
+                }
+
+                const sortedColors = Object.keys(colorBuckets).sort((a, b) => colorBuckets[b] - colorBuckets[a]);
+
+                dominantPalette = [];
+                for (const hex of sortedColors) {
+                    const rgb = hexToRgb(hex);
+                    const isTooSimilar = dominantPalette.some(existingHex => {
+                        const exRgb = hexToRgb(existingHex);
+                        const dist = Math.sqrt(
+                            Math.pow(rgb.r - exRgb.r, 2) +
+                            Math.pow(rgb.g - exRgb.g, 2) +
+                            Math.pow(rgb.b - exRgb.b, 2)
+                        );
+                        return dist < 45;
+                    });
+
+                    if (!isTooSimilar) {
+                        dominantPalette.push(hex);
+                    }
+                    if (dominantPalette.length >= 8) break;
+                }
+
+                renderPaletteSwatches();
+            }
+
+            function renderPaletteSwatches() {
+                paletteContainer.innerHTML = '';
+                if (dominantPalette.length === 0) {
+                    paletteContainer.innerHTML = `<div class="col-span-full text-center py-3 text-xs text-slate-500 italic">No se hallaron colores.</div>`;
+                    return;
+                }
+
+                dominantPalette.forEach(hex => {
+                    const card = document.createElement('div');
+                    card.className = "flex flex-col items-center bg-slate-950 p-2 rounded-xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer group";
+                    card.innerHTML = `
+                        <div class="w-full h-9 rounded-lg shadow-sm border border-slate-800 transition-transform group-hover:scale-105" style="background-color: ${hex}"></div>
+                        <span class="text-[10px] font-mono font-semibold text-slate-300 mt-1.5 group-hover:text-indigo-400">${hex}</span>
+                    `;
+
+                    card.addEventListener('click', () => {
+                        const rgb = hexToRgb(hex);
+                        updateActiveColor(rgb.r, rgb.g, rgb.b);
+                        showToast(`Color ${hex} seleccionado`);
+                    });
+
+                    paletteContainer.appendChild(card);
+                });
+            }
+
+            document.getElementById('btn-reextract-palette').addEventListener('click', () => {
+                if (currentImage) {
+                    extractDominantPalette();
+                    showToast("Paleta reanalizada");
+                }
+            });
+
+            document.getElementById('file-input').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => loadImage(event.target.result);
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            dropzoneArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dragOverlay.classList.remove('hidden');
+            });
+
+            dropzoneArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dragOverlay.classList.add('hidden');
+            });
+
+            dropzoneArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dragOverlay.classList.add('hidden');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (evt) => loadImage(evt.target.result);
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+
+            window.addEventListener('paste', (e) => {
+                const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+                for (const item of items) {
+                    if (item.type.indexOf('image') !== -1) {
+                        const file = item.getAsFile();
+                        const reader = new FileReader();
+                        reader.onload = (evt) => loadImage(evt.target.result);
+                        reader.readAsDataURL(file);
+                        showToast("Imagen pegada desde el portapapeles");
+                        break;
+                    }
+                }
+            });
+
+            document.getElementById('btn-samples-dropdown').addEventListener('click', () => {
+                document.getElementById('samples-menu').classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('.sample-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const type = e.currentTarget.getAttribute('data-sample');
+                    document.getElementById('samples-menu').classList.add('hidden');
+
+                    let sampleUrl = '';
+                    if (type === 'abstract') {
+                        sampleUrl = 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1000&q=80';
+                    } else if (type === 'nature') {
+                        sampleUrl = 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1000&q=80';
+                    } else if (type === 'architecture') {
+                        sampleUrl = 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80';
+                    }
+                    loadImage(sampleUrl);
+                });
+            });
+
+            function generateFallbackCanvasPattern() {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 800;
+                tempCanvas.height = 600;
+                const ctx = tempCanvas.getContext('2d');
+
+                const grad = ctx.createLinearGradient(0, 0, 800, 600);
+                grad.addColorStop(0, '#6366f1');
+                grad.addColorStop(0.5, '#ec4899');
+                grad.addColorStop(1, '#10b981');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, 800, 600);
+
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.beginPath(); ctx.arc(200, 200, 120, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(450, 250, 180, 180);
+
+                loadImage(tempCanvas.toDataURL());
+            }
+
+            document.querySelectorAll('.btn-zoom').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.btn-zoom').forEach(b => {
+                        b.classList.remove('bg-slate-800', 'text-slate-300');
+                        b.classList.add('text-slate-400');
+                    });
+                    e.currentTarget.classList.add('bg-slate-800', 'text-slate-300');
+                    zoomLevel = e.currentTarget.getAttribute('data-zoom');
+                    renderMainCanvas();
+                });
+            });
+
+            window.addEventListener('resize', () => {
+                if (currentImage && zoomLevel === 'fit') {
+                    renderMainCanvas();
+                }
+            });
+
+            function copyTextToClipboard(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast(`Copiado: ${text}`);
+                } catch (err) {
+                    showToast("No se pudo copiar automáticamente", "error");
+                }
+                document.body.removeChild(textarea);
+            }
+
+            document.querySelectorAll('.btn-copy').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetId = e.currentTarget.getAttribute('data-copy-target');
+                    const text = document.getElementById(targetId).textContent;
+                    copyTextToClipboard(text);
+                });
+            });
+
+            activeHexCode.addEventListener('click', () => copyTextToClipboard(activeHexCode.textContent.trim()));
+            activeColorSwatch.addEventListener('click', () => copyTextToClipboard(activeHexCode.textContent.trim()));
+
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `px-4 py-2.5 rounded-xl shadow-2xl border text-xs font-semibold flex items-center space-x-2 transition-all duration-300 toast-enter ${
+                    type === 'error' ? 'bg-rose-950/90 text-rose-200 border-rose-800' :
+                    type === 'warning' ? 'bg-amber-950/90 text-amber-200 border-amber-800' :
+                    'bg-slate-900/95 text-slate-100 border-slate-700'
+                }`;
+
+                toast.innerHTML = `
+                    <i class="${type === 'error' ? 'fa-solid fa-circle-exclamation text-rose-400' : 'fa-solid fa-circle-check text-emerald-400'}"></i>
+                    <span>${message}</span>
+                `;
+
+                container.appendChild(toast);
+                setTimeout(() => toast.classList.add('toast-show'), 10);
+                setTimeout(() => {
+                    toast.classList.remove('toast-show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 2500);
+            }
+
+            const modalUrl = document.getElementById('modal-url');
+            const modalExport = document.getElementById('modal-export');
+
+            document.getElementById('btn-open-url-modal').addEventListener('click', () => modalUrl.classList.remove('hidden'));
+            document.querySelectorAll('.btn-close-modal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    modalUrl.classList.add('hidden');
+                    modalExport.classList.add('hidden');
+                });
+            });
+
+            document.getElementById('btn-confirm-url').addEventListener('click', () => {
+                const url = document.getElementById('input-img-url').value.trim();
+                if (url) {
+                    loadImage(url);
+                    modalUrl.classList.add('hidden');
+                    document.getElementById('input-img-url').value = '';
+                }
+            });
+
+            let currentExportFormat = 'css';
+            const exportPreview = document.getElementById('export-code-preview');
+
+            document.getElementById('btn-export-history').addEventListener('click', () => {
+                updateExportPreview();
+                modalExport.classList.remove('hidden');
+            });
+
+            document.querySelectorAll('.btn-export-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    document.querySelectorAll('.btn-export-tab').forEach(t => {
+                        t.classList.remove('bg-indigo-600', 'text-white');
+                        t.classList.add('text-slate-400');
+                    });
+                    e.currentTarget.classList.add('bg-indigo-600', 'text-white');
+                    currentExportFormat = e.currentTarget.getAttribute('data-format');
+                    updateExportPreview();
+                });
+            });
+
+            function updateExportPreview() {
+                const allColors = [...new Set([...dominantPalette, ...colorHistory])];
+                if (currentExportFormat === 'css') {
+                    exportPreview.value = `:root {\n` + allColors.map((c, i) => `  --color-${i + 1}: ${c};`).join('\n') + `\n}`;
+                } else if (currentExportFormat === 'json') {
+                    exportPreview.value = JSON.stringify({ palette: dominantPalette, history: colorHistory }, null, 2);
+                } else if (currentExportFormat === 'txt') {
+                    exportPreview.value = allColors.join('\n');
+                }
+            }
+
+            document.getElementById('btn-copy-export').addEventListener('click', () => {
+                copyTextToClipboard(exportPreview.value);
+            });
+
+            loadHistory();
+            updateActiveColor(99, 102, 241, false);
+
+            setTimeout(() => {
+                loadImage('https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1000&q=80');
+            }, 300);
+        });
+    </script>
 </body>
 </html>

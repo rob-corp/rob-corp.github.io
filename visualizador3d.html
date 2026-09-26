@@ -144,7 +144,7 @@
     .viewport-container {
       flex: 1;
       position: relative;
-      background-color: #090d13;
+      background: radial-gradient(ellipse at center, #0d1119 0%, #05070a 100%);
     }
 
     #webgl-canvas {
@@ -328,6 +328,29 @@
       gridSecondary.position.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, -0.1);
       scene.add(gridSecondary);
 
+      // Perímetro de cama resaltado (estilo Mainsail: el borde exacto del área imprimible)
+      const bedOutlineShape = new THREE.Shape();
+      bedOutlineShape.moveTo(0, 0);
+      bedOutlineShape.lineTo(BED_SIZE_X, 0);
+      bedOutlineShape.lineTo(BED_SIZE_X, BED_SIZE_Y);
+      bedOutlineShape.lineTo(0, BED_SIZE_Y);
+      bedOutlineShape.lineTo(0, 0);
+      const bedOutlineGeom = new THREE.BufferGeometry().setFromPoints(bedOutlineShape.getPoints());
+      const bedOutline = new THREE.LineLoop(
+        bedOutlineGeom,
+        new THREE.LineBasicMaterial({ color: 0xe05e1b, linewidth: 2, transparent: true, opacity: 0.9 })
+      );
+      bedOutline.position.z = 0.05;
+      scene.add(bedOutline);
+
+      // Marcador de origen (0,0) — Mainsail siempre lo señala
+      const originMarker = new THREE.Mesh(
+        new THREE.CircleGeometry(3, 24),
+        new THREE.MeshBasicMaterial({ color: 0xe05e1b, transparent: true, opacity: 0.6 })
+      );
+      originMarker.position.set(0, 0, 0.06);
+      scene.add(originMarker);
+
       // Ejes globales de referencia
       addCornerCartesianAxes();
 
@@ -353,7 +376,7 @@
     }
 
     // --- TEXTURAS CON ZONAS DE VISIÓN (CENTRO, BORDES Y ESQUINAS) ---
-    function createFaceTexture(text) {
+    function createFaceTexture(text, rotationDeg = 0) {
       const canvas = document.createElement('canvas');
       canvas.width = 256;
       canvas.height = 256;
@@ -368,7 +391,9 @@
       ctx.lineWidth = 2;
 
       const pad = 64; // Inset de la zona central (50% de la superficie total)
-      ctx.strokeRect(pad, pad, 256 - pad * 2, 256 - pad * 2);
+      ctx.beginPath();
+      ctx.roundRect(pad, pad, 256 - pad * 2, 256 - pad * 2, 10);
+      ctx.stroke();
 
       // Líneas de conexión hacia las esquinas
       ctx.beginPath();
@@ -384,15 +409,17 @@
       ctx.strokeRect(0, 0, 256, 256);
 
       // Texto orientado
+      // Ángulo verificado analíticamente contra el mapeo UV real de
+      // THREE.BoxGeometry (r128) para que "arriba" del texto coincida
+      // con +Z en las 4 caras laterales, y con +Y (dirección "Trasera")
+      // en la vista superior/inferior. Son rotaciones puras (sin espejar),
+      // por eso ninguna cara queda con el texto invertido tipo espejo.
       ctx.save();
       ctx.translate(128, 128);
-
-      if (text === 'Superior' || text === 'Inferior') {
-        ctx.rotate(Math.PI);
-      }
+      ctx.rotate((rotationDeg || 0) * Math.PI / 180);
 
       ctx.fillStyle = '#e2e8f0';
-      ctx.font = 'Bold 34px "Segoe UI", sans-serif';
+      ctx.font = 'Bold 30px "Segoe UI", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(text, 0, 0);
@@ -428,12 +455,12 @@
 
       // Materiales del cubo por caras (+X, -X, +Y, -Y, +Z, -Z)
       const materials = [
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Derecha'), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Izquierda'), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Trasera'), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Frontal'), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Superior'), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Inferior'), transparent: true, opacity: 0.82 })
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Derecha', 270), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Izquierda', 90), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Trasera', 180), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Frontal', 0), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Superior', 0), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Inferior', 0), transparent: true, opacity: 0.82 })
       ];
 
       const geometry = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
