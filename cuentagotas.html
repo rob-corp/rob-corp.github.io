@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuentagotas de Imagen - Color Picker</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    header p { color: var(--text-muted); font-size: 0.95rem; }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .container { grid-template-columns: 3fr 1fr; }
+    }
+
+    .drop-zone {
+      background: var(--card-bg);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .drop-zone.dragover {
+      border-color: var(--accent);
+      background: #1e293b80;
+    }
+
+    .drop-zone input[type="file"] { display: none; }
+
+    #image-canvas {
+      max-width: 100%;
+      max-height: 60vh;
+      height: auto;
+      display: none;
+      cursor: crosshair;
+      border-radius: 6px;
+    }
+
+    .sidebar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .color-preview-box {
+      width: 100%;
+      height: 80px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background-color: #ffffff;
+      transition: background-color 0.1s ease;
+    }
+
+    .color-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .color-field label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .input-group input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      color: var(--text);
+      font-family: monospace;
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: #475569; }
+    .btn-primary { background: #0284c7; color: white; }
+    .btn-primary:hover { background: #0369a1; }
+
+    /* Lupa / Magnifier Overlay */
+    #magnifier {
+      position: fixed;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      pointer-events: none;
+      display: none;
+      overflow: hidden;
+      z-index: 1000;
+      background: #000;
+    }
+
+    #magnifier-canvas {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+    }
+
+    .crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      transform: translate(-50%, -50%);
+      border: 1.5px solid white;
+      box-shadow: 0 0 2px black;
+      pointer-events: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      background: #10b981;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Selector de Color & Cuentagotas</h1>
+    <p>Subí, arrastrá o pegá (Ctrl+V) una imagen para inspeccionar píxeles</p>
+  </header>
+
+  <div class="container">
+    <div class="drop-zone" id="drop-zone">
+      <div id="drop-text">
+        <p style="font-weight: 600; margin-bottom: 0.5rem;">Haz clic para seleccionar o arrastra una imagen aquí</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Soporta PNG, JPG, WEBP, SVG</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*">
+      <canvas id="image-canvas"></canvas>
+    </div>
+
+    <div class="sidebar">
+      <button id="native-eyedropper-btn" class="btn btn-primary" style="display:none;">
+        🔍 Cuentagotas Pantalla Completa
+      </button>
+
+      <div class="color-preview-box" id="preview-box"></div>
+
+      <div class="color-field">
+        <label>HEX</label>
+        <div class="input-group">
+          <input type="text" id="hex-val" readonly value="#FFFFFF">
+          <button class="btn" onclick="copyValue('hex-val')">Copiar</button>
+        </div>
+      </div>
+
+      <div class="color-field">
+        <label>RGB</label>
+        <div class="input-group">
+          <input type="text" id="rgb-val" readonly value="rgb(255, 255, 255)">
+          <button class="btn" onclick="copyValue('rgb-val')">Copiar</button>
+        </div>
+      </div>
+
+      <div class="color-field">
+        <label>HSL</label>
+        <div class="input-group">
+          <input type="text" id="hsl-val" readonly value="hsl(0, 0%, 100%)">
+          <button class="btn" onclick="copyValue('hsl-val')">Copiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Elemento Lupa -->
+  <div id="magnifier">
+    <canvas id="magnifier-canvas" width="120" height="120"></canvas>
+    <div class="crosshair"></div>
+  </div>
+
+  <div id="toast" class="toast">¡Copiado al portapapeles!</div>
+
+  <script>
+    const dropZone = document.getElementById('drop-zone');
+    const dropText = document.getElementById('drop-text');
+    const fileInput = document.getElementById('file-input');
+    const canvas = document.getElementById('image-canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    const magnifier = document.getElementById('magnifier');
+    const magCanvas = document.getElementById('magnifier-canvas');
+    const magCtx = magCanvas.getContext('2d');
+    magCtx.imageSmoothingEnabled = false; // Mantiene píxeles nítidos en la lupa
+
+    const previewBox = document.getElementById('preview-box');
+    const hexInput = document.getElementById('hex-val');
+    const rgbInput = document.getElementById('rgb-val');
+    const hslInput = document.getElementById('hsl-val');
+    const nativeBtn = document.getElementById('native-eyedropper-btn');
+
+    let loadedImage = null;
+
+    // Verificar soporte para EyeDropper API nativa
+    if ('EyeDropper' in window) {
+      nativeBtn.style.display = 'block';
+      nativeBtn.addEventListener('click', async () => {
+        const eyeDropper = new EyeDropper();
+        try {
+          const result = await eyeDropper.open();
+          updateColorFromHex(result.sRGBHex);
+        } catch (e) {
+          // El usuario canceló la selección
+        }
+      });
+    }
+
+    // Eventos de Carga de Archivo
+    dropZone.addEventListener('click', (e) => {
+      if (e.target === canvas) return;
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) loadImage(e.target.files[0]);
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) loadImage(e.dataTransfer.files[0]);
+    });
+
+    // Soporte para Pegar imagen desde Clipboard (Ctrl+V)
+    document.addEventListener('paste', (e) => {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (const item of items) {
+        if (item.type.indexOf('image') !== -1) {
+          const blob = item.getAsFile();
+          loadImage(blob);
+          break;
+        }
+      }
+    });
+
+    function loadImage(file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          loadedImage = img;
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          dropText.style.display = 'none';
+          canvas.style.display = 'block';
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Inspección de Color y Lupa
+    canvas.addEventListener('mousemove', (e) => {
+      if (!loadedImage) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const x = Math.floor((e.clientX - rect.left) * scaleX);
+      const y = Math.floor((e.clientY - rect.top) * scaleY);
+
+      // Posicionar Lupa
+      magnifier.style.display = 'block';
+      magnifier.style.left = `${e.clientX - 60}px`;
+      magnifier.style.top = `${e.clientY - 60}px`;
+
+      // Renderizar vista previa ampliada (área de 11x11 píxeles)
+      const zoomSize = 11;
+      magCtx.clearRect(0, 0, magCanvas.width, magCanvas.height);
+      magCtx.drawImage(
+        canvas,
+        Math.max(0, x - Math.floor(zoomSize / 2)),
+        Math.max(0, y - Math.floor(zoomSize / 2)),
+        zoomSize, zoomSize,
+        0, 0, magCanvas.width, magCanvas.height
+      );
+
+      // Extraer datos del píxel bajo el puntero
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      updateColorDisplay(pixel[0], pixel[1], pixel[2]);
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      magnifier.style.display = 'none';
+    });
+
+    // Actualización de UI e Interpretación de Formatos
+    function updateColorDisplay(r, g, b) {
+      const hex = rgbToHex(r, g, b);
+      const hsl = rgbToHsl(r, g, b);
+
+      previewBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+      hexInput.value = hex.toUpperCase();
+      rgbInput.value = `rgb(${r}, ${g}, ${b})`;
+      hslInput.value = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+    }
+
+    function updateColorFromHex(hex) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      updateColorDisplay(r, g, b);
+    }
+
+    // Funciones Matemáticas de Conversión
+    function rgbToHex(r, g, b) {
+      return "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    function rgbToHsl(r, g, b) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+
+      if (max === min) {
+        h = s = 0;
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
+      return {
+        h: Math.round(h * 360),
+        s: Math.round(s * 100),
+        l: Math.round(l * 100)
+      };
+    }
+
+    function copyValue(elementId) {
+      const input = document.getElementById(elementId);
+      navigator.clipboard.writeText(input.value);
+      showToast();
+    }
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>

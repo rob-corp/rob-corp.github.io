@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizador 3D - Estilo Mainsail / OrcaSlicer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #212c3d;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    body {
+      background-color: #0d1117;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .header {
+      background-color: #161b22;
+      padding: 10px 18px;
+      border-bottom: 1px solid #21262d;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .app-layout {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 43px);
+    }
+
+    .sidebar {
+      width: 310px;
+      background-color: #11161d;
+      border-right: 1px solid #21262d;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .card-section {
+      background-color: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      padding: 12px;
+    }
+
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    .upload-box {
+      border: 2px dashed #30363d;
+      background-color: #0d1117;
+      border-radius: 6px;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .upload-box.dragover,
+    .upload-box:hover {
+      border-color: #e05e1b;
+      background-color: #1c1917;
+    }
+
+    .upload-box span {
+      font-size: 12px;
+      color: #c9d1d9;
+      margin-top: 6px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #21262d;
+      font-size: 12px;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: #8b949e;
+    }
+
+    .info-value {
+      color: #f8fafc;
+      font-weight: 600;
+      text-align: right;
+      max-width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .viewport-container {
+      flex: 1;
+      position: relative;
+      background-color: #090d13;
+    }
+
+    #webgl-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Contenedor del Cubo 3D de Navegación */
+    #viewcube-wrapper {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 140px;
+      height: 140px;
+      z-index: 10;
+    }
+
+    #viewcube-canvas {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e05e1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+      </svg>
+      <span>Visualizador 3D</span>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <div class="sidebar">
+      <div class="card-section">
+        <div class="card-title">CARGAR MODELO / STL</div>
+        <div class="upload-box" id="drop-zone">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#e05e1b" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span>Seleccionar o arrastrar STL aquí</span>
+          <input type="file" id="file-input" accept=".stl" style="display:none">
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="card-title">INFORMACIÓN DEL MODELO</div>
+        <div class="info-row">
+          <span class="info-label">Nombre del objeto:</span>
+          <span class="info-value" id="info-name">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Tamaño (X×Y×Z):</span>
+          <span class="info-value" id="info-size">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Volumen:</span>
+          <span class="info-value" id="info-volume">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Triángulos:</span>
+          <span class="info-value" id="info-triangles">-</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="viewport-container" id="viewport">
+      <canvas id="webgl-canvas"></canvas>
+      <div id="viewcube-wrapper">
+        <canvas id="viewcube-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js + OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    let scene, camera, renderer, controls, currentMesh;
+    let cubeScene, cubeCamera, cubeRenderer, cubeMesh, highlightMesh, raycaster, mouse;
+    let activeTargetVector = null;
+    
+    const container = document.getElementById('viewport');
+    const canvas = document.getElementById('webgl-canvas');
+    const MAINSAIL_ORANGE = 0xb86035; // Color café/naranja característico del selector
+    const BED_SIZE_X = 235;
+    const BED_SIZE_Y = 235;
+    const CUBE_SIZE = 1.6;
+
+    // --- PARSER STL NATIVO (Soporta Binario y ASCII) ---
+    function parseSTL(buffer) {
+      const dataView = new DataView(buffer);
+      let isBinary = true;
+
+      if (buffer.byteLength > 84) {
+        const numTriangles = dataView.getUint32(80, true);
+        const expectedSize = 84 + numTriangles * 50;
+        if (expectedSize !== buffer.byteLength) {
+          isBinary = false;
+        }
+      } else {
+        isBinary = false;
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      const vertices = [];
+      const normals = [];
+
+      if (isBinary) {
+        const numTriangles = dataView.getUint32(80, true);
+        let offset = 84;
+        for (let i = 0; i < numTriangles; i++) {
+          const nx = dataView.getFloat32(offset, true);
+          const ny = dataView.getFloat32(offset + 4, true);
+          const nz = dataView.getFloat32(offset + 8, true);
+          offset += 12;
+
+          for (let j = 0; j < 3; j++) {
+            const vx = dataView.getFloat32(offset, true);
+            const vy = dataView.getFloat32(offset + 4, true);
+            const vz = dataView.getFloat32(offset + 8, true);
+            vertices.push(vx, vy, vz);
+            normals.push(nx, ny, nz);
+            offset += 12;
+          }
+          offset += 2;
+        }
+      } else {
+        const text = new TextDecoder().decode(buffer);
+        const vertexRegex = /vertex\s+([\d.\-eE]+)\s+([\d.\-eE]+)\s+([\d.\-eE]+)/g;
+        let match;
+        while ((match = vertexRegex.exec(text)) !== null) {
+          vertices.push(parseFloat(match[1]), parseFloat(match[2]), parseFloat(match[3]));
+        }
+      }
+
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+      if (normals.length === vertices.length && normals.length > 0) {
+        geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+      } else {
+        geometry.computeVertexNormals();
+      }
+      return geometry;
+    }
+
+    function init() {
+      // Escena principal
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x090d13);
+
+      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 2000);
+      camera.up.set(0, 0, 1);
+      camera.position.set(117.5, -280, 220);
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.target.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, 0);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+
+      // Cama de impresión
+      const gridPrimary = new THREE.GridHelper(BED_SIZE_X, 47, 0x384454, 0x1c2430);
+      gridPrimary.rotation.x = Math.PI / 2;
+      gridPrimary.position.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, 0);
+      scene.add(gridPrimary);
+
+      const gridSecondary = new THREE.GridHelper(BED_SIZE_X, 235, 0x18202a, 0x121720);
+      gridSecondary.rotation.x = Math.PI / 2;
+      gridSecondary.position.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, -0.1);
+      scene.add(gridSecondary);
+
+      // Ejes globales de referencia
+      addCornerCartesianAxes();
+
+      // Iluminación
+      scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+      const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+      light1.position.set(100, -100, 250);
+      scene.add(light1);
+
+      // Cubo 3D de Vistas
+      initViewCube();
+
+      setupFileHandlers();
+      animate();
+    }
+
+    function addCornerCartesianAxes() {
+      const len = 35;
+      const origin = new THREE.Vector3(0, 0, 0);
+      scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), origin, len, 0xef4444, 5, 3));
+      scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), origin, len, 0x22c55e, 5, 3));
+      scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), origin, len, 0x3b82f6, 5, 3));
+    }
+
+    // --- TEXTURAS CON ZONAS DE VISIÓN (CENTRO, BORDES Y ESQUINAS) ---
+    function createFaceTexture(text) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+
+      // Fondo oscuro semitransparente
+      ctx.fillStyle = '#222831';
+      ctx.fillRect(0, 0, 256, 256);
+
+      // Dibujar división de zonas de visión (Estilo Mainsail/OrcaSlicer: Cuadro central + bordes)
+      ctx.strokeStyle = '#3a4352';
+      ctx.lineWidth = 2;
+
+      const pad = 64; // Inset de la zona central (50% de la superficie total)
+      ctx.strokeRect(pad, pad, 256 - pad * 2, 256 - pad * 2);
+
+      // Líneas de conexión hacia las esquinas
+      ctx.beginPath();
+      ctx.moveTo(0, 0); ctx.lineTo(pad, pad);
+      ctx.moveTo(256, 0); ctx.lineTo(256 - pad, pad);
+      ctx.moveTo(0, 256); ctx.lineTo(pad, 256 - pad);
+      ctx.moveTo(256, 256); ctx.lineTo(256 - pad, 256 - pad);
+      ctx.stroke();
+
+      // Borde exterior
+      ctx.strokeStyle = '#4b5563';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(0, 0, 256, 256);
+
+      // Texto orientado
+      ctx.save();
+      ctx.translate(128, 128);
+
+      if (text === 'Superior' || text === 'Inferior') {
+        ctx.rotate(Math.PI);
+      }
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'Bold 34px "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function createAxisLabelTexture(text, color) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = color;
+      ctx.font = 'Bold 48px "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 32, 32);
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    // --- CUBOS Y EJES CARTESIANOS EN LA ESQUINA INFERIOR ---
+    function initViewCube() {
+      const cubeCanvas = document.getElementById('viewcube-canvas');
+      cubeScene = new THREE.Scene();
+
+      cubeCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+      cubeCamera.up.set(0, 0, 1);
+
+      cubeRenderer = new THREE.WebGLRenderer({ canvas: cubeCanvas, alpha: true, antialias: true });
+      cubeRenderer.setSize(140, 140);
+      cubeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Materiales del cubo por caras (+X, -X, +Y, -Y, +Z, -Z)
+      const materials = [
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Derecha'), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Izquierda'), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Trasera'), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Frontal'), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Superior'), transparent: true, opacity: 0.82 }),
+        new THREE.MeshBasicMaterial({ map: createFaceTexture('Inferior'), transparent: true, opacity: 0.82 })
+      ];
+
+      const geometry = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
+      cubeMesh = new THREE.Mesh(geometry, materials);
+      cubeScene.add(cubeMesh);
+
+      // --- EJES CARTESIANOS UBICADOS EN LA ESQUINA INFERIOR FRONTAL (0,0,0 relativo al cubo) ---
+      const h = CUBE_SIZE / 2;
+      const cornerOrigin = new THREE.Vector3(-h, -h, -h); // Vértice inferior frontal
+      const axisExt = 1.2;
+
+      // Eje X (Rojo)
+      const matX = new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 3, depthTest: false });
+      const geomX = new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h + axisExt, -h, -h)]);
+      const lineX = new THREE.Line(geomX, matX);
+      lineX.renderOrder = 999;
+      cubeScene.add(lineX);
+
+      const labelXMat = new THREE.SpriteMaterial({ map: createAxisLabelTexture('X', '#ef4444'), depthTest: false });
+      const labelX = new THREE.Sprite(labelXMat);
+      labelX.position.set(-h + axisExt + 0.25, -h, -h);
+      labelX.scale.set(0.35, 0.35, 1);
+      labelX.renderOrder = 1000;
+      cubeScene.add(labelX);
+
+      // Eje Y (Verde)
+      const matY = new THREE.LineBasicMaterial({ color: 0x22c55e, linewidth: 3, depthTest: false });
+      const geomY = new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h, -h + axisExt, -h)]);
+      const lineY = new THREE.Line(geomY, matY);
+      lineY.renderOrder = 999;
+      cubeScene.add(lineY);
+
+      const labelYMat = new THREE.SpriteMaterial({ map: createAxisLabelTexture('Y', '#22c55e'), depthTest: false });
+      const labelY = new THREE.Sprite(labelYMat);
+      labelY.position.set(-h, -h + axisExt + 0.25, -h);
+      labelY.scale.set(0.35, 0.35, 1);
+      labelY.renderOrder = 1000;
+      cubeScene.add(labelY);
+
+      // Eje Z (Azul)
+      const matZ = new THREE.LineBasicMaterial({ color: 0x3b82f6, linewidth: 3, depthTest: false });
+      const geomZ = new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h, -h, -h + axisExt)]);
+      const lineZ = new THREE.Line(geomZ, matZ);
+      lineZ.renderOrder = 999;
+      cubeScene.add(lineZ);
+
+      const labelZMat = new THREE.SpriteMaterial({ map: createAxisLabelTexture('Z', '#3b82f6'), depthTest: false });
+      const labelZ = new THREE.Sprite(labelZMat);
+      labelZ.position.set(-h, -h, -h + axisExt + 0.25);
+      labelZ.scale.set(0.35, 0.35, 1);
+      labelZ.renderOrder = 1000;
+      cubeScene.add(labelZ);
+
+      // Plano de resalte (Hover)
+      const hlGeometry = new THREE.PlaneGeometry(1, 1);
+      const hlMaterial = new THREE.MeshBasicMaterial({
+        color: MAINSAIL_ORANGE,
+        transparent: true,
+        opacity: 0.85,
+        side: THREE.DoubleSide,
+        depthTest: false
+      });
+      highlightMesh = new THREE.Mesh(hlGeometry, hlMaterial);
+      highlightMesh.visible = false;
+      highlightMesh.renderOrder = 1001;
+      cubeScene.add(highlightMesh);
+
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
+
+      cubeCanvas.addEventListener('pointermove', onCubeHover);
+      cubeCanvas.addEventListener('pointerleave', () => { highlightMesh.visible = false; });
+      cubeCanvas.addEventListener('click', onCubeClick);
+    }
+
+    // Calculador de Zonas de Visión (Cara Central, Bordes y Esquinas)
+    function onCubeHover(event) {
+      const rect = event.target.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, cubeCamera);
+      const intersects = raycaster.intersectObject(cubeMesh);
+
+      if (intersects.length > 0) {
+        const hit = intersects[0];
+        const normal = hit.face.normal.clone();
+        const point = hit.point;
+
+        const h = CUBE_SIZE / 2;
+        let u = 0, v = 0;
+
+        // Proyectar punto a coordenadas 2D local de la cara (-h a +h)
+        if (Math.abs(normal.x) > 0.5) {
+          u = point.y; v = point.z;
+        } else if (Math.abs(normal.y) > 0.5) {
+          u = point.x; v = point.z;
+        } else {
+          u = point.x; v = point.y;
+        }
+
+        const margin = h * 0.5; // Límite de la zona central
+        let scaleU = CUBE_SIZE * 0.5;
+        let scaleV = CUBE_SIZE * 0.5;
+        let posU = 0, posV = 0;
+
+        // Determinar vector objetivo de orientación de cámara
+        let targetDir = normal.clone();
+
+        if (Math.abs(u) < margin && Math.abs(v) < margin) {
+          // Centro de la cara (Vista ortogonal directa)
+          posU = 0; posV = 0;
+          scaleU = CUBE_SIZE * 0.5; scaleV = CUBE_SIZE * 0.5;
+        } else {
+          // Borde o Esquina
+          if (Math.abs(u) >= margin) {
+            posU = Math.sign(u) * (h - (h - margin) / 2);
+            scaleU = h - margin;
+            if (Math.abs(normal.x) > 0.5) targetDir.y += Math.sign(u);
+            else targetDir.x += Math.sign(u);
+          }
+          if (Math.abs(v) >= margin) {
+            posV = Math.sign(v) * (h - (h - margin) / 2);
+            scaleV = h - margin;
+            if (Math.abs(normal.z) > 0.5) targetDir.y += Math.sign(v);
+            else targetDir.z += Math.sign(v);
+          }
+        }
+
+        activeTargetVector = targetDir.normalize();
+
+        // Posicionar plano de resalte
+        highlightMesh.scale.set(scaleU * 0.95, scaleV * 0.95, 1);
+
+        if (Math.abs(normal.x) > 0.5) {
+          highlightMesh.position.set(normal.x * (h + 0.01), posU, posV);
+          highlightMesh.rotation.set(0, Math.PI / 2, 0);
+        } else if (Math.abs(normal.y) > 0.5) {
+          highlightMesh.position.set(posU, normal.y * (h + 0.01), posV);
+          highlightMesh.rotation.set(Math.PI / 2, 0, 0);
+        } else {
+          highlightMesh.position.set(posU, posV, normal.z * (h + 0.01));
+          highlightMesh.rotation.set(0, 0, 0);
+        }
+
+        highlightMesh.visible = true;
+      } else {
+        highlightMesh.visible = false;
+        activeTargetVector = null;
+      }
+    }
+
+    function onCubeClick() {
+      if (activeTargetVector) {
+        const dist = 320;
+        const target = controls.target.clone();
+        camera.position.set(
+          target.x + activeTargetVector.x * dist,
+          target.y + activeTargetVector.y * dist,
+          target.z + activeTargetVector.z * dist
+        );
+        camera.lookAt(target);
+      }
+    }
+
+    // Orientar y asentar base automáticamente en la cama
+    function autoOrientAndGround(geometry) {
+      geometry.computeVertexNormals();
+
+      const pos = geometry.attributes.position;
+      const count = pos.count / 3;
+      const buckets = {};
+
+      for (let i = 0; i < count; i++) {
+        const vA = new THREE.Vector3(pos.getX(i * 3), pos.getY(i * 3), pos.getZ(i * 3));
+        const vB = new THREE.Vector3(pos.getX(i * 3 + 1), pos.getY(i * 3 + 1), pos.getZ(i * 3 + 1));
+        const vC = new THREE.Vector3(pos.getX(i * 3 + 2), pos.getY(i * 3 + 2), pos.getZ(i * 3 + 2));
+
+        const cb = new THREE.Vector3().subVectors(vC, vB);
+        const ab = new THREE.Vector3().subVectors(vA, vB);
+        const faceNormal = new THREE.Vector3().crossVectors(cb, ab);
+        const area = faceNormal.length() * 0.5;
+
+        if (area < 0.0001) continue;
+        faceNormal.normalize();
+
+        const key = `${Math.round(faceNormal.x * 10)},${Math.round(faceNormal.y * 10)},${Math.round(faceNormal.z * 10)}`;
+        if (!buckets[key]) {
+          buckets[key] = { normal: faceNormal.clone(), area: 0 };
+        }
+        buckets[key].area += area;
+      }
+
+      let maxArea = 0;
+      let bestNormal = new THREE.Vector3(0, 0, 1);
+
+      for (const key in buckets) {
+        if (buckets[key].area > maxArea) {
+          maxArea = buckets[key].area;
+          bestNormal = buckets[key].normal;
+        }
+      }
+
+      const targetNormal = new THREE.Vector3(0, 0, -1);
+      const rotationQuaternion = new THREE.Quaternion().setFromUnitVectors(bestNormal, targetNormal);
+      geometry.applyQuaternion(rotationQuaternion);
+
+      geometry.computeBoundingBox();
+      const bbox = geometry.boundingBox;
+      const center = new THREE.Vector3();
+      bbox.getCenter(center);
+
+      geometry.translate(
+        (BED_SIZE_X / 2) - center.x,
+        (BED_SIZE_Y / 2) - center.y,
+        -bbox.min.z
+      );
+    }
+
+    function calculateVolume(geometry) {
+      let volume = 0;
+      const pos = geometry.attributes.position;
+      const totalTriangles = pos.count / 3;
+
+      for (let i = 0; i < totalTriangles; i++) {
+        let p1 = { x: pos.getX(i * 3), y: pos.getY(i * 3), z: pos.getZ(i * 3) };
+        let p2 = { x: pos.getX(i * 3 + 1), y: pos.getY(i * 3 + 1), z: pos.getZ(i * 3 + 1) };
+        let p3 = { x: pos.getX(i * 3 + 2), y: pos.getY(i * 3 + 2), z: pos.getZ(i * 3 + 2) };
+
+        volume += (-p3.x * p2.y * p1.z + p2.x * p3.y * p1.z + p3.x * p1.y * p2.z - p1.x * p3.y * p2.z - p2.x * p1.y * p3.z + p1.x * p2.y * p3.z) / 6.0;
+      }
+      return Math.abs(volume);
+    }
+
+    function updateInfo(geometry, fileName) {
+      geometry.computeBoundingBox();
+      const bbox = geometry.boundingBox;
+
+      const dx = (bbox.max.x - bbox.min.x).toFixed(2);
+      const dy = (bbox.max.y - bbox.min.y).toFixed(2);
+      const dz = (bbox.max.z - bbox.min.z).toFixed(2);
+
+      const triangles = geometry.attributes.position.count / 3;
+      const volume = calculateVolume(geometry).toFixed(2);
+
+      document.getElementById('info-name').innerText = fileName;
+      document.getElementById('info-size').innerText = `${dx} × ${dy} × ${dz} mm`;
+      document.getElementById('info-volume').innerText = `${volume} mm³`;
+      document.getElementById('info-triangles').innerText = triangles.toLocaleString();
+    }
+
+    function processFile(file) {
+      if (!file || !file.name.toLowerCase().endsWith('.stl')) {
+        alert('Selecciona un archivo .stl válido');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const geometry = parseSTL(e.target.result);
+
+          if (currentMesh) {
+            scene.remove(currentMesh);
+            currentMesh.geometry.dispose();
+            currentMesh.material.dispose();
+          }
+
+          autoOrientAndGround(geometry);
+
+          const material = new THREE.MeshPhongMaterial({
+            color: 0xe05e1b,
+            specular: 0x333333,
+            shininess: 90
+          });
+
+          currentMesh = new THREE.Mesh(geometry, material);
+          scene.add(currentMesh);
+
+          updateInfo(geometry, file.name);
+        } catch (err) {
+          console.error(err);
+          alert('Error al leer el archivo STL.');
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function setupFileHandlers() {
+      const dropZone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('file-input');
+      const viewportEl = document.getElementById('viewport');
+
+      dropZone.addEventListener('click', () => fileInput.click());
+
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) processFile(e.target.files[0]);
+      });
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        viewportEl.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+      });
+
+      function handleDrop(e) {
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) processFile(files[0]);
+      }
+
+      dropZone.addEventListener('drop', handleDrop, false);
+      viewportEl.addEventListener('drop', handleDrop, false);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+
+      // Sincronizar inclinación del cubo con la cámara principal
+      cubeCamera.position.copy(camera.position).sub(controls.target).setLength(4.8);
+      cubeCamera.lookAt(0, 0, 0);
+
+      renderer.render(scene, camera);
+      cubeRenderer.render(cubeScene, cubeCamera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+
+    init();
+  </script>
+</body>
+</html>
