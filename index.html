@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RobCorp</title>
-    <link rel="icon" type="image/svg+xml" href="y.r.svg">
+    <link rel="icon" type="image/svg+xml" href="iconos/y.r.svg">
     <style>
         :root {
             --bg-primary: #0f172a;
@@ -138,6 +138,14 @@
             transition: var(--transition);
         }
 
+        /* Estilo para ajustar los SVG dentro de las tarjetas */
+        .card-icon img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: block;
+        }
+
         .tool-card:hover .card-icon {
             background-color: rgba(59, 130, 246, 0.15);
         }
@@ -184,6 +192,11 @@
                 border-radius: 8px;
             }
 
+            .card-icon img {
+                width: 20px;
+                height: 20px;
+            }
+
             .tool-title {
                 font-size: 0.9rem;
             }
@@ -194,7 +207,7 @@
 
     <header>
         <div class="brand">
-            <img src="y.r.svg" alt="RobCorp" class="brand-logo">
+            <img src="iconos/y.r.svg" alt="RobCorp" class="brand-logo">
             <div>
                 <h1>RobCorp</h1>
                 <p class="subtitle">Panel de herramientas</p>
@@ -206,21 +219,26 @@
         <div class="grid">
             
             <a href="presupuesto.html" class="tool-card">
-                <div class="card-icon">🧮</div>
+                <div class="card-icon">
+                    <img src="iconos/presupuestador.svg" alt="Presupuestador">
+                </div>
                 <span class="tool-title">Presupuestador</span>
             </a>
 
             <a href="visualizador3d.html" class="tool-card">
-                <div class="card-icon">⚡</div>
+                <div class="card-icon">
+                    <img src="iconos/visualizador3d.svg" alt="Visualizador 3D">
+                </div>
                 <span class="tool-title">Visualizador 3D</span>
             </a>
 
             <a href="cuentagotas.html" class="tool-card">
-                <div class="card-icon">💨</div>
+                <div class="card-icon">
+                    <img src="iconos/cuentagotas.svg" alt="Cuenta Gotas">  
+                </div>
                 <span class="tool-title">Cuenta Gotas</span>
             </a>
 
-            
         </div>
     </main>
 
