@@ -19,6 +19,9 @@
             darkMode: 'class',
             theme: {
                 extend: {
+                    screens: {
+                        'xs': '400px'
+                    },
                     colors: {
                         slate: { 850: '#131e2e', 950: '#090d16' },
                         cyan: { 500: '#06b6d4', 600: '#0891b2' }
@@ -39,7 +42,7 @@
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #334155; }
         
-        /* Sintaxis CSS estandarizada para evitar advertencias de linter */
+        /* Sintaxis CSS estandarizada para suprimir advertencias de linter */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -51,34 +54,44 @@
             appearance: textfield;
         }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); cursor: pointer; }
+
+        /* PREVENCIÓN DE AUTOFILL DE CHROME (Evita el fondo blanco y texto negro) */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #090d16 inset !important;
+            -webkit-text-fill-color: #f1f5f9 !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-white flex flex-col">
 
-    <!-- CABECERA CON LOGO Y ESTADO DE SESIÓN -->
+    <!-- CABECERA ADAPTATIVA CORREGIDA -->
     <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="index.html" class="flex items-center space-x-3 group rounded-xl p-1 transition-all">
-                <img src="iconos/y.r.svg" alt="Logo YR" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
-                <div>
-                    <h1 class="text-lg sm:text-xl font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors">
-                        Calculadora de Presupuestos
-                    </h1>
-                </div>
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-h-[4rem] py-2 flex items-center justify-between gap-2">
+            
+            <!-- LOGO Y TÍTULO (PROTEGIDO CONTRA DEFORMACIONES) -->
+            <a href="index.html" class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 sm:flex-initial group">
+                <img src="iconos/y.r.svg" alt="Logo YR" class="h-7 sm:h-8 w-auto object-contain flex-shrink-0" onerror="this.style.display='none'">
+                <h1 class="text-xs sm:text-base md:text-lg font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors truncate">
+                    Calculadora de Presupuestos
+                </h1>
             </a>
 
-            <!-- BARRA DE INFORMACIÓN DE USUARIO (MUESTRA EL EMAIL ACTIVO) -->
-            <div class="flex items-center space-x-3">
-                <div id="user-info-bar" class="hidden items-center space-x-2 bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-xl shadow-inner">
+            <!-- INFORMACIÓN DE USUARIO (COMPACTA Y ADAPTABLE) -->
+            <div class="flex items-center space-x-2 flex-shrink-0">
+                <div id="user-info-bar" class="hidden items-center space-x-1.5 sm:space-x-2 bg-slate-800/90 border border-slate-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl shadow-inner">
                     <span class="text-xs">👤</span>
-                    <span id="user-email-display" class="text-xs font-mono text-cyan-300 font-semibold max-w-[180px] truncate">Cargando...</span>
-                    <button onclick="logout()" class="text-slate-400 hover:text-rose-400 ml-1.5 text-xs transition-colors" title="Cerrar Sesión">
+                    <span id="user-email-display" class="text-[11px] sm:text-xs font-mono text-cyan-300 font-semibold max-w-[80px] xs:max-w-[130px] sm:max-w-[200px] truncate">Cargando...</span>
+                    <button onclick="logout()" class="text-slate-400 hover:text-rose-400 ml-0.5 sm:ml-1 text-xs transition-colors p-0.5" title="Cerrar Sesión">
                         🚪
                     </button>
                 </div>
 
-                <button id="btn-login-modal" onclick="openModal('modal-auth')" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center space-x-2 transition-all">
-                    <span>🔑 Iniciar Sesión / Registro</span>
+                <button id="btn-login-modal" onclick="openModal('modal-auth')" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center space-x-1.5 transition-all whitespace-nowrap">
+                    <span>🔑 <span class="hidden xs:inline">Iniciar Sesión / </span>Registro</span>
                 </button>
             </div>
         </div>
@@ -112,13 +125,13 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div class="space-y-1">
                         <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Cliente (Autocompletado)</label>
-                        <input type="text" id="client" list="clients-autocomplete" placeholder="Ej: Juan Pérez" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-medium">
+                        <input type="text" id="client" autocomplete="off" name="calc_client_field" list="clients-autocomplete" placeholder="Ej: Juan Pérez" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-medium">
                         <datalist id="clients-autocomplete"></datalist>
                     </div>
 
                     <div class="space-y-1">
                         <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Detalle del Trabajo</label>
-                        <input type="text" id="jobDetail" placeholder="Ej: Impresión 3D / Diseño" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-medium">
+                        <input type="text" id="jobDetail" autocomplete="off" name="calc_job_field" placeholder="Ej: Impresión 3D / Diseño" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-medium">
                     </div>
 
                     <div class="space-y-1">
@@ -155,7 +168,7 @@
                 <input type="hidden" id="hourlyRate" value="10">
             </div>
 
-            <!-- REGISTRO E HISTORIAL -->
+            <!-- REGISTRO E HISTORIAL (AUTOFILL BLOQUEADO Y ESTILO OSCURO) -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4 flex-1">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Mis Presupuestos Guardados</h2>
@@ -164,7 +177,7 @@
 
                 <div class="flex flex-col sm:flex-row gap-2.5">
                     <div class="relative flex-1">
-                        <input type="text" id="search-filter" placeholder="🔍 Buscar por cliente o detalle..." oninput="renderHistory()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500">
+                        <input type="text" id="search-filter" autocomplete="off" name="search_history_query" placeholder="🔍 Buscar por cliente o detalle..." oninput="renderHistory()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500">
                     </div>
                     <select id="sort-order" onchange="renderHistory()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:border-cyan-500">
                         <option value="newest">Más recientes</option>
@@ -236,11 +249,11 @@
             <div class="space-y-3">
                 <div class="space-y-1">
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Correo Electrónico</label>
-                    <input type="email" id="auth-email" placeholder="tu@email.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
+                    <input type="email" id="auth-email" autocomplete="email" placeholder="tu@email.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
                 </div>
                 <div class="space-y-1">
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Contraseña</label>
-                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
+                    <input type="password" id="auth-password" autocomplete="current-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
                 </div>
             </div>
 
@@ -262,7 +275,7 @@
             <div class="grid grid-cols-2 gap-3">
                 <div class="space-y-1">
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Teléfono Cliente</label>
-                    <input type="tel" id="modal-phone" placeholder="Ej: +54 9 351..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
+                    <input type="tel" id="modal-phone" autocomplete="off" placeholder="Ej: +54 9 351..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
                 </div>
                 <div class="space-y-1">
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Fecha de Inicio</label>
@@ -317,16 +330,16 @@
     </div>
 
     <script>
-        /* CONFIGURACIÓN CONEXIÓN CON PERSISTENCIA DE SESIÓN */
+        /* CONFIGURACIÓN CONEXIÓN SUPABASE */
         const SUPABASE_URL = 'https://btjgctebliydjyqopvjo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0amdjdGVibGl5ZGp5cW9wdmpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1Mzk2MDMsImV4cCI6MjEwNjExNTYwM30.MrJcVSAiWbxsKmeezRE76sAuwUjXVyugCUEKvXLCbnw'; 
 
         const _supabase = (SUPABASE_URL.startsWith('http') && !SUPABASE_URL.includes('tu-proyecto')) 
             ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                 auth: {
-                    persistSession: true,       // Guarda sesión en localStorage
-                    autoRefreshToken: true,     // Renueva tokens en segundo plano
-                    detectSessionInUrl: true    // Mantiene la sesión al navegar
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
                 }
             }) 
             : null;
@@ -350,11 +363,9 @@
         async function initAuthSession() {
             if (!_supabase) return;
 
-            // Consultar la sesión persistida actual
             const { data: { session } } = await _supabase.auth.getSession();
             updateSessionState(session);
 
-            // Suscribirse a cambios futuros (login, logout, refresh token)
             _supabase.auth.onAuthStateChange((_event, session) => {
                 updateSessionState(session);
             });
