@@ -2,20 +2,21 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RobCorp</title>
-    <link rel="icon" type="image/svg+xml" href="iconos/y.r.svg">
+    <link rel="icon" type="image/svg+xml" href="iconos/y.r.svg" sizes="any">
     <style>
         :root {
             --bg-primary: #0f172a;
             --bg-card: #1e293b;
             --bg-card-hover: #334155;
             --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: #334155;
             --radius: 12px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         *, *::before, *::after {
@@ -26,45 +27,44 @@
 
         html, body {
             width: 100%;
-            min-height: 100vh;
+            height: 100%;
             background-color: var(--bg-primary);
             color: var(--text-main);
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             display: flex;
             flex-direction: column;
-            padding: 2rem 1.25rem;
         }
 
-        header, main {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
+        /* CABECERA PRINCIPAL */
         header {
-            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+            flex-shrink: 0;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.85rem;
         }
 
         .brand-logo {
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             object-fit: contain;
-            filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.3));
+            filter: drop-shadow(0 4px 12px var(--accent-glow));
             flex-shrink: 0;
         }
 
         h1 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 800;
             letter-spacing: -0.03em;
             background: linear-gradient(135deg, #ffffff 40%, var(--accent));
@@ -76,29 +76,108 @@
 
         p.subtitle {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             font-weight: 500;
-            margin-top: 0.2rem;
+            margin-top: 0.1rem;
         }
 
-        main {
+        /* BARRA DE PESTAÑAS ADAPTABLE */
+        .tabs-wrapper {
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .tabs-header {
+            display: flex;
+            width: 100%;
+            position: relative;
+        }
+
+        .tab-btn {
             flex: 1;
+            padding: 0.85rem 0.2rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            user-select: none;
+            white-space: nowrap;
         }
 
-        /* Lista Vertical de Módulos */
+        .tab-btn.active {
+            color: var(--text-main);
+        }
+
+        /* INDICADOR DESLIZANTE */
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 33.333%;
+            background-color: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* VIEWPORT PRINCIPAL DESLIZABLE CON LÍMITES NATIVOS */
+        main.swipe-container {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        main.swipe-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* PÁGINAS INDIVIDUALES */
+        .tab-page {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            overflow-y: auto;
+            padding: 1.25rem;
+            display: flex;
+            justify-content: center;
+        }
+
         .grid {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
             width: 100%;
+            max-width: 650px;
+            height: max-content;
+            padding-bottom: 2rem;
         }
 
-        /* Bloque Unificado Clickable Estilo ElectroDoc */
+        /* TARJETAS DE MÓDULOS */
         .tool-card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
-            padding: 0.9rem 1.1rem;
+            padding: 0.85rem 1.1rem;
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -110,7 +189,6 @@
             cursor: pointer;
             user-select: none;
             width: 100%;
-            overflow: hidden;
         }
 
         .tool-card:hover {
@@ -126,7 +204,7 @@
         }
 
         .card-icon {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             width: 42px;
             height: 42px;
             background-color: rgba(255, 255, 255, 0.05);
@@ -138,7 +216,6 @@
             transition: var(--transition);
         }
 
-        /* Estilo para ajustar los SVG dentro de las tarjetas */
         .card-icon img {
             width: 24px;
             height: 24px;
@@ -152,44 +229,59 @@
 
         .tool-title {
             font-weight: 600;
-            font-size: 0.98rem;
+            font-size: 0.95rem;
             letter-spacing: -0.01em;
             line-height: 1.3;
             flex: 1;
             min-width: 0;
             overflow-wrap: break-word;
-            word-break: break-word;
         }
 
-        /* Adaptación Responsiva para Celulares Estrechos */
-        @media (max-width: 480px) {
-            body {
-                padding: 1.25rem 0.85rem;
-            }
+        .empty-state {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 2.5rem 1rem;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+        }
 
+        /* MEDIA QUERIES (RESPONSIVIDAD MÓVIL DE 320PX A 480PX) */
+        @media (max-width: 480px) {
             header {
-                margin-bottom: 1.5rem;
+                padding: 1rem 1rem 0.5rem 1rem;
             }
 
             .brand-logo {
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
             }
 
             h1 {
-                font-size: 1.45rem;
+                font-size: 1.35rem;
+            }
+
+            p.subtitle {
+                font-size: 0.78rem;
+            }
+
+            .tab-btn {
+                font-size: 0.7rem;
+                padding: 0.75rem 0.05rem;
+            }
+
+            .tab-page {
+                padding: 0.85rem;
             }
 
             .tool-card {
-                padding: 0.8rem 0.95rem;
-                gap: 0.85rem;
+                padding: 0.75rem 0.9rem;
+                gap: 0.8rem;
             }
 
             .card-icon {
                 width: 38px;
                 height: 38px;
-                font-size: 1.25rem;
-                border-radius: 8px;
             }
 
             .card-icon img {
@@ -198,13 +290,21 @@
             }
 
             .tool-title {
-                font-size: 0.9rem;
+                font-size: 0.88rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .tab-btn {
+                font-size: 0.65rem;
+                letter-spacing: 0;
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- CABECERA -->
     <header>
         <div class="brand">
             <img src="iconos/y.r.svg" alt="RobCorp" class="brand-logo">
@@ -215,39 +315,120 @@
         </div>
     </header>
 
-    <main>
-        <div class="grid">
-            
-            <a href="presupuesto.html" class="tool-card">
-                <div class="card-icon">
-                    <img src="iconos/presupuestador.svg" alt="Presupuestador">
-                </div>
-                <span class="tool-title">Presupuestador</span>
-            </a>
-
-            <a href="visualizador3d.html" class="tool-card">
-                <div class="card-icon">
-                    <img src="iconos/visualizador3d.svg" alt="Visualizador 3D">
-                </div>
-                <span class="tool-title">Visualizador 3D</span>
-            </a>
-
-            <a href="cuentagotas.html" class="tool-card">
-                <div class="card-icon">
-                    <img src="iconos/cuentagotas.svg" alt="Cuenta Gotas">  
-                </div>
-                <span class="tool-title">Cuenta Gotas</span>
-            </a>
-
-            <a href="calculadora_resitencias.html" class="tool-card">
-                <div class="card-icon">
-                    <img src="iconos/.svg" alt="Cuenta Gotas">  
-                </div>
-                <span class="tool-title">Cuenta Gotas</span>
-            </a>
-
+    <!-- BARRA DE PESTAÑAS -->
+    <nav class="tabs-wrapper">
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="switchTab(0)">Calculadoras</button>
+            <button class="tab-btn" onclick="switchTab(1)">Pin-outs</button>
+            <button class="tab-btn" onclick="switchTab(2)">Recursos</button>
         </div>
+        <div class="tab-indicator" id="tabIndicator"></div>
+    </nav>
+
+    <!-- CONTENEDOR DESLIZABLE -->
+    <main class="swipe-container" id="swipeContainer">
+        
+        <!-- PÁGINA 1: CALCULADORAS -->
+        <section class="tab-page">
+            <div class="grid">
+                
+                <a href="presupuesto.html" class="tool-card">
+                    <div class="card-icon">
+                        <img src="iconos/presupuestador.svg" alt="Presupuestador">
+                    </div>
+                    <span class="tool-title">Presupuestador</span>
+                </a>
+
+                <a href="calculadora_resitencias.html" class="tool-card">
+                    <div class="card-icon">
+                        <img src="iconos/omega.svg" alt="Calculadora de Resistencias">  
+                    </div>
+                    <span class="tool-title">Calculadora de Resistencias</span>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- PÁGINA 2: PIN-OUTS -->
+        <section class="tab-page">
+            <div class="grid">
+                
+                <div class="empty-state">
+                    📌 Módulos de Pin-outs en desarrollo...
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PÁGINA 3: RECURSOS -->
+        <section class="tab-page">
+            <div class="grid">
+
+                <a href="cuentagotas.html" class="tool-card">
+                    <div class="card-icon">
+                        <img src="iconos/cuentagotas.svg" alt="Cuenta Gotas">  
+                    </div>
+                    <span class="tool-title">Cuenta Gotas</span>
+                </a>
+                
+                <a href="visualizador3d.html" class="tool-card">
+                    <div class="card-icon">
+                        <img src="iconos/visualizador3d.svg" alt="Visualizador 3D">
+                    </div>
+                    <span class="tool-title">Visualizador 3D</span>
+                </a>
+
+            </div>
+        </section>
+
     </main>
+
+    <script>
+        const container = document.getElementById('swipeContainer');
+        const indicator = document.getElementById('tabIndicator');
+        const tabs = document.querySelectorAll('.tab-btn');
+        let isProgrammaticScroll = false;
+
+        function switchTab(index) {
+            isProgrammaticScroll = true;
+            const pageWidth = container.clientWidth;
+            
+            container.scrollTo({
+                left: pageWidth * index,
+                behavior: 'smooth'
+            });
+
+            updateActiveTab(index);
+
+            setTimeout(() => {
+                isProgrammaticScroll = false;
+            }, 350);
+        }
+
+        function updateActiveTab(index) {
+            tabs.forEach((tab, idx) => {
+                tab.classList.toggle('active', idx === index);
+            });
+            indicator.style.transform = `translateX(${index * 100}%)`;
+        }
+
+        container.addEventListener('scroll', () => {
+            if (isProgrammaticScroll) return;
+
+            const scrollLeft = container.scrollLeft;
+            const pageWidth = container.clientWidth;
+            
+            if (pageWidth > 0) {
+                const currentIndex = Math.round(scrollLeft / pageWidth);
+                updateActiveTab(currentIndex);
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            const currentIndex = Math.round(container.scrollLeft / container.clientWidth);
+            updateActiveTab(currentIndex);
+        });
+    </script>
 
 </body>
 </html>

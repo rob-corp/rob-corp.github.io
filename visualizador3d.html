@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Visualizador 3D</title>
-    <link id="favicon" rel="icon" type="image/svg+xml" href="iconos/visualizador3d.svg">
+  <link id="favicon" rel="icon" type="image/svg+xml" href="iconos/visualizador3d.svg">
 
   <style>
     * {
@@ -35,31 +35,51 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      height: 100dvh; /* Soporte para Viewport Height dinámico en navegadores móviles */
       overflow: hidden;
     }
 
     .header {
       background-color: #161b22;
-      padding: 10px 18px;
+      padding: 0 18px;
       border-bottom: 1px solid #21262d;
       display: flex;
       align-items: center;
       gap: 10px;
+      height: 46px;
+      flex-shrink: 0;
+      z-index: 20;
     }
 
     .header-title {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       font-size: 15px;
       font-weight: 600;
       color: #f8fafc;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .header-title:hover {
+      opacity: 0.85;
+    }
+
+    .header-icon {
+      width: 22px;
+      height: 22px;
+      display: block;
     }
 
     .app-layout {
       display: flex;
       flex: 1;
-      height: calc(100vh - 43px);
+      height: calc(100vh - 46px);
+      height: calc(100dvh - 46px);
+      overflow: hidden;
+      flex-direction: row;
     }
 
     .sidebar {
@@ -71,6 +91,8 @@
       flex-direction: column;
       gap: 12px;
       overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 10;
     }
 
     .card-section {
@@ -93,7 +115,7 @@
       border: 2px dashed #30363d;
       background-color: #0d1117;
       border-radius: 6px;
-      min-height: 100px;
+      min-height: 90px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -147,6 +169,7 @@
       flex: 1;
       position: relative;
       background: radial-gradient(ellipse at center, #0d1119 0%, #05070a 100%);
+      overflow: hidden;
     }
 
     #webgl-canvas {
@@ -155,48 +178,126 @@
       display: block;
     }
 
-    /* Contenedor del Cubo 3D de Navegación */
     #viewcube-wrapper {
       position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 140px;
-      height: 140px;
+      top: 12px;
+      right: 12px;
+      width: 180px;
+      height: 180px;
       z-index: 10;
+      user-select: none;
+      pointer-events: none;
+      transition: width 0.3s ease, height 0.3s ease;
     }
 
     #viewcube-canvas {
       width: 100%;
       height: 100%;
       cursor: pointer;
+      pointer-events: auto;
+    }
+
+    /* Reglas Adaptativas / Media Queries para Dispositivos Móviles y Tabletas */
+    @media (max-width: 768px) {
+      .app-layout {
+        flex-direction: column-reverse;
+      }
+
+      .viewport-container {
+        flex: 1;
+        width: 100%;
+        min-height: 50vh;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 40vh;
+        border-right: none;
+        border-top: 1px solid #21262d;
+        padding: 10px;
+        gap: 8px;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4);
+      }
+
+      .card-section {
+        padding: 8px 10px;
+      }
+
+      .upload-box {
+        min-height: 65px;
+        padding: 8px;
+      }
+
+      .upload-box svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .upload-box span {
+        font-size: 11px;
+      }
+
+      #viewcube-wrapper {
+        width: 110px;
+        height: 110px;
+        top: 8px;
+        right: 8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header {
+        padding: 0 12px;
+        height: 40px;
+      }
+
+      .header-title {
+        font-size: 13px;
+      }
+
+      .app-layout {
+        height: calc(100vh - 40px);
+        height: calc(100dvh - 40px);
+      }
+
+      .sidebar {
+        max-height: 45vh;
+      }
+
+      .info-row {
+        padding: 4px 0;
+        font-size: 11px;
+      }
+
+      #viewcube-wrapper {
+        width: 90px;
+        height: 90px;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <div class="header-title">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e05e1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-        <line x1="12" y1="22.08" x2="12" y2="12"></line>
-      </svg>
+    <a href="index.html" class="header-title" title="Ir a inicio">
+      <img src="iconos/visualizador3d.svg" alt="Visualizador 3D" class="header-icon">
       <span>Visualizador 3D</span>
-    </div>
+    </a>
   </div>
 
   <div class="app-layout">
     <div class="sidebar">
       <div class="card-section">
-        <div class="card-title">CARGAR MODELO / STL</div>
+        <div class="card-title">CARGAR MODELO</div>
         <div class="upload-box" id="drop-zone">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#e05e1b" stroke-width="2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e05e1b" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          <span>Seleccionar o arrastrar STL aquí</span>
-          <input type="file" id="file-input" accept=".stl" style="display:none">
+          <span>Seleccionar o arrastrar STL, OBJ o G-code</span>
+          <input type="file" id="file-input" accept=".stl,.obj,.gcode" style="display:none">
         </div>
       </div>
 
@@ -207,6 +308,10 @@
           <span class="info-value" id="info-name">-</span>
         </div>
         <div class="info-row">
+          <span class="info-label">Formato / Tipo:</span>
+          <span class="info-value" id="info-type">-</span>
+        </div>
+        <div class="info-row">
           <span class="info-label">Tamaño (X×Y×Z):</span>
           <span class="info-value" id="info-size">-</span>
         </div>
@@ -215,8 +320,12 @@
           <span class="info-value" id="info-volume">-</span>
         </div>
         <div class="info-row">
-          <span class="info-label">Triángulos:</span>
+          <span class="info-label">Triángulos / Entidades:</span>
           <span class="info-value" id="info-triangles">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Asentamiento Base:</span>
+          <span class="info-value" id="info-z-ground" style="color: #22c55e;">-</span>
         </div>
       </div>
     </div>
@@ -229,35 +338,48 @@
     </div>
   </div>
 
-  <!-- Three.js + OrbitControls -->
+  <!-- Three.js + Controles + Loaders -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GCodeLoader.js"></script>
 
   <script>
-    let scene, camera, renderer, controls, currentMesh;
-    let cubeScene, cubeCamera, cubeRenderer, cubeMesh, highlightMesh, raycaster, mouse;
+    let scene, camera, renderer, controls, currentObject;
+    let cubeScene, cubeCamera, cubeRenderer, cubeMesh, highlightBlock, raycaster, mouse;
     let activeTargetVector = null;
-    
+
+    let isAnimatingCamera = false;
+    const animStartPos = new THREE.Vector3();
+    const animEndPos = new THREE.Vector3();
+    let animProgress = 0;
+
     const container = document.getElementById('viewport');
     const canvas = document.getElementById('webgl-canvas');
-    const MAINSAIL_ORANGE = 0xb86035; // Color café/naranja característico del selector
+    const cubeWrapper = document.getElementById('viewcube-wrapper');
+    const cubeCanvas = document.getElementById('viewcube-canvas');
+
+    const MAINSAIL_ORANGE = 0xe05e1b;
     const BED_SIZE_X = 235;
     const BED_SIZE_Y = 235;
     const CUBE_SIZE = 1.6;
+    const CELL_SIZE = CUBE_SIZE / 3;
 
-    // --- PARSER STL NATIVO (Soporta Binario y ASCII) ---
-    function parseSTL(buffer) {
+    function parseSTLEmbedded(buffer) {
       const dataView = new DataView(buffer);
       let isBinary = true;
 
-      if (buffer.byteLength > 84) {
+      if (buffer.byteLength < 84) {
+        isBinary = false;
+      } else {
         const numTriangles = dataView.getUint32(80, true);
         const expectedSize = 84 + numTriangles * 50;
-        if (expectedSize !== buffer.byteLength) {
-          isBinary = false;
+        if (buffer.byteLength < expectedSize || numTriangles === 0) {
+          const headerStr = new TextDecoder().decode(buffer.slice(0, 80));
+          if (headerStr.trim().toLowerCase().startsWith('solid')) {
+            isBinary = false;
+          }
         }
-      } else {
-        isBinary = false;
       }
 
       const geometry = new THREE.BufferGeometry();
@@ -268,16 +390,19 @@
         const numTriangles = dataView.getUint32(80, true);
         let offset = 84;
         for (let i = 0; i < numTriangles; i++) {
+          if (offset + 50 > buffer.byteLength) break;
+
           const nx = dataView.getFloat32(offset, true);
           const ny = dataView.getFloat32(offset + 4, true);
           const nz = dataView.getFloat32(offset + 8, true);
           offset += 12;
 
           for (let j = 0; j < 3; j++) {
-            const vx = dataView.getFloat32(offset, true);
-            const vy = dataView.getFloat32(offset + 4, true);
-            const vz = dataView.getFloat32(offset + 8, true);
-            vertices.push(vx, vy, vz);
+            vertices.push(
+              dataView.getFloat32(offset, true),
+              dataView.getFloat32(offset + 4, true),
+              dataView.getFloat32(offset + 8, true)
+            );
             normals.push(nx, ny, nz);
             offset += 12;
           }
@@ -285,10 +410,23 @@
         }
       } else {
         const text = new TextDecoder().decode(buffer);
-        const vertexRegex = /vertex\s+([\d.\-eE]+)\s+([\d.\-eE]+)\s+([\d.\-eE]+)/g;
-        let match;
-        while ((match = vertexRegex.exec(text)) !== null) {
-          vertices.push(parseFloat(match[1]), parseFloat(match[2]), parseFloat(match[3]));
+        const lines = text.split('\n');
+        let currentNormal = [0, 0, 1];
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim().toLowerCase();
+          if (line.startsWith('facet normal')) {
+            const parts = line.split(/\s+/);
+            if (parts.length >= 4) {
+              currentNormal = [parseFloat(parts[2]), parseFloat(parts[3]), parseFloat(parts[4])];
+            }
+          } else if (line.startsWith('vertex')) {
+            const parts = line.split(/\s+/);
+            if (parts.length >= 4) {
+              vertices.push(parseFloat(parts[1]), parseFloat(parts[2]), parseFloat(parts[3]));
+              normals.push(currentNormal[0], currentNormal[1], currentNormal[2]);
+            }
+          }
         }
       }
 
@@ -302,13 +440,12 @@
     }
 
     function init() {
-      // Escena principal
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x090d13);
 
-      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 2000);
+      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 3000);
       camera.up.set(0, 0, 1);
-      camera.position.set(117.5, -280, 220);
+      camera.position.set(117.5, -300, 240);
 
       renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
       renderer.setSize(container.clientWidth, container.clientHeight);
@@ -319,7 +456,6 @@
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
 
-      // Cama de impresión
       const gridPrimary = new THREE.GridHelper(BED_SIZE_X, 47, 0x384454, 0x1c2430);
       gridPrimary.rotation.x = Math.PI / 2;
       gridPrimary.position.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, 0);
@@ -330,7 +466,6 @@
       gridSecondary.position.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, -0.1);
       scene.add(gridSecondary);
 
-      // Perímetro de cama resaltado (estilo Mainsail: el borde exacto del área imprimible)
       const bedOutlineShape = new THREE.Shape();
       bedOutlineShape.moveTo(0, 0);
       bedOutlineShape.lineTo(BED_SIZE_X, 0);
@@ -340,31 +475,30 @@
       const bedOutlineGeom = new THREE.BufferGeometry().setFromPoints(bedOutlineShape.getPoints());
       const bedOutline = new THREE.LineLoop(
         bedOutlineGeom,
-        new THREE.LineBasicMaterial({ color: 0xe05e1b, linewidth: 2, transparent: true, opacity: 0.9 })
+        new THREE.LineBasicMaterial({ color: MAINSAIL_ORANGE, linewidth: 2, transparent: true, opacity: 0.9 })
       );
       bedOutline.position.z = 0.05;
       scene.add(bedOutline);
 
-      // Marcador de origen (0,0) — Mainsail siempre lo señala
       const originMarker = new THREE.Mesh(
         new THREE.CircleGeometry(3, 24),
-        new THREE.MeshBasicMaterial({ color: 0xe05e1b, transparent: true, opacity: 0.6 })
+        new THREE.MeshBasicMaterial({ color: MAINSAIL_ORANGE, transparent: true, opacity: 0.6 })
       );
       originMarker.position.set(0, 0, 0.06);
       scene.add(originMarker);
 
-      // Ejes globales de referencia
       addCornerCartesianAxes();
 
-      // Iluminación
-      scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+      scene.add(new THREE.AmbientLight(0xffffff, 0.8));
       const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
       light1.position.set(100, -100, 250);
       scene.add(light1);
 
-      // Cubo 3D de Vistas
-      initViewCube();
+      const light2 = new THREE.DirectionalLight(0xffffff, 0.3);
+      light2.position.set(-100, 100, -100);
+      scene.add(light2);
 
+      initViewCube();
       setupFileHandlers();
       animate();
     }
@@ -377,57 +511,42 @@
       scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), origin, len, 0x3b82f6, 5, 3));
     }
 
-    // --- TEXTURAS CON ZONAS DE VISIÓN (CENTRO, BORDES Y ESQUINAS) ---
-    function createFaceTexture(text, rotationDeg = 0) {
+    function createOrcaFaceTexture(text, rotationDeg = 0) {
       const canvas = document.createElement('canvas');
       canvas.width = 256;
       canvas.height = 256;
       const ctx = canvas.getContext('2d');
 
-      // Fondo oscuro semitransparente
-      ctx.fillStyle = '#222831';
+      ctx.fillStyle = '#2f343d';
       ctx.fillRect(0, 0, 256, 256);
 
-      // Dibujar división de zonas de visión (Estilo Mainsail/OrcaSlicer: Cuadro central + bordes)
-      ctx.strokeStyle = '#3a4352';
+      ctx.strokeStyle = '#434a56';
       ctx.lineWidth = 2;
+      const step = 256 / 3;
 
-      const pad = 64; // Inset de la zona central (50% de la superficie total)
-      ctx.beginPath();
-      ctx.roundRect(pad, pad, 256 - pad * 2, 256 - pad * 2, 10);
-      ctx.stroke();
+      for (let i = 1; i < 3; i++) {
+        ctx.beginPath(); ctx.moveTo(i * step, 0); ctx.lineTo(i * step, 256); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i * step); ctx.lineTo(256, i * step); ctx.stroke();
+      }
 
-      // Líneas de conexión hacia las esquinas
-      ctx.beginPath();
-      ctx.moveTo(0, 0); ctx.lineTo(pad, pad);
-      ctx.moveTo(256, 0); ctx.lineTo(256 - pad, pad);
-      ctx.moveTo(0, 256); ctx.lineTo(pad, 256 - pad);
-      ctx.moveTo(256, 256); ctx.lineTo(256 - pad, 256 - pad);
-      ctx.stroke();
-
-      // Borde exterior
-      ctx.strokeStyle = '#4b5563';
-      ctx.lineWidth = 6;
+      ctx.strokeStyle = '#555e6d';
+      ctx.lineWidth = 4;
       ctx.strokeRect(0, 0, 256, 256);
 
-      // Texto orientado
-      // Ángulo verificado analíticamente contra el mapeo UV real de
-      // THREE.BoxGeometry (r128) para que "arriba" del texto coincida
-      // con +Z en las 4 caras laterales, y con +Y (dirección "Trasera")
-      // en la vista superior/inferior. Son rotaciones puras (sin espejar),
-      // por eso ninguna cara queda con el texto invertido tipo espejo.
       ctx.save();
       ctx.translate(128, 128);
       ctx.rotate((rotationDeg || 0) * Math.PI / 180);
 
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = 'Bold 30px "Segoe UI", sans-serif';
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'italic 700 40px "Segoe UI", system-ui, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(text, 0, 0);
       ctx.restore();
 
-      return new THREE.CanvasTexture(canvas);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.anisotropy = 4;
+      return texture;
     }
 
     function createAxisLabelTexture(text, color) {
@@ -436,110 +555,95 @@
       canvas.height = 64;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = color;
-      ctx.font = 'Bold 48px "Segoe UI", sans-serif';
+      ctx.font = 'Bold 46px "Segoe UI", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(text, 32, 32);
       return new THREE.CanvasTexture(canvas);
     }
 
-    // --- CUBOS Y EJES CARTESIANOS EN LA ESQUINA INFERIOR ---
     function initViewCube() {
-      const cubeCanvas = document.getElementById('viewcube-canvas');
       cubeScene = new THREE.Scene();
 
-      cubeCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+      const d = 2.1;
+      cubeCamera = new THREE.OrthographicCamera(-d, d, d, -d, 0.1, 100);
       cubeCamera.up.set(0, 0, 1);
 
       cubeRenderer = new THREE.WebGLRenderer({ canvas: cubeCanvas, alpha: true, antialias: true });
-      cubeRenderer.setSize(140, 140);
+      cubeRenderer.setSize(cubeWrapper.clientWidth, cubeWrapper.clientHeight);
       cubeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-      // Materiales del cubo por caras (+X, -X, +Y, -Y, +Z, -Z)
       const materials = [
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Derecha', 270), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Izquierda', 90), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Trasera', 180), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Frontal', 0), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Superior', 0), transparent: true, opacity: 0.82 }),
-        new THREE.MeshBasicMaterial({ map: createFaceTexture('Inferior', 0), transparent: true, opacity: 0.82 })
+        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Derecha', 270), transparent: true, opacity: 0.9 }),
+        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Izquierda', 90), transparent: true, opacity: 0.9 }),
+        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Trasera', 180), transparent: true, opacity: 0.9 }),
+        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Frontal', 0), transparent: true, opacity: 0.9 }),
+        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Superior', 0), transparent: true, opacity: 0.9 }),
+        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Inferior', 180), transparent: true, opacity: 0.9 })
       ];
 
       const geometry = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
       cubeMesh = new THREE.Mesh(geometry, materials);
       cubeScene.add(cubeMesh);
 
-      // --- EJES CARTESIANOS UBICADOS EN LA ESQUINA INFERIOR FRONTAL (0,0,0 relativo al cubo) ---
       const h = CUBE_SIZE / 2;
-      const cornerOrigin = new THREE.Vector3(-h, -h, -h); // Vértice inferior frontal
-      const axisExt = 1.2;
+      const cornerOrigin = new THREE.Vector3(-h, -h, -h);
+      const axisLen = CUBE_SIZE * 1.05;
 
-      // Eje X (Rojo)
       const matX = new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 3, depthTest: false });
-      const geomX = new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h + axisExt, -h, -h)]);
-      const lineX = new THREE.Line(geomX, matX);
+      const lineX = new THREE.Line(new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h + axisLen, -h, -h)]), matX);
       lineX.renderOrder = 999;
       cubeScene.add(lineX);
 
-      const labelXMat = new THREE.SpriteMaterial({ map: createAxisLabelTexture('X', '#ef4444'), depthTest: false });
-      const labelX = new THREE.Sprite(labelXMat);
-      labelX.position.set(-h + axisExt + 0.25, -h, -h);
-      labelX.scale.set(0.35, 0.35, 1);
+      const labelX = new THREE.Sprite(new THREE.SpriteMaterial({ map: createAxisLabelTexture('X', '#ef4444'), depthTest: false }));
+      labelX.position.set(-h + axisLen + 0.18, -h, -h);
+      labelX.scale.set(0.24, 0.24, 1);
       labelX.renderOrder = 1000;
       cubeScene.add(labelX);
 
-      // Eje Y (Verde)
       const matY = new THREE.LineBasicMaterial({ color: 0x22c55e, linewidth: 3, depthTest: false });
-      const geomY = new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h, -h + axisExt, -h)]);
-      const lineY = new THREE.Line(geomY, matY);
+      const lineY = new THREE.Line(new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h, -h + axisLen, -h)]), matY);
       lineY.renderOrder = 999;
       cubeScene.add(lineY);
 
-      const labelYMat = new THREE.SpriteMaterial({ map: createAxisLabelTexture('Y', '#22c55e'), depthTest: false });
-      const labelY = new THREE.Sprite(labelYMat);
-      labelY.position.set(-h, -h + axisExt + 0.25, -h);
-      labelY.scale.set(0.35, 0.35, 1);
+      const labelY = new THREE.Sprite(new THREE.SpriteMaterial({ map: createAxisLabelTexture('Y', '#22c55e'), depthTest: false }));
+      labelY.position.set(-h, -h + axisLen + 0.18, -h);
+      labelY.scale.set(0.24, 0.24, 1);
       labelY.renderOrder = 1000;
       cubeScene.add(labelY);
 
-      // Eje Z (Azul)
       const matZ = new THREE.LineBasicMaterial({ color: 0x3b82f6, linewidth: 3, depthTest: false });
-      const geomZ = new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h, -h, -h + axisExt)]);
-      const lineZ = new THREE.Line(geomZ, matZ);
+      const lineZ = new THREE.Line(new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h, -h, -h + axisLen)]), matZ);
       lineZ.renderOrder = 999;
       cubeScene.add(lineZ);
 
-      const labelZMat = new THREE.SpriteMaterial({ map: createAxisLabelTexture('Z', '#3b82f6'), depthTest: false });
-      const labelZ = new THREE.Sprite(labelZMat);
-      labelZ.position.set(-h, -h, -h + axisExt + 0.25);
-      labelZ.scale.set(0.35, 0.35, 1);
+      const labelZ = new THREE.Sprite(new THREE.SpriteMaterial({ map: createAxisLabelTexture('Z', '#3b82f6'), depthTest: false }));
+      labelZ.position.set(-h, -h, -h + axisLen + 0.18);
+      labelZ.scale.set(0.24, 0.24, 1);
       labelZ.renderOrder = 1000;
       cubeScene.add(labelZ);
 
-      // Plano de resalte (Hover)
-      const hlGeometry = new THREE.PlaneGeometry(1, 1);
-      const hlMaterial = new THREE.MeshBasicMaterial({
-        color: MAINSAIL_ORANGE,
-        transparent: true,
-        opacity: 0.85,
-        side: THREE.DoubleSide,
-        depthTest: false
-      });
-      highlightMesh = new THREE.Mesh(hlGeometry, hlMaterial);
-      highlightMesh.visible = false;
-      highlightMesh.renderOrder = 1001;
-      cubeScene.add(highlightMesh);
+      const hlGeom = new THREE.BoxGeometry(CELL_SIZE * 0.98, CELL_SIZE * 0.98, CELL_SIZE * 0.98);
+      const hlMat = new THREE.MeshBasicMaterial({ color: 0xb86d3b, depthTest: false, transparent: false });
+      highlightBlock = new THREE.Mesh(hlGeom, hlMat);
+      highlightBlock.visible = false;
+      highlightBlock.renderOrder = 1001;
+      cubeScene.add(highlightBlock);
 
       raycaster = new THREE.Raycaster();
       mouse = new THREE.Vector2();
 
       cubeCanvas.addEventListener('pointermove', onCubeHover);
-      cubeCanvas.addEventListener('pointerleave', () => { highlightMesh.visible = false; });
+      cubeCanvas.addEventListener('pointerleave', () => { highlightBlock.visible = false; });
       cubeCanvas.addEventListener('click', onCubeClick);
     }
 
-    // Calculador de Zonas de Visión (Cara Central, Bordes y Esquinas)
     function onCubeHover(event) {
+      if (isAnimatingCamera) {
+        highlightBlock.visible = false;
+        return;
+      }
+
       const rect = event.target.getBoundingClientRect();
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -548,141 +652,65 @@
       const intersects = raycaster.intersectObject(cubeMesh);
 
       if (intersects.length > 0) {
-        const hit = intersects[0];
-        const normal = hit.face.normal.clone();
-        const point = hit.point;
+        const point = intersects[0].point;
+        const th = CELL_SIZE / 2;
 
-        const h = CUBE_SIZE / 2;
-        let u = 0, v = 0;
+        const ix = point.x > th ? 1 : (point.x < -th ? -1 : 0);
+        const iy = point.y > th ? 1 : (point.y < -th ? -1 : 0);
+        const iz = point.z > th ? 1 : (point.z < -th ? -1 : 0);
 
-        // Proyectar punto a coordenadas 2D local de la cara (-h a +h)
-        if (Math.abs(normal.x) > 0.5) {
-          u = point.y; v = point.z;
-        } else if (Math.abs(normal.y) > 0.5) {
-          u = point.x; v = point.z;
-        } else {
-          u = point.x; v = point.y;
-        }
+        highlightBlock.position.set(ix * CELL_SIZE, iy * CELL_SIZE, iz * CELL_SIZE);
+        highlightBlock.visible = true;
 
-        const margin = h * 0.5; // Límite de la zona central
-        let scaleU = CUBE_SIZE * 0.5;
-        let scaleV = CUBE_SIZE * 0.5;
-        let posU = 0, posV = 0;
-
-        // Determinar vector objetivo de orientación de cámara
-        let targetDir = normal.clone();
-
-        if (Math.abs(u) < margin && Math.abs(v) < margin) {
-          // Centro de la cara (Vista ortogonal directa)
-          posU = 0; posV = 0;
-          scaleU = CUBE_SIZE * 0.5; scaleV = CUBE_SIZE * 0.5;
-        } else {
-          // Borde o Esquina
-          if (Math.abs(u) >= margin) {
-            posU = Math.sign(u) * (h - (h - margin) / 2);
-            scaleU = h - margin;
-            if (Math.abs(normal.x) > 0.5) targetDir.y += Math.sign(u);
-            else targetDir.x += Math.sign(u);
-          }
-          if (Math.abs(v) >= margin) {
-            posV = Math.sign(v) * (h - (h - margin) / 2);
-            scaleV = h - margin;
-            if (Math.abs(normal.z) > 0.5) targetDir.y += Math.sign(v);
-            else targetDir.z += Math.sign(v);
-          }
-        }
-
-        activeTargetVector = targetDir.normalize();
-
-        // Posicionar plano de resalte
-        highlightMesh.scale.set(scaleU * 0.95, scaleV * 0.95, 1);
-
-        if (Math.abs(normal.x) > 0.5) {
-          highlightMesh.position.set(normal.x * (h + 0.01), posU, posV);
-          highlightMesh.rotation.set(0, Math.PI / 2, 0);
-        } else if (Math.abs(normal.y) > 0.5) {
-          highlightMesh.position.set(posU, normal.y * (h + 0.01), posV);
-          highlightMesh.rotation.set(Math.PI / 2, 0, 0);
-        } else {
-          highlightMesh.position.set(posU, posV, normal.z * (h + 0.01));
-          highlightMesh.rotation.set(0, 0, 0);
-        }
-
-        highlightMesh.visible = true;
+        activeTargetVector = new THREE.Vector3(ix, iy, iz).normalize();
       } else {
-        highlightMesh.visible = false;
+        highlightBlock.visible = false;
         activeTargetVector = null;
       }
     }
 
     function onCubeClick() {
-      if (activeTargetVector) {
+      if (activeTargetVector && activeTargetVector.lengthSq() > 0) {
+        highlightBlock.visible = false;
+
         const dist = 320;
         const target = controls.target.clone();
-        camera.position.set(
+
+        animStartPos.copy(camera.position);
+        animEndPos.set(
           target.x + activeTargetVector.x * dist,
           target.y + activeTargetVector.y * dist,
           target.z + activeTargetVector.z * dist
         );
-        camera.lookAt(target);
+        animProgress = 0;
+        isAnimatingCamera = true;
       }
     }
 
-    // Orientar y asentar base automáticamente en la cama
-    function autoOrientAndGround(geometry) {
-      geometry.computeVertexNormals();
+    function centerAndGroundObject(object) {
+      object.position.set(0, 0, 0);
+      object.rotation.set(0, 0, 0);
+      object.scale.set(1, 1, 1);
+      object.updateMatrixWorld(true);
 
-      const pos = geometry.attributes.position;
-      const count = pos.count / 3;
-      const buckets = {};
-
-      for (let i = 0; i < count; i++) {
-        const vA = new THREE.Vector3(pos.getX(i * 3), pos.getY(i * 3), pos.getZ(i * 3));
-        const vB = new THREE.Vector3(pos.getX(i * 3 + 1), pos.getY(i * 3 + 1), pos.getZ(i * 3 + 1));
-        const vC = new THREE.Vector3(pos.getX(i * 3 + 2), pos.getY(i * 3 + 2), pos.getZ(i * 3 + 2));
-
-        const cb = new THREE.Vector3().subVectors(vC, vB);
-        const ab = new THREE.Vector3().subVectors(vA, vB);
-        const faceNormal = new THREE.Vector3().crossVectors(cb, ab);
-        const area = faceNormal.length() * 0.5;
-
-        if (area < 0.0001) continue;
-        faceNormal.normalize();
-
-        const key = `${Math.round(faceNormal.x * 10)},${Math.round(faceNormal.y * 10)},${Math.round(faceNormal.z * 10)}`;
-        if (!buckets[key]) {
-          buckets[key] = { normal: faceNormal.clone(), area: 0 };
-        }
-        buckets[key].area += area;
-      }
-
-      let maxArea = 0;
-      let bestNormal = new THREE.Vector3(0, 0, 1);
-
-      for (const key in buckets) {
-        if (buckets[key].area > maxArea) {
-          maxArea = buckets[key].area;
-          bestNormal = buckets[key].normal;
-        }
-      }
-
-      const targetNormal = new THREE.Vector3(0, 0, -1);
-      const rotationQuaternion = new THREE.Quaternion().setFromUnitVectors(bestNormal, targetNormal);
-      geometry.applyQuaternion(rotationQuaternion);
-
-      geometry.computeBoundingBox();
-      const bbox = geometry.boundingBox;
+      const box = new THREE.Box3().setFromObject(object);
       const center = new THREE.Vector3();
-      bbox.getCenter(center);
+      box.getCenter(center);
 
-      geometry.translate(
-        (BED_SIZE_X / 2) - center.x,
-        (BED_SIZE_Y / 2) - center.y,
-        -bbox.min.z
-      );
+      const offsetX = (BED_SIZE_X / 2) - center.x;
+      const offsetY = (BED_SIZE_Y / 2) - center.y;
+      const offsetZ = -box.min.z;
+
+      object.position.set(offsetX, offsetY, offsetZ);
+      object.updateMatrixWorld(true);
+
+      const updatedBox = new THREE.Box3().setFromObject(object);
+      const height = updatedBox.max.z - updatedBox.min.z;
+      controls.target.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, height / 2);
     }
 
     function calculateVolume(geometry) {
+      if (!geometry || !geometry.attributes.position) return 0;
       let volume = 0;
       const pos = geometry.attributes.position;
       const totalTriangles = pos.count / 3;
@@ -697,58 +725,139 @@
       return Math.abs(volume);
     }
 
-    function updateInfo(geometry, fileName) {
-      geometry.computeBoundingBox();
-      const bbox = geometry.boundingBox;
+    function updateInfo(object, fileName, fileExt) {
+      const box = new THREE.Box3().setFromObject(object);
+      const dx = (box.max.x - box.min.x).toFixed(2);
+      const dy = (box.max.y - box.min.y).toFixed(2);
+      const dz = (box.max.z - box.min.z).toFixed(2);
 
-      const dx = (bbox.max.x - bbox.min.x).toFixed(2);
-      const dy = (bbox.max.y - bbox.min.y).toFixed(2);
-      const dz = (bbox.max.z - bbox.min.z).toFixed(2);
-
-      const triangles = geometry.attributes.position.count / 3;
-      const volume = calculateVolume(geometry).toFixed(2);
+      const typeMap = {
+        'stl': 'STL (Malla Poligonal)',
+        'obj': 'OBJ (Geometría 3D)',
+        'gcode': 'G-Code (Trayectoria CNC/3D)'
+      };
 
       document.getElementById('info-name').innerText = fileName;
+      document.getElementById('info-type').innerText = typeMap[fileExt] || fileExt.toUpperCase();
       document.getElementById('info-size').innerText = `${dx} × ${dy} × ${dz} mm`;
-      document.getElementById('info-volume').innerText = `${volume} mm³`;
-      document.getElementById('info-triangles').innerText = triangles.toLocaleString();
+      document.getElementById('info-z-ground').innerText = '0.00 mm (Alineado)';
+
+      if (fileExt === 'gcode') {
+        document.getElementById('info-volume').innerText = 'N/A (G-Code)';
+        document.getElementById('info-triangles').innerText = 'N/A (Líneas Vectoriales)';
+        return;
+      }
+
+      let totalTriangles = 0;
+      let totalVolume = 0;
+
+      object.traverse((child) => {
+        if (child.isMesh && child.geometry) {
+          const pos = child.geometry.attributes.position;
+          if (pos) {
+            totalTriangles += child.geometry.index ? child.geometry.index.count / 3 : pos.count / 3;
+            totalVolume += calculateVolume(child.geometry);
+          }
+        }
+      });
+
+      document.getElementById('info-volume').innerText = totalVolume > 0 ? `${totalVolume.toFixed(2)} mm³` : 'N/A';
+      document.getElementById('info-triangles').innerText = totalTriangles.toLocaleString();
+    }
+
+    function removeCurrentObject() {
+      if (currentObject) {
+        scene.remove(currentObject);
+        currentObject.traverse((child) => {
+          if (child.geometry) child.geometry.dispose();
+          if (child.material) {
+            if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+            else child.material.dispose();
+          }
+        });
+        currentObject = null;
+      }
     }
 
     function processFile(file) {
-      if (!file || !file.name.toLowerCase().endsWith('.stl')) {
-        alert('Selecciona un archivo .stl válido');
+      if (!file) return;
+
+      const fileName = file.name;
+      const ext = fileName.split('.').pop().toLowerCase();
+
+      if (!['stl', 'obj', 'gcode'].includes(ext)) {
+        alert('Formato no soportado. Por favor use archivos .stl, .obj o .gcode');
         return;
       }
 
       const reader = new FileReader();
-      reader.onload = function (e) {
-        try {
-          const geometry = parseSTL(e.target.result);
 
-          if (currentMesh) {
-            scene.remove(currentMesh);
-            currentMesh.geometry.dispose();
-            currentMesh.material.dispose();
+      if (ext === 'stl') {
+        reader.onload = function (e) {
+          try {
+            removeCurrentObject();
+            const geometry = parseSTLEmbedded(e.target.result);
+            const material = new THREE.MeshStandardMaterial({
+              color: MAINSAIL_ORANGE,
+              roughness: 0.35,
+              metalness: 0.1,
+              side: THREE.DoubleSide
+            });
+
+            currentObject = new THREE.Mesh(geometry, material);
+            scene.add(currentObject);
+            centerAndGroundObject(currentObject);
+            updateInfo(currentObject, fileName, 'stl');
+          } catch (err) {
+            console.error(err);
+            alert('Error al procesar STL: ' + err.message);
           }
+        };
+        reader.readAsArrayBuffer(file);
+      } else if (ext === 'obj') {
+        reader.onload = function (e) {
+          try {
+            removeCurrentObject();
+            const loader = new THREE.OBJLoader();
+            currentObject = loader.parse(e.target.result);
 
-          autoOrientAndGround(geometry);
+            currentObject.traverse((child) => {
+              if (child.isMesh) {
+                child.material = new THREE.MeshStandardMaterial({
+                  color: MAINSAIL_ORANGE,
+                  roughness: 0.35,
+                  metalness: 0.1,
+                  side: THREE.DoubleSide
+                });
+              }
+            });
 
-          const material = new THREE.MeshPhongMaterial({
-            color: 0xe05e1b,
-            specular: 0x333333,
-            shininess: 90
-          });
+            scene.add(currentObject);
+            centerAndGroundObject(currentObject);
+            updateInfo(currentObject, fileName, 'obj');
+          } catch (err) {
+            console.error(err);
+            alert('Error al procesar OBJ: ' + err.message);
+          }
+        };
+        reader.readAsText(file);
+      } else if (ext === 'gcode') {
+        reader.onload = function (e) {
+          try {
+            removeCurrentObject();
+            const loader = new THREE.GCodeLoader();
+            currentObject = loader.parse(e.target.result);
 
-          currentMesh = new THREE.Mesh(geometry, material);
-          scene.add(currentMesh);
-
-          updateInfo(geometry, file.name);
-        } catch (err) {
-          console.error(err);
-          alert('Error al leer el archivo STL.');
-        }
-      };
-      reader.readAsArrayBuffer(file);
+            scene.add(currentObject);
+            centerAndGroundObject(currentObject);
+            updateInfo(currentObject, fileName, 'gcode');
+          } catch (err) {
+            console.error(err);
+            alert('Error al procesar G-code: ' + err.message);
+          }
+        };
+        reader.readAsText(file);
+      }
     }
 
     function setupFileHandlers() {
@@ -792,20 +901,39 @@
 
     function animate() {
       requestAnimationFrame(animate);
+
+      if (isAnimatingCamera) {
+        animProgress += 0.08;
+        if (animProgress >= 1) {
+          animProgress = 1;
+          isAnimatingCamera = false;
+        }
+        const t = animProgress * animProgress * (3 - 2 * animProgress);
+        camera.position.lerpVectors(animStartPos, animEndPos, t);
+        camera.lookAt(controls.target);
+      }
+
       controls.update();
 
-      // Sincronizar inclinación del cubo con la cámara principal
-      cubeCamera.position.copy(camera.position).sub(controls.target).setLength(4.8);
+      cubeCamera.position.copy(camera.position).sub(controls.target).setLength(10);
       cubeCamera.lookAt(0, 0, 0);
 
       renderer.render(scene, camera);
       cubeRenderer.render(cubeScene, cubeCamera);
     }
 
+    // Manejo adaptativo del cambio de tamaño de pantalla
     window.addEventListener('resize', () => {
-      camera.aspect = container.clientWidth / container.clientHeight;
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(width, height);
+
+      const cubeWidth = cubeWrapper.clientWidth;
+      const cubeHeight = cubeWrapper.clientHeight;
+      cubeRenderer.setSize(cubeWidth, cubeHeight);
     });
 
     init();
