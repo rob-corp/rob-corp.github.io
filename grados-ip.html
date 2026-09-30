@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grados de protección IP</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            navyBg: '#0b132b',
+            navyDark: '#0f172a',
+            navyCard: '#132042',
+            navyCardHeader: '#1c2d54',
+            navyBorder: '#1e3a8a',
+            cyanAccent: '#00f2fe',
+            cyanGlow: '#38bdf8',
+            blueAccent: '#3b82f6',
+            blueBright: '#60a5fa',
+            slateText: '#94a3b8'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Consolas', 'Monaco', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Custom CSS for strict focus outline removal & interaction cleanup -->
+  <style>
+    *, *::before, *::after,
+    a, a:hover, a:focus, a:active, a:visited,
+    button, button:hover, button:focus, button:active,
+    .no-outline, .no-outline:focus, .no-outline:active {
+      outline: none !important;
+      box-shadow: none !important;
+      -webkit-tap-highlight-color: transparent !important;
+      -webkit-touch-callout: none !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+
+    /* Page-level custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b132b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e3a8a;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #38bdf8;
+    }
+  </style>
+</head>
+<body class="bg-[#0b132b] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#38bdf8] selection:text-slate-950">
+
+  <!-- Header: Clean link to index.html with no focus frame or interaction box -->
+  <header class="bg-[#0f172a] border-b border-[#1e3a8a] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-blue-950/40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Logo + Title encapsulated in <a> pointing to index.html -->
+      <a href="index.html" class="no-outline inline-flex items-center gap-3.5 group cursor-pointer decoration-0">
+        <!-- SVG Technical Shield Logo in Electric Cyan -->
+        <div class="w-10 h-10 flex items-center justify-center bg-[#0b132b] border border-[#38bdf8]/60 rounded-xl p-2 transition-colors group-hover:border-[#00f2fe]">
+          <svg class="w-full h-full text-[#38bdf8] group-hover:text-[#00f2fe] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" class="fill-[#38bdf8]/15" />
+            <path d="M12 8v8M8 12h8" stroke="#00f2fe" stroke-width="1.8" />
+          </svg>
+        </div>
+
+        <!-- Clean Title with Cyan hover effect -->
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#38bdf8] transition-colors">
+          Grados de protección IP
+        </h1>
+      </a>
+
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 flex flex-col gap-6">
+
+    <!-- Section Navigation Buttons (Only 2 Main Tabs) -->
+    <nav class="flex flex-wrap gap-3 border-b border-[#1e3a8a] pb-3" id="main-nav">
+      
+      <button onclick="switchSection('sec1')" id="nav-btn-sec1" class="no-outline flex items-center gap-2.5 px-5 py-3 rounded-lg font-bold text-sm transition-all bg-[#38bdf8] text-slate-950">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        1. Fundamentos e Índices (IP XY)
+      </button>
+
+      <button onclick="switchSection('sec2')" id="nav-btn-sec2" class="no-outline flex items-center gap-2.5 px-5 py-3 rounded-lg font-medium text-sm text-slate-300 hover:text-white hover:bg-[#132042] transition-all border border-[#1e3a8a]">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+        2. Matriz y Letras (A-D / H-K)
+      </button>
+
+    </nav>
+
+    <!-- SECTION 1: FUNDAMENTOS Y NIVELES (IP XY) -->
+    <section id="section-1" class="flex flex-col gap-6">
+      
+      <!-- Card: Grado de Protección IP y Estructura de la Nomenclatura -->
+      <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
+        
+        <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-[#00f2fe]"></span>
+            Grado de Protección IP y Estructura de la Nomenclatura
+          </h2>
+        </div>
+
+        <div class="p-6 flex flex-col gap-6 text-sm text-slate-200 leading-relaxed">
+          
+          <p class="text-slate-200 text-sm leading-relaxed">
+            El grado de protección IP (Ingress Protection) especifica el nivel de estanqueidad de los envolventes de equipamiento eléctrico y electrónico contra la entrada de objetos sólidos y líquidos, definido según la norma IEC 60529.
+          </p>
+
+          <!-- Structure Breakdown -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-1.5">
+              <span class="text-2xl font-mono font-bold text-[#00f2fe]">IP</span>
+              <span class="text-xs font-mono font-semibold text-[#38bdf8] uppercase">Prefijo Estándar</span>
+              <p class="text-xs text-slate-300">
+                Corresponde al acrónimo en inglés <em class="text-slate-100">Ingress Protection</em> (Protección contra la Penetración).
+              </p>
+            </div>
+
+            <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-1.5">
+              <span class="text-2xl font-mono font-bold text-[#60a5fa]">X (Primer Dígito)</span>
+              <span class="text-xs font-mono font-semibold text-[#60a5fa] uppercase">Protección Sólidos (0 a 6)</span>
+              <p class="text-xs text-slate-300">
+                Especifica el grado de protección del equipamiento contra objetos sólidos, polvo en suspensión y contactos accidentales de personas.
+              </p>
+            </div>
+
+            <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-1.5">
+              <span class="text-2xl font-mono font-bold text-[#38bdf8]">Y (Segundo Dígito)</span>
+              <span class="text-xs font-mono font-semibold text-[#38bdf8] uppercase">Protección Líquidos (0 a 9K)</span>
+              <p class="text-xs text-slate-300">
+                Especifica la hermeticidad contra la entrada perjudicial de agua en diversas formas (goteo, lluvia, chorros o inmersión).
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Card: Primer Dígito (X) - Sólidos y Polvo -->
+      <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
+        
+        <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
+          <h3 class="text-base font-bold text-[#60a5fa] flex items-center gap-2">
+            Primer Dígito (X): Protección contra Objetos Sólidos y Polvo
+          </h3>
+        </div>
+
+        <div class="p-4 sm:p-6 flex flex-col gap-3">
+          
+          <!-- Level 0 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">0</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Sin protección</span>
+                <span class="text-xs font-mono text-slate-400 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Sin ensayo</span>
+              </div>
+              <p class="text-xs text-slate-300">Ninguna protección especial contra el contacto directo o la penetración de objetos sólidos.</p>
+            </div>
+          </div>
+
+          <!-- Level 1 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">1</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Objetos grandes (&gt; 50 mm)</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Esfera Ø 50 mm (50 N)</span>
+              </div>
+              <p class="text-xs text-slate-300">Protección contra el contacto accidental con superficies grandes del cuerpo humano, como el dorso de la mano.</p>
+            </div>
+          </div>
+
+          <!-- Level 2 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">2</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Objetos medianos (&gt; 12.5 mm)</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Dedo de prueba Ø 12 mm x 80 mm</span>
+              </div>
+              <p class="text-xs text-slate-300">Protección contra la inserción de dedos u objetos de dimensiones similares, manteniendo distancia de partes bajo tensión.</p>
+            </div>
+          </div>
+
+          <!-- Level 3 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">3</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Objetos pequeños (&gt; 2.5 mm)</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Varilla de acero Ø 2.5 mm (3 N)</span>
+              </div>
+              <p class="text-xs text-slate-300">Protección contra el acceso de herramientas manuales delgadas, destornilladores, cables gruesos y objetos similares.</p>
+            </div>
+          </div>
+
+          <!-- Level 4 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">4</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Granulares / Alambres (&gt; 1.0 mm)</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Alambre rígido Ø 1.0 mm (1 N)</span>
+              </div>
+              <p class="text-xs text-slate-300">Protección contra la mayoría de alambres finos, tornillos delgados, hilos, grapas e insectos pequeños.</p>
+            </div>
+          </div>
+
+          <!-- Level 5 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#38bdf8]/50 flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">5</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-[#38bdf8] text-sm">Protegido contra el polvo</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Cámara de talco en depresión</span>
+              </div>
+              <p class="text-xs text-slate-300">La entrada de polvo no se evita por completo, pero la cantidad que penetra no interfiere con el correcto funcionamiento ni la seguridad del equipo.</p>
+            </div>
+          </div>
+
+          <!-- Level 6 -->
+          <div class="p-4 bg-[#0f172a] border border-[#00f2fe]/40 rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#00f2fe] flex items-center justify-center font-mono font-bold text-xl text-[#00f2fe]">6</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-[#00f2fe] text-sm">Totalmente estanco al polvo (Dust-tight)</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Cámara de vacío continuo (8 horas)</span>
+              </div>
+              <p class="text-xs text-slate-300">Sellado hermético total. Imposibilidad absoluta de entrada de partículas de polvo bajo condiciones de vacío de ensayo.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Card: Segundo Dígito (Y) - Agua y Líquidos -->
+      <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
+        
+        <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
+          <h3 class="text-base font-bold text-[#38bdf8] flex items-center gap-2">
+            Segundo Dígito (Y): Protección contra Agua y Líquidos
+          </h3>
+        </div>
+
+        <div class="p-4 sm:p-6 flex flex-col gap-3">
+          
+          <!-- Level 0 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">0</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Sin protección</span>
+                <span class="text-xs font-mono text-slate-400 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Sin ensayo</span>
+              </div>
+              <p class="text-xs text-slate-300">Sin ninguna protección frente a la humedad o penetración de agua.</p>
+            </div>
+          </div>
+
+          <!-- Level 1 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">1</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Goteo vertical</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">1 mm/min (10 min)</span>
+              </div>
+              <p class="text-xs text-slate-300">Goteo de agua cayendo en dirección vertical directamente sobre la cubierta sin provocar efectos perjudiciales.</p>
+            </div>
+          </div>
+
+          <!-- Level 2 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">2</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Goteo inclinado (hasta 15°)</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">3 mm/min en 4 posiciones</span>
+              </div>
+              <p class="text-xs text-slate-300">Goteo de agua cayendo cuando la estructura se encuentra inclinada hasta 15° respecto a su posición normal.</p>
+            </div>
+          </div>
+
+          <!-- Level 3 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">3</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Agua pulverizada / Lluvia fina (±60°)</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Tubo oscilante (10 L/min)</span>
+              </div>
+              <p class="text-xs text-slate-300">Agua pulverizada cayendo en un ángulo de hasta 60° a ambos lados de la vertical durante 10 minutos.</p>
+            </div>
+          </div>
+
+          <!-- Level 4 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">4</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Salpicaduras en 360°</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Tubo oscilante ±180°</span>
+              </div>
+              <p class="text-xs text-slate-300">Agua salpicada contra la envolvente desde cualquier dirección e inclinación sin efectos perjudiciales.</p>
+            </div>
+          </div>
+
+          <!-- Level 5 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">5</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Chorros de agua a baja presión</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Boquilla Ø 6.3 mm (12.5 L/min)</span>
+              </div>
+              <p class="text-xs text-slate-300">Chorros de agua proyectados por boquilla desde cualquier ángulo a una distancia de 2.5m a 3m durante 3 min.</p>
+            </div>
+          </div>
+
+          <!-- Level 6 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">6</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm">Chorros potentes / Mar encrespada</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Boquilla Ø 12.5 mm (100 L/min)</span>
+              </div>
+              <p class="text-xs text-slate-300">Chorros potentes de agua equivalentes a oleaje directo de mar o manguera de alta presión industrial.</p>
+            </div>
+          </div>
+
+          <!-- Level 7 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#00f2fe]/50 flex items-center justify-center font-mono font-bold text-xl text-[#00f2fe]">7</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-[#00f2fe] text-sm">Inmersión temporal (hasta 1 m / 30 min)</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Tanque a 1m de profundidad</span>
+              </div>
+              <p class="text-xs text-slate-300">Sumergimiento estandarizado en agua. No ingresa agua en cantidad dañina tras 30 minutos a 1 metro de profundidad.</p>
+            </div>
+          </div>
+
+          <!-- Level 8 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#00f2fe]/50 flex items-center justify-center font-mono font-bold text-xl text-[#00f2fe]">8</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-[#00f2fe] text-sm">Inmersión continua y prolongada</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Sumergimiento bajo presión</span>
+              </div>
+              <p class="text-xs text-slate-300">Apto para sumergimiento continuo prolongado bajo las condiciones y profundidad especificadas por el fabricante (ej. 3m, 5m).</p>
+            </div>
+          </div>
+
+          <!-- Level 9K -->
+          <div class="p-4 bg-[#0f172a] border border-[#00f2fe]/50 rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+            <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#00f2fe] flex items-center justify-center font-mono font-bold text-xl text-[#00f2fe]">9K</div>
+            <div class="flex-grow flex flex-col gap-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-[#00f2fe] text-sm">Lavado a alta presión y alta temperatura</span>
+                <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">80-100 bar a 80 °C</span>
+              </div>
+              <p class="text-xs text-slate-300">Protección contra chorros de agua a alta presión (14-16 L/min) y temperatura extrema (80 °C) en ángulos de 0°, 30°, 60° y 90°.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- SECTION 2: MATRIZ Y LETRAS ADICIONALES -->
+    <section id="section-2" class="hidden flex-col gap-6">
+      
+      <!-- Card: Matriz de Combinaciones y Letras Adicionales -->
+      <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
+        
+        <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-[#00f2fe]"></span>
+            Matriz de Combinaciones y Letras Adicionales
+          </h2>
+        </div>
+
+        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- IP20 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+              <span class="text-xl font-mono font-bold text-white">IP20</span>
+              <span class="px-2 py-0.5 bg-slate-800 text-slate-300 font-mono text-[10px] rounded border border-slate-700">Uso Interior</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>Protección:</strong> Objetos &gt; 12.5 mm. Sin protección contra agua.<br>
+              <strong>Usos:</strong> Tableros eléctricos bajo techo, llaves térmicas, tomas de corriente en oficinas e iluminación interior.
+            </p>
+          </div>
+
+          <!-- IP44 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+              <span class="text-xl font-mono font-bold text-[#60a5fa]">IP44</span>
+              <span class="px-2 py-0.5 bg-[#1e3a8a]/40 text-[#60a5fa] font-mono text-[10px] rounded border border-[#1e3a8a]">Intemperie Leve</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>Protección:</strong> Objetos &gt; 1.0 mm y salpicaduras en 360°.<br>
+              <strong>Usos:</strong> Luminarias exteriores resguardadas, tomas de baño y pequeños motores.
+            </p>
+          </div>
+
+          <!-- IP54 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+              <span class="text-xl font-mono font-bold text-[#60a5fa]">IP54</span>
+              <span class="px-2 py-0.5 bg-[#1e3a8a]/40 text-[#60a5fa] font-mono text-[10px] rounded border border-[#1e3a8a]">Industrial Estándar</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>Protección:</strong> Protegido contra polvo y salpicaduras directas.<br>
+              <strong>Usos:</strong> Gabinetes de máquinas herramientas, armarios de automatización y variadores.
+            </p>
+          </div>
+
+          <!-- IP65 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+              <span class="text-xl font-mono font-bold text-[#38bdf8]">IP65</span>
+              <span class="px-2 py-0.5 bg-[#38bdf8]/10 text-[#38bdf8] font-mono text-[10px] rounded border border-[#38bdf8]/30">Chorro Directo</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>Protección:</strong> Estanco al polvo y chorros de manguera estándar.<br>
+              <strong>Usos:</strong> Proyectores LED para exterior, botoneras de taller y cajas de paso.
+            </p>
+          </div>
+
+          <!-- IP66 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+              <span class="text-xl font-mono font-bold text-[#38bdf8]">IP66</span>
+              <span class="px-2 py-0.5 bg-[#38bdf8]/10 text-[#38bdf8] font-mono text-[10px] rounded border border-[#38bdf8]/30">Marino / Oleaje</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>Protección:</strong> Estanco al polvo y chorros potentes a alta presión.<br>
+              <strong>Usos:</strong> Equipos para buques, terminales portuarias y lavaderos industriales.
+            </p>
+          </div>
+
+          <!-- IP67 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+              <span class="text-xl font-mono font-bold text-[#00f2fe]">IP67</span>
+              <span class="px-2 py-0.5 bg-[#00f2fe]/10 text-[#00f2fe] font-mono text-[10px] rounded border border-[#00f2fe]/30">Inmersión Temp.</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>Protección:</strong> Estanco al polvo e inmersión a 1m (30 min).<br>
+              <strong>Usos:</strong> Arquetas subterráneas, instrumentos de campo portátiles y sensores navales.
+            </p>
+          </div>
+
+          <!-- IP68 -->
+          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+              <span class="text-xl font-mono font-bold text-[#00f2fe]">IP68</span>
+              <span class="px-2 py-0.5 bg-[#00f2fe]/10 text-[#00f2fe] font-mono text-[10px] rounded border border-[#00f2fe]/30">Subacuático</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>Protección:</strong> Estanco al polvo e inmersión continua bajo presión.<br>
+              <strong>Usos:</strong> Bombas sumergibles de pozo, focos subacuáticos para piscinas y caudalímetros.
+            </p>
+          </div>
+
+          <!-- IP69K -->
+          <div class="p-4 bg-[#0f172a] border border-[#00f2fe]/50 rounded-xl flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+              <span class="text-xl font-mono font-bold text-[#00f2fe]">IP69K</span>
+              <span class="px-2 py-0.5 bg-[#00f2fe]/20 text-[#00f2fe] font-mono text-[10px] rounded border border-[#00f2fe]/40">Sanitario / Lavado</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>Protección:</strong> Estanco al polvo y desinfección a 80 °C / 100 bar.<br>
+              <strong>Usos:</strong> Industria alimentaria, plantas lácteas, farmacéuticas y camiones recolectores.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Grid for Additional & Supplementary Letters -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Card: Letras Adicionales (Acceso de Personas A, B, C, D) -->
+        <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
+          
+          <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
+            <h3 class="text-base font-bold text-[#38bdf8] flex items-center gap-2">
+              Letras Adicionales: Protección de Personas (A, B, C, D)
+            </h3>
+            <p class="text-xs text-slate-300 mt-1">
+              Se añaden cuando la protección real contra el acceso directo a partes bajo tensión o peligrosas es superior a la indicada por el primer dígito.
+            </p>
+          </div>
+
+          <div class="p-5 flex flex-col gap-3">
+            
+            <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
+              <span class="px-2.5 py-1 bg-[#38bdf8] text-slate-950 font-mono font-bold text-xs rounded shrink-0">A</span>
+              <div class="text-xs text-slate-200">
+                <strong class="text-white block">Protección con el dorso de la mano</strong>
+                Impide el acceso a partes peligrosas con el dorso de la mano (Sonda esférica Ø 50 mm).
+              </div>
+            </div>
+
+            <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
+              <span class="px-2.5 py-1 bg-[#38bdf8] text-slate-950 font-mono font-bold text-xs rounded shrink-0">B</span>
+              <div class="text-xs text-slate-200">
+                <strong class="text-white block">Protección con el dedo de prueba</strong>
+                Impide el acceso a partes peligrosas con el dedo articulado estandarizado (Ø 12 mm x 80 mm).
+              </div>
+            </div>
+
+            <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
+              <span class="px-2.5 py-1 bg-[#38bdf8] text-slate-950 font-mono font-bold text-xs rounded shrink-0">C</span>
+              <div class="text-xs text-slate-200">
+                <strong class="text-white block">Protección con una herramienta</strong>
+                Impide el acceso a partes peligrosas con una herramienta rígida (Varilla Ø 2.5 mm).
+              </div>
+            </div>
+
+            <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
+              <span class="px-2.5 py-1 bg-[#38bdf8] text-slate-950 font-mono font-bold text-xs rounded shrink-0">D</span>
+              <div class="text-xs text-slate-200">
+                <strong class="text-white block">Protección con un alambre</strong>
+                Impide el acceso a partes peligrosas introduciendo un alambre fino (Alambre Ø 1.0 mm).
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Card: Letras Suplementarias (Condiciones del Equipo H, M, S, W, K) -->
+        <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
+          
+          <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
+            <h3 class="text-base font-bold text-[#60a5fa] flex items-center gap-2">
+              Letras Suplementarias: Condiciones del Ensayo (H, M, S, W, K)
+            </h3>
+            <p class="text-xs text-slate-300 mt-1">
+              Aportan información específica sobre el comportamiento o diseño del equipo durante el ensayo.
+            </p>
+          </div>
+
+          <div class="p-5 flex flex-col gap-3">
+            
+            <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
+              <span class="px-2.5 py-1 bg-[#60a5fa] text-slate-950 font-mono font-bold text-xs rounded shrink-0">H</span>
+              <div class="text-xs text-slate-200">
+                <strong class="text-white block">Aparatos de Alta Tensión</strong>
+                Indica que el equipo está diseñado para operar en instalaciones de Alta Tensión.
+              </div>
+            </div>
+
+            <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
+              <span class="px-2.5 py-1 bg-[#60a5fa] text-slate-950 font-mono font-bold text-xs rounded shrink-0">M</span>
+              <div class="text-xs text-slate-200">
+                <strong class="text-white block">Probado en movimiento durante el ensayo de agua</strong>
+                Las partes móviles del equipo (ejes, rotores, motores) estuvieron en movimiento activo durante la prueba.
+              </div>
+            </div>
+
+            <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
+              <span class="px-2.5 py-1 bg-[#60a5fa] text-slate-950 font-mono font-bold text-xs rounded shrink-0">S</span>
+              <div class="text-xs text-slate-200">
+                <strong class="text-white block">Probado en reposo / estacionario</strong>
+                Las partes móviles del equipo permanecieron completamente inmóviles durante el ensayo de agua.
+              </div>
+            </div>
+
+            <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
+              <span class="px-2.5 py-1 bg-[#60a5fa] text-slate-950 font-mono font-bold text-xs rounded shrink-0">W</span>
+              <div class="text-xs text-slate-200">
+                <strong class="text-white block">Condiciones meteorológicas especificadas</strong>
+                Apto para uso en condiciones atmosféricas específicas acordadas entre usuario y fabricante.
+              </div>
+            </div>
+
+            <div class="p-3 bg-[#0f172a] border border-[#00f2fe] rounded-lg flex items-start gap-3">
+              <span class="px-2.5 py-1 bg-[#00f2fe] text-slate-950 font-mono font-bold text-xs rounded shrink-0">K</span>
+              <div class="text-xs text-slate-200">
+                <strong class="text-white block">Requisito de protección especial</strong>
+                Resistencia a chorros de agua a presión extrema.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Section Switching Logic -->
+  <script>
+    function switchSection(secId) {
+      const sec1 = document.getElementById("section-1");
+      const sec2 = document.getElementById("section-2");
+      const btn1 = document.getElementById("nav-btn-sec1");
+      const btn2 = document.getElementById("nav-btn-sec2");
+
+      if (secId === 'sec1') {
+        sec1.classList.remove("hidden");
+        sec1.classList.add("flex");
+        sec2.classList.add("hidden");
+        sec2.classList.remove("flex");
+
+        btn1.className = "no-outline flex items-center gap-2.5 px-5 py-3 rounded-lg font-bold text-sm transition-all bg-[#38bdf8] text-slate-950";
+        btn2.className = "no-outline flex items-center gap-2.5 px-5 py-3 rounded-lg font-medium text-sm text-slate-300 hover:text-white hover:bg-[#132042] transition-all border border-[#1e3a8a]";
+      } else {
+        sec2.classList.remove("hidden");
+        sec2.classList.add("flex");
+        sec1.classList.add("hidden");
+        sec1.classList.remove("flex");
+
+        btn2.className = "no-outline flex items-center gap-2.5 px-5 py-3 rounded-lg font-bold text-sm transition-all bg-[#38bdf8] text-slate-950";
+        btn1.className = "no-outline flex items-center gap-2.5 px-5 py-3 rounded-lg font-medium text-sm text-slate-300 hover:text-white hover:bg-[#132042] transition-all border border-[#1e3a8a]";
+      }
+    }
+  </script>
+</body>
+</html>

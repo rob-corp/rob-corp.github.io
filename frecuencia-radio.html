@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es" class="dark h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frecuencias de Radio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#111827',
+                            950: '#030712',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0891b2;
+        }
+        .table-container {
+            scrollbar-width: thin;
+            scrollbar-color: #0891b2 #030712;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 font-sans min-h-full flex flex-col antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+
+    <!-- ENCABEZADO (SIN SUBTÍTULO, ENLACE A index.html) -->
+    <header class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-cyan-500/30 px-4 sm:px-6 lg:px-8 py-3.5 shadow-lg shadow-cyan-950/20">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3.5 group focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded-lg p-1 transition-all">
+                <div class="relative flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-cyan-500/40 group-hover:border-cyan-400 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all">
+                    <img src="iconos/omega.svg" 
+                         alt="Omega Logo" 
+                         class="w-6 h-6 object-contain filter drop-shadow-[0_0_3px_rgba(6,182,212,0.5)]" 
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2322d3ee\' stroke-width=\'2.2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M3 20h4.5a.5.5 0 0 0 .5-.5v-.25a3.75 3.75 0 0 1 7.5 0v.25a.5.5 0 0 0 .5.5H21\'/><path d=\'M8 19.25a7.5 7.5 0 1 1 8 0\'/></svg>';">
+                </div>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-100 group-hover:text-cyan-400 transition-colors">
+                    Frecuencias de Radio
+                </h1>
+            </a>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL: UNA SOLA SECCIÓN VERTICAL FLUIDA CON 4 TABLAS -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-8">
+
+        <!-- TABLA 1: ESPECTRO DE RADIO (ITU) -->
+        <section class="flex flex-col gap-2.5">
+            <h2 class="text-xs font-mono font-semibold tracking-wider text-cyan-400 uppercase px-1">
+                Espectro de Radio (ITU)
+            </h2>
+            <div class="table-container overflow-x-auto rounded-xl border border-cyan-500/20 bg-slate-900/80 shadow-2xl">
+                <table class="w-full text-left text-sm border-collapse min-w-[750px]">
+                    <thead class="bg-slate-950/90 text-cyan-400 font-mono text-xs uppercase border-b border-cyan-500/30">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 font-semibold w-24">Símbolo</th>
+                            <th scope="col" class="py-3 px-4 font-semibold w-24">Nº ITU</th>
+                            <th scope="col" class="py-3 px-4 font-semibold w-52">Rango de Frecuencia</th>
+                            <th scope="col" class="py-3 px-4 font-semibold w-48">Longitud de Onda</th>
+                            <th scope="col" class="py-3 px-4 font-semibold">Usos</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 font-sans">
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">ELF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">4</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">3 Hz – 30 Hz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">100,000 km – 10,000 km</td>
+                            <td class="py-2.5 px-4 text-slate-300">Comunicación submarina</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">SLF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">5</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">30 Hz – 300 Hz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">10,000 km – 1,000 km</td>
+                            <td class="py-2.5 px-4 text-slate-300">Comunicación con submarinos</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">ULF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">6</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">300 Hz – 3000 Hz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">1,000 km – 100 km</td>
+                            <td class="py-2.5 px-4 text-slate-300">Minería, comunicación a través de la tierra</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">VLF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">7</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">3 kHz – 30 kHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">100 km – 10 km</td>
+                            <td class="py-2.5 px-4 text-slate-300">Navegación marítima, geofísica</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">LF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">8</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">30 kHz – 300 kHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">10 km – 1 km</td>
+                            <td class="py-2.5 px-4 text-slate-300">Radioayudas, radiodifusión AM OL</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">MF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">9</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">300 kHz – 3000 kHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">1,000 m – 100 m</td>
+                            <td class="py-2.5 px-4 text-slate-300">Radiodifusión AM OM, marina</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">HF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">10</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">3 MHz – 30 MHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">100 m – 10 m</td>
+                            <td class="py-2.5 px-4 text-slate-300">Radio de onda corta, radioaficionados, aviación transoceánica</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">VHF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">11</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">30 MHz – 300 MHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">10 m – 1 m</td>
+                            <td class="py-2.5 px-4 text-slate-300">Radio FM, TV, control de tráfico aéreo, radioaficionados</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">UHF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">12</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">300 MHz – 3000 MHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">1 m – 10 cm</td>
+                            <td class="py-2.5 px-4 text-slate-300">TV digital, telefonía móvil, Wi-Fi, GPS, Bluetooth</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">SHF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">13</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">3 GHz – 30 GHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">10 cm – 1 cm</td>
+                            <td class="py-2.5 px-4 text-slate-300">Radar, enlaces de microondas, Wi-Fi 5 GHz, satélites</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">EHF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">14</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">30 GHz – 300 GHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">10 mm – 1 mm</td>
+                            <td class="py-2.5 px-4 text-slate-300">Radioastronomía, enlaces punto a punto, escáneres de seguridad</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">THF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-400 font-semibold">15</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">300 GHz – 3000 GHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">1 mm – 0.1 mm</td>
+                            <td class="py-2.5 px-4 text-slate-300">Espectroscopia terahertz, imágenes médicas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TABLA 2: BANDAS IEEE -->
+        <section class="flex flex-col gap-2.5">
+            <h2 class="text-xs font-mono font-semibold tracking-wider text-cyan-400 uppercase px-1">
+                Bandas IEEE
+            </h2>
+            <div class="table-container overflow-x-auto rounded-xl border border-cyan-500/20 bg-slate-900/80 shadow-2xl">
+                <table class="w-full text-left text-sm border-collapse min-w-[500px]">
+                    <thead class="bg-slate-950/90 text-cyan-400 font-mono text-xs uppercase border-b border-cyan-500/30">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 font-semibold w-48">Símbolo / Letra de Banda</th>
+                            <th scope="col" class="py-3 px-4 font-semibold">Rango de Frecuencia</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 font-sans">
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">HF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">3 MHz – 30 MHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">VHF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">30 MHz – 300 MHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">UHF</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">300 MHz – 1000 MHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda L</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">1 GHz – 2 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda S</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">2 GHz – 4 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda C</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">4 GHz – 8 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda X</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">8 GHz – 12 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda Ku</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">12 GHz – 18 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda K</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">18 GHz – 27 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda Ka</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">27 GHz – 40 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda V</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">40 GHz – 75 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda W</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">75 GHz – 110 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda mm / mmWave</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">110 GHz – 300 GHz</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TABLA 3: BANDAS EU / NATO / US ECM -->
+        <section class="flex flex-col gap-2.5">
+            <h2 class="text-xs font-mono font-semibold tracking-wider text-cyan-400 uppercase px-1">
+                Bandas EU / NATO / US ECM
+            </h2>
+            <div class="table-container overflow-x-auto rounded-xl border border-cyan-500/20 bg-slate-900/80 shadow-2xl">
+                <table class="w-full text-left text-sm border-collapse min-w-[500px]">
+                    <thead class="bg-slate-950/90 text-cyan-400 font-mono text-xs uppercase border-b border-cyan-500/30">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 font-semibold w-48">Símbolo / Letra de Banda</th>
+                            <th scope="col" class="py-3 px-4 font-semibold">Rango de Frecuencia</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 font-sans">
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda A</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">0 – 250 MHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda B</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">250 – 500 MHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda C</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">500 – 1000 MHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda D</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">1 – 2 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda E</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">2 – 3 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda F</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">3 – 4 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda G</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">4 – 6 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda H</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">6 – 8 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda I</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">8 – 10 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda J</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">10 – 20 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda K</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">20 – 40 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda L</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">40 – 60 GHz</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">Banda M</td>
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">60 – 100 GHz</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TABLA 4: BANDAS ISM -->
+        <section class="flex flex-col gap-2.5 mb-6">
+            <h2 class="text-xs font-mono font-semibold tracking-wider text-cyan-400 uppercase px-1">
+                Bandas ISM
+            </h2>
+            <div class="table-container overflow-x-auto rounded-xl border border-cyan-500/20 bg-slate-900/80 shadow-2xl">
+                <table class="w-full text-left text-sm border-collapse min-w-[750px]">
+                    <thead class="bg-slate-950/90 text-cyan-400 font-mono text-xs uppercase border-b border-cyan-500/30">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 font-semibold w-56">Rango de Frecuencia</th>
+                            <th scope="col" class="py-3 px-4 font-semibold w-36">Ancho de Banda</th>
+                            <th scope="col" class="py-3 px-4 font-semibold w-40">Frecuencia Central</th>
+                            <th scope="col" class="py-3 px-4 font-semibold">Accesibilidad / Cobertura</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 font-sans">
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">6.765 MHz – 6.795 MHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">30 kHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">6.78 MHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Sujeto a aceptación local</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">13.553 MHz – 13.567 MHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">14 kHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">13.56 MHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Mundial / NFC, RFID</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">26.957 MHz – 27.283 MHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">326 kHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">27.12 MHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Mundial / Radio CB, CB27</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">40.660 MHz – 40.700 MHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">40 kHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">40.68 MHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Mundial / Telemetría</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">433.050 MHz – 434.790 MHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">1.74 MHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">433.92 MHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Región 1 ITU / LPD433, Domótica</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">902.000 MHz – 928.000 MHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">26 MHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">915 MHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Región 2 ITU / Américas</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">2.400 GHz – 2.500 GHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">100 MHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">2.45 GHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Mundial / Wi-Fi, Bluetooth, Microondas</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">5.725 GHz – 5.875 GHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">150 MHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">5.80 GHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Mundial / Wi-Fi 5 GHz, Drones</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">24.000 GHz – 24.250 GHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">250 MHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">24.125 GHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Mundial / Radares de velocidad, sensores</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">61.000 GHz – 61.500 GHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">500 MHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">61.25 GHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Sujeto a aceptación local</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">122.000 GHz – 123.000 GHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">1 GHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">122.50 GHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Sujeto a aceptación local</td>
+                        </tr>
+                        <tr class="hover:bg-cyan-950/30 transition-colors">
+                            <td class="py-2.5 px-4 font-mono text-cyan-300">244.000 GHz – 246.000 GHz</td>
+                            <td class="py-2.5 px-4 font-mono text-slate-300">2 GHz</td>
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">245.00 GHz</td>
+                            <td class="py-2.5 px-4 text-slate-300">Sujeto a aceptación local</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>
