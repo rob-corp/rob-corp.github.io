@@ -1,1152 +1,1252 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cuenta Gotas</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#090d16">
+<title>Cuenta Gotas</title>
+<link rel="icon" type="image/svg+xml" href="iconos/cuentagotas.svg" sizes="any">
 
-    <link rel="icon" type="image/svg+xml" href="iconos/cuentagotas.svg" sizes="any">    
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- CSS Frameworks & Icon Libraries -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        slate: {
-                            850: '#131e2e',
-                            950: '#090d16'
-                        },
-                        cyan: {
-                            500: '#06b6d4',
-                            600: '#0891b2'
-                        }
-                    }
-                }
-            }
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          slate: { 850: '#131e2e', 950: '#090d16' },
+          cyan: { 500: '#06b6d4', 600: '#0891b2' },
         }
-    </script>
-    
-    <style>
-        *, *::before, *::after,
-        a, button, input, select, textarea {
-            outline: none !important;
-            -webkit-tap-highlight-color: transparent !important;
-        }
-        *:focus, *:focus-visible, *:active,
-        button:focus, button:focus-visible, button:active,
-        a:focus, a:focus-visible, a:active,
-        input:focus, input:focus-visible, input:active,
-        textarea:focus, textarea:focus-visible, textarea:active {
-            outline: none !important;
-            outline-style: none !important;
-            box-shadow: none !important;
-            -webkit-tap-highlight-color: transparent !important;
-        }
+      }
+    }
+  };
+</script>
 
-        /* Modern Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #090d16;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        
-        /* Canvas Checkerboard background for transparent image preview */
-        .checkerboard-pattern {
-            background-color: #0f172a;
-            background-image: 
-                linear-gradient(45deg, #1e293b 25%, transparent 25%), 
-                linear-gradient(-45deg, #1e293b 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #1e293b 75%), 
-                linear-gradient(-45deg, transparent 75%, #1e293b 75%);
-            background-size: 16px 16px;
-            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
-        }
+<style>
+  *, *::before, *::after {
+    -webkit-tap-highlight-color: transparent;
+  }
 
-        /* Prevent unwanted page drag/scroll while operating touch canvas on mobile */
-        .touch-canvas-active {
-            touch-action: none;
-        }
+  html { -webkit-text-size-adjust: 100%; }
 
-        /* Toast animation popups */
-        .toast-popup {
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .toast-hidden {
-            transform: translateY(1rem) scale(0.95);
-            opacity: 0;
-            pointer-events: none;
-        }
-        .toast-visible {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #090d16; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        /* Uniform height utility for main action controls */
-        .btn-action-uniform {
-            height: 44px;
-            min-height: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+  /* Accesibilidad: foco visible SOLO cuando navegas por teclado */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid #06b6d4 !important;
+    outline-offset: 2px !important;
+    border-radius: 6px;
+  }
+
+  .checkerboard-pattern {
+    background-color: #0f172a;
+    background-image:
+      linear-gradient(45deg, #1e293b 25%, transparent 25%),
+      linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #1e293b 75%),
+      linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+  }
+
+  .touch-canvas-active { touch-action: none; }
+
+  .toast-popup { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+  .toast-hidden { transform: translateY(1rem) scale(0.95); opacity: 0; pointer-events: none; }
+  .toast-visible { transform: translateY(0) scale(1); opacity: 1; }
+
+  .btn-action-uniform {
+    height: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Utilidad screen-reader only */
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-white flex flex-col">
 
-    <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <!-- LOGO SVG Y TÍTULO CON ENLACE DIRECTO A INDEX.HTML (SIN SUBTÍTULO NI TEXTOS SECUNDARIOS) -->
-            <a href="index.html" class="flex items-center space-x-3 group focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none rounded-xl p-1 transition-all">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/30 group-hover:scale-105 transition-transform duration-200">
-                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m2 22 1-1h3l9-9"/>
-                        <path d="M3 21v-3l9-9"/>
-                        <path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8"/>
-                    </svg>
-                </div>
-                <h1 class="text-xl font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors">
-                    Cuenta Gotas
-                </h1>
-            </a>
+<header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center space-x-3 group rounded-xl p-1 transition-all">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/30 group-hover:scale-105 transition-transform duration-200">
+        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m2 22 1-1h3l9-9"/>
+          <path d="M3 21v-3l9-9"/>
+          <path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8"/>
+        </svg>
+      </div>
+      <h1 class="text-xl font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors">Cuenta Gotas</h1>
+    </a>
 
-            <!-- Status Indicator -->
-            <div class="hidden sm:flex items-center space-x-2 text-xs text-slate-400 bg-slate-950/60 px-3 py-1.5 rounded-full border border-slate-800">
-                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                <span id="header-status-text" class="font-medium text-slate-300">Selector de Color Listo</span>
-            </div>
+    <div class="hidden sm:flex items-center space-x-2 text-xs text-slate-400 bg-slate-950/60 px-3 py-1.5 rounded-full border border-slate-800">
+      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" aria-hidden="true"></span>
+      <span id="header-status-text" class="font-medium text-slate-300">Selector de Color Listo</span>
+    </div>
+  </div>
+</header>
+
+<main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+
+  <section class="lg:col-span-7 xl:col-span-8 flex flex-col space-y-4">
+
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-md">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+
+        <label class="btn-action-uniform cursor-pointer bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 rounded-xl text-xs font-semibold transition-all shadow-md shadow-cyan-600/20 active:scale-95 space-x-2 w-full select-none" tabindex="0">
+          <i class="fa-solid fa-upload text-sm" aria-hidden="true"></i>
+          <span class="truncate">Cargar Imagen</span>
+          <input type="file" id="file-input" accept="image/*" class="sr-only">
+        </label>
+
+        <button id="btn-native-eyedropper" class="btn-action-uniform bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 px-3.5 rounded-xl text-xs font-semibold transition-all space-x-2 w-full shadow-sm active:scale-95" title="Capturar color de cualquier parte de la pantalla">
+          <i class="fa-solid fa-pipette text-cyan-400 text-sm" aria-hidden="true"></i>
+          <span class="truncate">Capturar Pantalla</span>
+        </button>
+
+        <div class="relative w-full">
+          <button id="btn-samples-toggle" class="btn-action-uniform bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 px-3.5 rounded-xl text-xs font-semibold transition-all space-x-1.5 w-full shadow-sm active:scale-95"
+                  aria-haspopup="true" aria-expanded="false" aria-controls="samples-menu">
+            <i class="fa-solid fa-images text-purple-400 text-sm" aria-hidden="true"></i>
+            <span class="truncate">Muestras</span>
+            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-auto" aria-hidden="true"></i>
+          </button>
+
+          <div id="samples-menu" class="hidden absolute left-0 sm:right-0 sm:left-auto mt-2 w-52 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl z-50 p-1.5 space-y-1" role="menu">
+            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1">Imágenes de Ejemplo</div>
+            <button data-sample="neon" class="sample-btn w-full text-left px-3 py-2 text-xs rounded-xl text-slate-300 hover:bg-cyan-600 hover:text-white flex items-center space-x-2 transition-colors" role="menuitem">
+              <i class="fa-solid fa-palette text-pink-400" aria-hidden="true"></i><span>Arte Neón</span>
+            </button>
+            <button data-sample="nature" class="sample-btn w-full text-left px-3 py-2 text-xs rounded-xl text-slate-300 hover:bg-cyan-600 hover:text-white flex items-center space-x-2 transition-colors" role="menuitem">
+              <i class="fa-solid fa-tree text-emerald-400" aria-hidden="true"></i><span>Paisaje Natural</span>
+            </button>
+            <button data-sample="city" class="sample-btn w-full text-left px-3 py-2 text-xs rounded-xl text-slate-300 hover:bg-cyan-600 hover:text-white flex items-center space-x-2 transition-colors" role="menuitem">
+              <i class="fa-solid fa-city text-amber-400" aria-hidden="true"></i><span>Arquitectura</span>
+            </button>
+            <button data-sample="illustration" class="sample-btn w-full text-left px-3 py-2 text-xs rounded-xl text-slate-300 hover:bg-cyan-600 hover:text-white flex items-center space-x-2 transition-colors" role="menuitem">
+              <i class="fa-solid fa-paintbrush text-indigo-400" aria-hidden="true"></i><span>Ilustración Digital</span>
+            </button>
+          </div>
         </div>
-    </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+        <button id="btn-open-url" class="btn-action-uniform bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 px-3.5 rounded-xl text-xs font-semibold transition-all space-x-2 w-full shadow-sm active:scale-95">
+          <i class="fa-solid fa-link text-cyan-400 text-sm" aria-hidden="true"></i>
+          <span class="truncate">Cargar URL</span>
+        </button>
+      </div>
 
-        <!-- COLUMNA IZQUIERDA: Herramientas, Canvas & Paleta Dominante (8 Cols) -->
-        <section class="lg:col-span-7 xl:col-span-8 flex flex-col space-y-4">
-            
-            <!-- BARRA DE ACCIONES / BOTONES UNIFORMES (4 CONTROLES SINO BOTONES DE ZOOM) -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-md">
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    
-                    <!-- Botón 1: Cargar Imagen -->
-                    <label class="btn-action-uniform cursor-pointer bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 rounded-xl text-xs font-semibold transition-all shadow-md shadow-cyan-600/20 active:scale-95 space-x-2 w-full select-none">
-                        <i class="fa-solid fa-upload text-sm"></i>
-                        <span class="truncate">Cargar Imagen</span>
-                        <input type="file" id="file-input" accept="image/*" class="hidden">
-                    </label>
-
-                    <!-- Botón 2: Capturar Pantalla (EyeDropper Native API) -->
-                    <button id="btn-native-eyedropper" class="btn-action-uniform bg-slate-800 hover:bg-slate-700 active:bg-slate-750 text-slate-200 border border-slate-700/80 px-3.5 rounded-xl text-xs font-semibold transition-all space-x-2 w-full shadow-sm active:scale-95" title="Capturar color de cualquier parte de la pantalla">
-                        <i class="fa-solid fa-pipette text-cyan-400 text-sm"></i>
-                        <span class="truncate">Capturar Pantalla</span>
-                    </button>
-
-                    <!-- Botón 3: Menú de Muestras -->
-                    <div class="relative w-full">
-                        <button id="btn-samples-toggle" class="btn-action-uniform bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 px-3.5 rounded-xl text-xs font-semibold transition-all space-x-1.5 w-full shadow-sm active:scale-95">
-                            <i class="fa-solid fa-images text-purple-400 text-sm"></i>
-                            <span class="truncate">Muestras</span>
-                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-auto"></i>
-                        </button>
-
-                        <!-- Menú Desplegable -->
-                        <div id="samples-menu" class="hidden absolute left-0 sm:right-0 sm:left-auto mt-2 w-52 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl z-50 p-1.5 space-y-1">
-                            <div class="text-[10px] uppercase font-bold text-slate-500 px-3 py-1">Imágenes de Ejemplo</div>
-                            <button data-sample="neon" class="sample-btn w-full text-left px-3 py-2 text-xs rounded-xl text-slate-300 hover:bg-cyan-600 hover:text-white flex items-center space-x-2 transition-colors">
-                                <i class="fa-solid fa-palette text-pink-400"></i>
-                                <span>Arte Neón</span>
-                            </button>
-                            <button data-sample="nature" class="sample-btn w-full text-left px-3 py-2 text-xs rounded-xl text-slate-300 hover:bg-cyan-600 hover:text-white flex items-center space-x-2 transition-colors">
-                                <i class="fa-solid fa-tree text-emerald-400"></i>
-                                <span>Paisaje Natural</span>
-                            </button>
-                            <button data-sample="city" class="sample-btn w-full text-left px-3 py-2 text-xs rounded-xl text-slate-300 hover:bg-cyan-600 hover:text-white flex items-center space-x-2 transition-colors">
-                                <i class="fa-solid fa-city text-amber-400"></i>
-                                <span>Arquitectura</span>
-                            </button>
-                            <button data-sample="illustration" class="sample-btn w-full text-left px-3 py-2 text-xs rounded-xl text-slate-300 hover:bg-cyan-600 hover:text-white flex items-center space-x-2 transition-colors">
-                                <i class="fa-solid fa-paintbrush text-indigo-400"></i>
-                                <span>Ilustración Digital</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Botón 4: Cargar URL -->
-                    <button id="btn-open-url" class="btn-action-uniform bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 px-3.5 rounded-xl text-xs font-semibold transition-all space-x-2 w-full shadow-sm active:scale-95">
-                        <i class="fa-solid fa-link text-cyan-400 text-sm"></i>
-                        <span class="truncate">Cargar URL</span>
-                    </button>
-
-                </div>
-
-                <!-- Info Resolución -->
-                <div class="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 px-1">
-                    <span class="flex items-center space-x-1.5">
-                        <i class="fa-regular fa-image text-cyan-400"></i>
-                        <span>Resolución:</span>
-                        <strong id="img-dimensions" class="font-mono text-slate-300">0 × 0 px</strong>
-                    </span>
-                </div>
-            </div>
-
-            <div id="dropzone" class="relative flex-1 min-h-[380px] sm:min-h-[480px] max-h-[620px] bg-slate-900 border-2 border-dashed border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center checkerboard-pattern group select-none shadow-inner">
-                
-                <!-- Estado Inicial Vacío -->
-                <div id="empty-state" class="text-center p-6 max-w-sm pointer-events-none transition-opacity duration-300">
-                    <div class="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700 mx-auto flex items-center justify-center text-cyan-400 text-2xl mb-3 shadow-xl">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                    </div>
-                    <h2 class="text-sm sm:text-base font-bold text-slate-200 mb-1">Arrastra o selecciona una imagen</h2>
-                    <p class="text-xs text-slate-400 mb-3">Soporta PNG, JPG, WEBP o pega con <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] font-mono">Ctrl+V</kbd></p>
-                    <span class="inline-flex items-center space-x-1.5 text-[11px] text-cyan-400 font-medium">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span>O selecciona una muestra en la barra superior</span>
-                    </span>
-                </div>
-
-                <!-- Canvas Interactivo Principal -->
-                <canvas id="main-canvas" class="hidden max-w-full max-h-full cursor-crosshair touch-canvas-active transition-transform duration-75"></canvas>
-
-                <!-- LUPA DE PRECISIÓN (Flota a 6px con detección de bordes y retícula central de 11x11px) -->
-                <div id="loupe-container" class="hidden pointer-events-none absolute w-32 h-32 rounded-full border-2 border-white shadow-2xl overflow-hidden z-20 bg-slate-950/90 ring-4 ring-cyan-500/40">
-                    <canvas id="loupe-canvas" width="128" height="128" class="w-full h-full block"></canvas>
-                    
-                    <!-- Retícula Central -->
-                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div class="w-3 h-3 border-2 border-red-500 rounded-xs shadow-md bg-red-500/20"></div>
-                    </div>
-
-                    <!-- Etiqueta con Código HEX en la parte inferior de la Lupa -->
-                    <div id="loupe-hex-tag" class="absolute bottom-1 left-1/2 -translate-x-1/2 bg-slate-950/90 border border-slate-700 text-[10px] font-mono font-bold text-white px-2 py-0.5 rounded-full shadow-lg">
-                        #06B6D4
-                    </div>
-                </div>
-
-                <!-- Overlay para Drag and Drop -->
-                <div id="drag-overlay" class="absolute inset-0 bg-cyan-600/20 backdrop-blur-sm border-2 border-cyan-500 rounded-2xl hidden flex flex-col items-center justify-center space-y-2 pointer-events-none">
-                    <i class="fa-solid fa-file-circle-plus text-4xl text-cyan-300 animate-bounce"></i>
-                    <span class="text-sm font-bold text-white">Suelta la imagen aquí</span>
-                </div>
-            </div>
-
-            <div id="palette-section" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
-                <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-sm"></i>
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Paleta Dominante Extraída</h2>
-                    </div>
-                    <button id="btn-reextract" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 font-semibold transition-colors">
-                        <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
-                        <span>Reanalizar</span>
-                    </button>
-                </div>
-
-                <!-- Swatches de Colores Dominantes -->
-                <div id="palette-swatches" class="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                    <div class="col-span-full text-center py-3 text-xs text-slate-500 italic">
-                        Carga una imagen para extraer automáticamente sus tonos principales.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <aside class="lg:col-span-5 xl:col-span-4 flex flex-col space-y-5">
-            
-            <!-- Tarjeta de Color Activo -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                        <i class="fa-solid fa-droplet text-cyan-400"></i>
-                        Color Seleccionado
-                    </span>
-                    <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-semibold">
-                        Activo
-                    </span>
-                </div>
-
-                <!-- Muestra Grande + HEX Principal -->
-                <div class="flex items-center space-x-4">
-                    <div id="active-swatch" class="w-16 h-16 rounded-2xl border-2 border-slate-700 shadow-inner flex-shrink-0 cursor-pointer group relative overflow-hidden transition-all duration-200" style="background-color: #06B6D4;" title="Clic para copiar HEX">
-                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <i class="fa-regular fa-copy text-white text-xs"></i>
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Código HEX</div>
-                        <div id="active-hex" class="text-2xl font-mono font-black text-white tracking-tight truncate cursor-pointer hover:text-cyan-400 transition-colors" title="Clic para copiar">
-                            #06B6D4
-                        </div>
-                        <div id="active-rgb-preview" class="text-xs text-slate-400 font-mono mt-0.5">rgb(6, 182, 212)</div>
-                    </div>
-                </div>
-
-                <!-- Formatos de Color (HEX, RGB, HSL, HSV, CMYK) con botón de copiado rápido -->
-                <div class="space-y-2 pt-1">
-                    <!-- HEX -->
-                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-                        <div class="flex items-center space-x-2 min-w-0">
-                            <span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HEX</span>
-                            <span id="fmt-hex" class="text-xs font-mono font-semibold text-slate-200 truncate">#06B6D4</span>
-                        </div>
-                        <button data-copy-target="fmt-hex" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar HEX">
-                            <i class="fa-regular fa-copy text-xs"></i>
-                        </button>
-                    </div>
-
-                    <!-- RGB -->
-                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-                        <div class="flex items-center space-x-2 min-w-0">
-                            <span class="w-12 text-[10px] font-bold text-slate-500 uppercase">RGB</span>
-                            <span id="fmt-rgb" class="text-xs font-mono font-semibold text-slate-200 truncate">rgb(6, 182, 212)</span>
-                        </div>
-                        <button data-copy-target="fmt-rgb" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar RGB">
-                            <i class="fa-regular fa-copy text-xs"></i>
-                        </button>
-                    </div>
-
-                    <!-- HSL -->
-                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-                        <div class="flex items-center space-x-2 min-w-0">
-                            <span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HSL</span>
-                            <span id="fmt-hsl" class="text-xs font-mono font-semibold text-slate-200 truncate">hsl(189, 94%, 43%)</span>
-                        </div>
-                        <button data-copy-target="fmt-hsl" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar HSL">
-                            <i class="fa-regular fa-copy text-xs"></i>
-                        </button>
-                    </div>
-
-                    <!-- HSV -->
-                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-                        <div class="flex items-center space-x-2 min-w-0">
-                            <span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HSV</span>
-                            <span id="fmt-hsv" class="text-xs font-mono font-semibold text-slate-200 truncate">hsv(189, 97%, 83%)</span>
-                        </div>
-                        <button data-copy-target="fmt-hsv" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar HSV">
-                            <i class="fa-regular fa-copy text-xs"></i>
-                        </button>
-                    </div>
-
-                    <!-- CMYK -->
-                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-                        <div class="flex items-center space-x-2 min-w-0">
-                            <span class="w-12 text-[10px] font-bold text-slate-500 uppercase">CMYK</span>
-                            <span id="fmt-cmyk" class="text-xs font-mono font-semibold text-slate-200 truncate">cmyk(97%, 14%, 0%, 17%)</span>
-                        </div>
-                        <button data-copy-target="fmt-cmyk" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar CMYK">
-                            <i class="fa-regular fa-copy text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Evaluación de Accesibilidad WCAG 2.1 -->
-                <div class="pt-2 border-t border-slate-800 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Accesibilidad WCAG 2.1</span>
-                        <span id="wcag-suggestion" class="text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-white text-black shadow-sm">
-                            Texto Blanco
-                        </span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <!-- Vs Negro -->
-                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <span class="w-5 h-5 rounded-full bg-black border border-slate-700 flex items-center justify-center text-[10px] font-bold text-white">A</span>
-                                <span id="wcag-black-ratio" class="text-xs font-mono font-bold text-slate-200">8.5:1</span>
-                            </div>
-                            <span id="wcag-black-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">AAA</span>
-                        </div>
-
-                        <!-- Vs Blanco -->
-                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[10px] font-bold text-black">A</span>
-                                <span id="wcag-white-ratio" class="text-xs font-mono font-bold text-slate-200">2.4:1</span>
-                            </div>
-                            <span id="wcag-white-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">Falló</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
-                        <i class="fa-solid fa-clock-rotate-left text-purple-400"></i>
-                        <span>Historial Reciente</span>
-                    </span>
-                    <div class="flex items-center space-x-2">
-                        <button id="btn-export-history" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center space-x-1 transition-colors">
-                            <i class="fa-solid fa-download text-[10px]"></i>
-                            <span>Exportar</span>
-                        </button>
-                        <button id="btn-clear-history" class="text-[11px] text-slate-500 hover:text-rose-400 font-medium transition-colors">
-                            Limpiar
-                        </button>
-                    </div>
-                </div>
-
-                <div id="history-swatches" class="grid grid-cols-7 gap-2 min-h-[40px]">
-                    <!-- Swatches de historial -->
-                </div>
-            </div>
-
-        </aside>
-    </main>
-
-    <!-- MODAL: Cargar por URL -->
-    <div id="modal-url" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between">
-                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                    <i class="fa-solid fa-link text-cyan-400"></i>
-                    <span>Cargar Imagen desde URL</span>
-                </h3>
-                <button class="btn-close-modal text-slate-400 hover:text-white p-1">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <p class="text-xs text-slate-400">Pega la URL pública de una imagen (JPG, PNG, WEBP):</p>
-            <input type="url" id="input-url" placeholder="https://images.unsplash.com/photo-..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none focus:border-cyan-500 font-mono">
-            <div class="flex justify-end space-x-2 pt-2">
-                <button class="btn-close-modal px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition-colors">Cancelar</button>
-                <button id="btn-confirm-url" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white shadow-md transition-colors">Cargar Imagen</button>
-            </div>
-        </div>
+      <div class="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 px-1">
+        <span class="flex items-center space-x-1.5">
+          <i class="fa-regular fa-image text-cyan-400" aria-hidden="true"></i>
+          <span>Resolución:</span>
+          <strong id="img-dimensions" class="font-mono text-slate-300">0 × 0 px</strong>
+        </span>
+      </div>
     </div>
 
-    <!-- MODAL: Exportar Colores -->
-    <div id="modal-export" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between">
-                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                    <i class="fa-solid fa-file-export text-cyan-400"></i>
-                    <span>Exportar Colores</span>
-                </h3>
-                <button class="btn-close-modal text-slate-400 hover:text-white p-1">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+    <div id="dropzone" class="relative flex-1 min-h-[380px] sm:min-h-[480px] max-h-[620px] bg-slate-900 border-2 border-dashed border-slate-800 rounded-2xl overflow-hidden flex items-center justify-center checkerboard-pattern group select-none shadow-inner" role="region" aria-label="Área de muestra de imagen">
 
-            <!-- Pestañas de Formato -->
-            <div class="flex space-x-2 border-b border-slate-800 pb-2">
-                <button data-format="css" class="btn-export-tab px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-600 text-white focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none">Variables CSS</button>
-                <button data-format="json" class="btn-export-tab px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:bg-slate-800 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none">JSON</button>
-                <button data-format="txt" class="btn-export-tab px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:bg-slate-800 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none">Lista (HEX)</button>
-            </div>
-
-            <textarea id="export-preview" readonly class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-cyan-300 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none resize-none"></textarea>
-
-            <div class="flex justify-end space-x-2 pt-2">
-                <button class="btn-close-modal px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition-colors">Cerrar</button>
-                <button id="btn-copy-export" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white shadow-md flex items-center space-x-1.5 transition-colors">
-                    <i class="fa-regular fa-copy"></i>
-                    <span>Copiar Código</span>
-                </button>
-            </div>
+      <div id="empty-state" class="text-center p-6 max-w-sm pointer-events-none transition-opacity duration-300">
+        <div class="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700 mx-auto flex items-center justify-center text-cyan-400 text-2xl mb-3 shadow-xl">
+          <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
         </div>
+        <h2 class="text-sm sm:text-base font-bold text-slate-200 mb-1">Arrastra o selecciona una imagen</h2>
+        <p class="text-xs text-slate-400 mb-3">Soporta PNG, JPG, WEBP o pega con <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] font-mono">Ctrl+V</kbd></p>
+        <span class="inline-flex items-center space-x-1.5 text-[11px] text-cyan-400 font-medium">
+          <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+          <span>O selecciona una muestra en la barra superior</span>
+        </span>
+      </div>
+
+      <canvas id="main-canvas" tabindex="0" role="img"
+              aria-label="Lienzo de muestra. Usa clic o flechas del teclado para inspeccionar colores."
+              class="hidden max-w-full max-h-full cursor-crosshair touch-canvas-active transition-transform duration-75"></canvas>
+
+      <div id="loupe-container" class="hidden pointer-events-none absolute w-32 h-32 rounded-full border-2 border-white shadow-2xl overflow-hidden z-20 bg-slate-950/90 ring-4 ring-cyan-500/40" aria-hidden="true">
+        <canvas id="loupe-canvas" width="128" height="128" class="w-full h-full block"></canvas>
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="w-3 h-3 border-2 border-red-500 rounded-xs shadow-md bg-red-500/20"></div>
+        </div>
+        <div id="loupe-hex-tag" class="absolute bottom-1 left-1/2 -translate-x-1/2 bg-slate-950/90 border border-slate-700 text-[10px] font-mono font-bold text-white px-2 py-0.5 rounded-full shadow-lg">
+          #06B6D4
+        </div>
+      </div>
+
+      <div id="drag-overlay" class="absolute inset-0 bg-cyan-600/20 backdrop-blur-sm border-2 border-cyan-500 rounded-2xl hidden flex flex-col items-center justify-center space-y-2 pointer-events-none" aria-hidden="true">
+        <i class="fa-solid fa-file-circle-plus text-4xl text-cyan-300 animate-bounce"></i>
+        <span class="text-sm font-bold text-white">Suelta la imagen aquí</span>
+      </div>
     </div>
 
-    <!-- Contenedor de Notificaciones Toast -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            /* State Variables */
-            let currentImg = null;
-            let activeColor = { r: 6, g: 182, b: 212, hex: '#06B6D4' };
-            let historyColors = [];
-            let extractedPalette = [];
-
-            /* DOM Element References */
-            const dropzone = document.getElementById('dropzone');
-            const emptyState = document.getElementById('empty-state');
-            const mainCanvas = document.getElementById('main-canvas');
-            const mainCtx = mainCanvas.getContext('2d', { willReadFrequently: true });
-
-            const loupeContainer = document.getElementById('loupe-container');
-            const loupeCanvas = document.getElementById('loupe-canvas');
-            const loupeCtx = loupeCanvas.getContext('2d');
-            const loupeHexTag = document.getElementById('loupe-hex-tag');
-
-            const activeSwatch = document.getElementById('active-swatch');
-            const activeHex = document.getElementById('active-hex');
-            const activeRgbPreview = document.getElementById('active-rgb-preview');
-            const imgDimensions = document.getElementById('img-dimensions');
-
-            const fmtHex = document.getElementById('fmt-hex');
-            const fmtRgb = document.getElementById('fmt-rgb');
-            const fmtHsl = document.getElementById('fmt-hsl');
-            const fmtHsv = document.getElementById('fmt-hsv');
-            const fmtCmyk = document.getElementById('fmt-cmyk');
-
-            const wcagBlackRatio = document.getElementById('wcag-black-ratio');
-            const wcagBlackBadge = document.getElementById('wcag-black-badge');
-            const wcagWhiteRatio = document.getElementById('wcag-white-ratio');
-            const wcagWhiteBadge = document.getElementById('wcag-white-badge');
-            const wcagSuggestion = document.getElementById('wcag-suggestion');
-
-            const historySwatches = document.getElementById('history-swatches');
-            const paletteSwatches = document.getElementById('palette-swatches');
-
-            function rgbToHex(r, g, b) {
-                return "#" + [r, g, b].map(x => {
-                    const h = Math.min(255, Math.max(0, Math.round(x))).toString(16);
-                    return h.length === 1 ? "0" + h : h;
-                }).join("").toUpperCase();
-            }
-
-            function hexToRgb(hex) {
-                let c = hex.replace('#', '');
-                if (c.length === 3) c = c.split('').map(x => x + x).join('');
-                const num = parseInt(c, 16);
-                return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
-            }
-
-            function rgbToHsl(r, g, b) {
-                r /= 255; g /= 255; b /= 255;
-                const max = Math.max(r, g, b), min = Math.min(r, g, b);
-                let h, s, l = (max + min) / 2;
-
-                if (max === min) {
-                    h = s = 0;
-                } else {
-                    const d = max - min;
-                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                    switch (max) {
-                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                        case g: h = (b - r) / d + 2; break;
-                        case b: h = (r - g) / d + 4; break;
-                    }
-                    h /= 6;
-                }
-                return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
-            }
-
-            function rgbToHsv(r, g, b) {
-                r /= 255; g /= 255; b /= 255;
-                const max = Math.max(r, g, b), min = Math.min(r, g, b);
-                const d = max - min;
-                let h;
-                const v = max;
-                const s = max === 0 ? 0 : d / max;
-
-                if (max === min) {
-                    h = 0;
-                } else {
-                    switch (max) {
-                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                        case g: h = (b - r) / d + 2; break;
-                        case b: h = (r - g) / d + 4; break;
-                    }
-                    h /= 6;
-                }
-                return { h: Math.round(h * 360), s: Math.round(s * 100), v: Math.round(v * 100) };
-            }
-
-            function rgbToCmyk(r, g, b) {
-                let c = 1 - (r / 255);
-                let m = 1 - (g / 255);
-                let y = 1 - (b / 255);
-                let k = Math.min(c, Math.min(m, y));
-
-                if (k === 1) return { c: 0, m: 0, y: 0, k: 100 };
-
-                c = Math.round(((c - k) / (1 - k)) * 100);
-                m = Math.round(((m - k) / (1 - k)) * 100);
-                y = Math.round(((y - k) / (1 - k)) * 100);
-                k = Math.round(k * 100);
-
-                return { c, m, y, k };
-            }
-
-            /* WCAG Contrast Calculations */
-            function getLuminance(r, g, b) {
-                const a = [r, g, b].map(v => {
-                    v /= 255;
-                    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-                });
-                return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-            }
-
-            function getContrastRatio(l1, l2) {
-                const b = Math.max(l1, l2);
-                const d = Math.min(l1, l2);
-                return (b + 0.05) / (d + 0.05);
-            }
-
-            function updateActiveColor(r, g, b, saveHist = true) {
-                const hex = rgbToHex(r, g, b);
-                activeColor = { r, g, b, hex };
-
-                activeSwatch.style.backgroundColor = hex;
-                activeHex.textContent = hex;
-                activeRgbPreview.textContent = `rgb(${r}, ${g}, ${b})`;
-
-                fmtHex.textContent = hex;
-                fmtRgb.textContent = `rgb(${r}, ${g}, ${b})`;
-                
-                const hsl = rgbToHsl(r, g, b);
-                fmtHsl.textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
-
-                const hsv = rgbToHsv(r, g, b);
-                fmtHsv.textContent = `hsv(${hsv.h}, ${hsv.s}%, ${hsv.v}%)`;
-
-                const cmyk = rgbToCmyk(r, g, b);
-                fmtCmyk.textContent = `cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`;
-
-                // Calculate WCAG Contrast Ratios vs Black and White
-                const lum = getLuminance(r, g, b);
-                const cBlack = getContrastRatio(lum, 0);
-                const cWhite = getContrastRatio(lum, 1);
-
-                wcagBlackRatio.textContent = `${cBlack.toFixed(1)}:1`;
-                wcagWhiteRatio.textContent = `${cWhite.toFixed(1)}:1`;
-
-                updateBadge(wcagBlackBadge, cBlack);
-                updateBadge(wcagWhiteBadge, cWhite);
-
-                if (cWhite > cBlack) {
-                    wcagSuggestion.textContent = "Texto Blanco";
-                    wcagSuggestion.className = "text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-white text-black shadow-sm";
-                } else {
-                    wcagSuggestion.textContent = "Texto Negro";
-                    wcagSuggestion.className = "text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-black text-white shadow-sm border border-slate-700";
-                }
-
-                if (saveHist) {
-                    addToHistory(hex);
-                }
-            }
-
-            function updateBadge(badge, ratio) {
-                if (ratio >= 7.0) {
-                    badge.textContent = "AAA";
-                    badge.className = "text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-                } else if (ratio >= 4.5) {
-                    badge.textContent = "AA";
-                    badge.className = "text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-                } else if (ratio >= 3.0) {
-                    badge.textContent = "AA Large";
-                    badge.className = "text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30";
-                } else {
-                    badge.textContent = "Falló";
-                    badge.className = "text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30";
-                }
-            }
-
-            function updateLoupe(clientX, clientY) {
-                if (!currentImg) return null;
-
-                const canvasRect = mainCanvas.getBoundingClientRect();
-                const mouseX = clientX - canvasRect.left;
-                const mouseY = clientY - canvasRect.top;
-
-                // Hide loupe if outside canvas bounds
-                if (mouseX < 0 || mouseX >= canvasRect.width || mouseY < 0 || mouseY >= canvasRect.height) {
-                    loupeContainer.classList.add('hidden');
-                    return null;
-                }
-
-                loupeContainer.classList.remove('hidden');
-
-                const dropzoneRect = dropzone.getBoundingClientRect();
-                const relX = clientX - dropzoneRect.left;
-                const relY = clientY - dropzoneRect.top;
-
-                const loupeWidth = loupeContainer.offsetWidth || 128;
-                const loupeHeight = loupeContainer.offsetHeight || 128;
-
-                // GAP OFFSET EXACTO: 6px
-                const OFFSET_GAP = 6;
-
-                // Default positioning: Top-right relative to cursor
-                let posX = relX + OFFSET_GAP;
-                let posY = relY - loupeHeight - OFFSET_GAP;
-
-                // Smart edge detection: Flip below if close to top edge
-                if (posY < 6) {
-                    posY = relY + OFFSET_GAP + 12;
-                }
-
-                // Flip left if close to right edge
-                if (posX + loupeWidth > dropzoneRect.width - 6) {
-                    posX = relX - loupeWidth - OFFSET_GAP;
-                }
-
-                // Boundary bounds check inside dropzone
-                if (posX < 6) posX = 6;
-                if (posY + loupeHeight > dropzoneRect.height - 6) {
-                    posY = dropzoneRect.height - loupeHeight - 6;
-                }
-
-                loupeContainer.style.left = `${posX}px`;
-                loupeContainer.style.top = `${posY}px`;
-
-                // Calculate exact image coordinates
-                const scaleX = mainCanvas.width / canvasRect.width;
-                const scaleY = mainCanvas.height / canvasRect.height;
-
-                const imgX = Math.floor(mouseX * scaleX);
-                const imgY = Math.floor(mouseY * scaleY);
-
-                // Render 11x11 magnified pixel matrix
-                const gridRadius = 5; // 11x11 grid centered on point
-                loupeCtx.imageSmoothingEnabled = false;
-                loupeCtx.fillStyle = '#0f172a';
-                loupeCtx.fillRect(0, 0, loupeCanvas.width, loupeCanvas.height);
-
-                loupeCtx.drawImage(
-                    mainCanvas,
-                    imgX - gridRadius, imgY - gridRadius, 11, 11,
-                    0, 0, 128, 128
-                );
-
-                // Visual grid overlay
-                loupeCtx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-                loupeCtx.lineWidth = 1;
-                const step = 128 / 11;
-                for (let i = 0; i <= 128; i += step) {
-                    loupeCtx.beginPath(); loupeCtx.moveTo(i, 0); loupeCtx.lineTo(i, 128); loupeCtx.stroke();
-                    loupeCtx.beginPath(); loupeCtx.moveTo(0, i); loupeCtx.lineTo(128, i); loupeCtx.stroke();
-                }
-
-                // Sample target central pixel
-                try {
-                    const pixel = mainCtx.getImageData(imgX, imgY, 1, 1).data;
-                    const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
-                    loupeHexTag.textContent = hex;
-                    return { r: pixel[0], g: pixel[1], b: pixel[2], hex };
-                } catch (e) {
-                    return null;
-                }
-            }
-
-            /* Mouse & Interaction Listeners */
-            mainCanvas.addEventListener('mousemove', (e) => updateLoupe(e.clientX, e.clientY));
-            mainCanvas.addEventListener('mouseleave', () => loupeContainer.classList.add('hidden'));
-            
-            mainCanvas.addEventListener('click', (e) => {
-                const sampled = updateLoupe(e.clientX, e.clientY);
-                if (sampled) {
-                    updateActiveColor(sampled.r, sampled.g, sampled.b);
-                    showToast(`Color ${sampled.hex} capturado`);
-                }
-            });
-
-            function processTouch(e, isEnd = false) {
-                if (e.touches && e.touches.length > 0) {
-                    const touch = e.touches[0];
-                    const sampled = updateLoupe(touch.clientX, touch.clientY);
-                    if (sampled) {
-                        updateActiveColor(sampled.r, sampled.g, sampled.b, false);
-                    }
-                } else if (isEnd && e.changedTouches && e.changedTouches.length > 0) {
-                    const touch = e.changedTouches[0];
-                    const canvasRect = mainCanvas.getBoundingClientRect();
-                    const scaleX = mainCanvas.width / canvasRect.width;
-                    const scaleY = mainCanvas.height / canvasRect.height;
-                    
-                    const imgX = Math.floor((touch.clientX - canvasRect.left) * scaleX);
-                    const imgY = Math.floor((touch.clientY - canvasRect.top) * scaleY);
-                    
-                    try {
-                        const pixel = mainCtx.getImageData(imgX, imgY, 1, 1).data;
-                        updateActiveColor(pixel[0], pixel[1], pixel[2], true);
-                        showToast(`Color capturado`);
-                    } catch (err) {}
-                }
-            }
-
-            mainCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); processTouch(e); }, { passive: false });
-            mainCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); processTouch(e); }, { passive: false });
-            mainCanvas.addEventListener('touchend', (e) => { 
-                loupeContainer.classList.add('hidden'); 
-                processTouch(e, true); 
-            });
-
-            function loadImage(src) {
-                const img = new Image();
-                img.crossOrigin = "Anonymous";
-                img.onload = () => {
-                    currentImg = img;
-                    emptyState.classList.add('hidden');
-                    mainCanvas.classList.remove('hidden');
-
-                    imgDimensions.textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
-
-                    renderCanvas();
-                    extractPalette();
-                    showToast("Imagen cargada con éxito");
-                };
-                img.onerror = () => {
-                    generateFallbackPattern();
-                    showToast("Cargada imagen generada de respaldo", "warning");
-                };
-                img.src = src;
-            }
-
-            function renderCanvas() {
-                if (!currentImg) return;
-                mainCanvas.width = currentImg.naturalWidth;
-                mainCanvas.height = currentImg.naturalHeight;
-                mainCtx.drawImage(currentImg, 0, 0);
-            }
-
-            /* File Upload & Drag-and-Drop Listeners */
-            document.getElementById('file-input').addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const r = new FileReader();
-                    r.onload = (evt) => loadImage(evt.target.result);
-                    r.readAsDataURL(file);
-                }
-            });
-
-            dropzone.addEventListener('dragover', (e) => { e.preventDefault(); document.getElementById('drag-overlay').classList.remove('hidden'); });
-            dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); document.getElementById('drag-overlay').classList.add('hidden'); });
-            dropzone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                document.getElementById('drag-overlay').classList.add('hidden');
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    const file = e.dataTransfer.files[0];
-                    if (file.type.startsWith('image/')) {
-                        const r = new FileReader();
-                        r.onload = (evt) => loadImage(evt.target.result);
-                        r.readAsDataURL(file);
-                    }
-                }
-            });
-
-            window.addEventListener('paste', (e) => {
-                const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-                for (const item of items) {
-                    if (item.type.indexOf('image') !== -1) {
-                        const file = item.getAsFile();
-                        const r = new FileReader();
-                        r.onload = (evt) => loadImage(evt.target.result);
-                        r.readAsDataURL(file);
-                        showToast("Imagen pegada desde el portapapeles");
-                        break;
-                    }
-                }
-            });
-
-            function extractPalette() {
-                if (!currentImg) return;
-
-                const tmp = document.createElement('canvas');
-                tmp.width = 100; tmp.height = 100;
-                const ctx = tmp.getContext('2d');
-                ctx.drawImage(currentImg, 0, 0, 100, 100);
-
-                const data = ctx.getImageData(0, 0, 100, 100).data;
-                const buckets = {};
-
-                for (let i = 0; i < data.length; i += 16) {
-                    const r = Math.round(data[i] / 24) * 24;
-                    const g = Math.round(data[i + 1] / 24) * 24;
-                    const b = Math.round(data[i + 2] / 24) * 24;
-                    if (data[i + 3] < 128) continue; // Skip transparent pixels
-
-                    const hex = rgbToHex(r, g, b);
-                    buckets[hex] = (buckets[hex] || 0) + 1;
-                }
-
-                const sorted = Object.keys(buckets).sort((a, b) => buckets[b] - buckets[a]);
-                extractedPalette = [];
-
-                for (const hex of sorted) {
-                    const rgb = hexToRgb(hex);
-                    const isSimilar = extractedPalette.some(exHex => {
-                        const exRgb = hexToRgb(exHex);
-                        const dist = Math.sqrt(
-                            Math.pow(rgb.r - exRgb.r, 2) +
-                            Math.pow(rgb.g - exRgb.g, 2) +
-                            Math.pow(rgb.b - exRgb.b, 2)
-                        );
-                        return dist < 42;
-                    });
-
-                    if (!isSimilar) {
-                        extractedPalette.push(hex);
-                    }
-                    if (extractedPalette.length >= 8) break;
-                }
-
-                renderPaletteSwatches();
-            }
-
-            function renderPaletteSwatches() {
-                paletteSwatches.innerHTML = '';
-                if (extractedPalette.length === 0) {
-                    paletteSwatches.innerHTML = `<div class="col-span-full text-center py-3 text-xs text-slate-500 italic">Sin colores extraídos.</div>`;
-                    return;
-                }
-
-                extractedPalette.forEach(hex => {
-                    const card = document.createElement('div');
-                    card.className = "flex flex-col items-center bg-slate-950 p-1.5 rounded-xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer group";
-                    card.innerHTML = `
-                        <div class="w-full h-8 rounded-lg shadow-sm border border-slate-800 transition-transform group-hover:scale-105" style="background-color: ${hex}"></div>
-                        <span class="text-[10px] font-mono font-bold text-slate-300 mt-1 group-hover:text-cyan-400">${hex}</span>
-                    `;
-
-                    card.addEventListener('click', () => {
-                        const rgb = hexToRgb(hex);
-                        updateActiveColor(rgb.r, rgb.g, rgb.b);
-                        showToast(`Color ${hex} seleccionado`);
-                    });
-
-                    paletteSwatches.appendChild(card);
-                });
-            }
-
-            document.getElementById('btn-reextract').addEventListener('click', () => {
-                if (currentImg) {
-                    extractPalette();
-                    showToast("Paleta reanalizada");
-                }
-            });
-
-            function loadHistory() {
-                try {
-                    const saved = localStorage.getItem('cuentagotas_hist');
-                    historyColors = saved ? JSON.parse(saved) : ['#06B6D4', '#EC4899', '#10B981', '#F59E0B', '#3B82F6'];
-                } catch (e) {
-                    historyColors = ['#06B6D4', '#EC4899', '#10B981'];
-                }
-                renderHistory();
-            }
-
-            function addToHistory(hex) {
-                if (historyColors[0] === hex) return;
-                historyColors = [hex, ...historyColors.filter(c => c !== hex)].slice(0, 14);
-                try {
-                    localStorage.setItem('cuentagotas_hist', JSON.stringify(historyColors));
-                } catch (e) {}
-                renderHistory();
-            }
-
-            function renderHistory() {
-                historySwatches.innerHTML = '';
-                historyColors.forEach(hex => {
-                    const btn = document.createElement('button');
-                    btn.className = "w-7 h-7 rounded-lg border border-slate-700 shadow-sm transition-transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none";
-                    btn.style.backgroundColor = hex;
-                    btn.title = hex;
-
-                    btn.addEventListener('click', () => {
-                        const rgb = hexToRgb(hex);
-                        updateActiveColor(rgb.r, rgb.g, rgb.b, false);
-                        showToast(`Color ${hex} seleccionado`);
-                    });
-
-                    historySwatches.appendChild(btn);
-                });
-            }
-
-            document.getElementById('btn-clear-history').addEventListener('click', () => {
-                historyColors = [];
-                localStorage.removeItem('cuentagotas_hist');
-                renderHistory();
-                showToast("Historial borrado");
-            });
-
-            /* Native Screen EyeDropper API */
-            async function triggerEyeDropper() {
-                if (!('EyeDropper' in window)) {
-                    showToast("Tu navegador no soporta Cuentagotas de Pantalla", "error");
-                    return;
-                }
-                try {
-                    const eyeDropper = new EyeDropper();
-                    const res = await eyeDropper.open();
-                    const rgb = hexToRgb(res.sRGBHex);
-                    updateActiveColor(rgb.r, rgb.g, rgb.b);
-                    showToast(`Color ${res.sRGBHex} capturado`);
-                } catch (e) {}
-            }
-
-            document.getElementById('btn-native-eyedropper').addEventListener('click', triggerEyeDropper);
-
-            /* Sample Menu Dropdown logic */
-            const samplesToggleBtn = document.getElementById('btn-samples-toggle');
-            const samplesMenu = document.getElementById('samples-menu');
-
-            samplesToggleBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                samplesMenu.classList.toggle('hidden');
-            });
-
-            document.addEventListener('click', () => {
-                samplesMenu.classList.add('hidden');
-            });
-
-            document.querySelectorAll('.sample-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const sample = e.currentTarget.getAttribute('data-sample');
-                    samplesMenu.classList.add('hidden');
-
-                    let url = '';
-                    if (sample === 'neon') url = 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1000&q=80';
-                    else if (sample === 'nature') url = 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1000&q=80';
-                    else if (sample === 'city') url = 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80';
-                    else if (sample === 'illustration') url = 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1000&q=80';
-
-                    loadImage(url);
-                });
-            });
-
-            function generateFallbackPattern() {
-                const cvs = document.createElement('canvas');
-                cvs.width = 800; cvs.height = 600;
-                const ctx = cvs.getContext('2d');
-
-                const g = ctx.createLinearGradient(0, 0, 800, 600);
-                g.addColorStop(0, '#06b6d4');
-                g.addColorStop(0.5, '#ec4899');
-                g.addColorStop(1, '#10b981');
-                ctx.fillStyle = g; ctx.fillRect(0, 0, 800, 600);
-
-                ctx.fillStyle = '#f59e0b';
-                ctx.beginPath(); ctx.arc(400, 300, 140, 0, Math.PI * 2); ctx.fill();
-
-                loadImage(cvs.toDataURL());
-            }
-
-            window.addEventListener('resize', () => {
-                if (currentImg) renderCanvas();
-            });
-
-            function copyToClipboard(txt) {
-                const ta = document.createElement('textarea');
-                ta.value = txt;
-                ta.style.position = 'fixed';
-                ta.style.opacity = '0';
-                document.body.appendChild(ta);
-                ta.select();
-                try {
-                    document.execCommand('copy');
-                    showToast(`Copiado: ${txt}`);
-                } catch (err) {
-                    showToast("Error al copiar", "error");
-                }
-                document.body.removeChild(ta);
-            }
-
-            document.querySelectorAll('.btn-copy').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const tid = e.currentTarget.getAttribute('data-copy-target');
-                    const txt = document.getElementById(tid).textContent;
-                    copyToClipboard(txt);
-                });
-            });
-
-            activeHex.addEventListener('click', () => copyToClipboard(activeHex.textContent.trim()));
-            activeSwatch.addEventListener('click', () => copyToClipboard(activeHex.textContent.trim()));
-
-            function showToast(msg, type = 'success') {
-                const container = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = `toast-popup toast-hidden px-4 py-2.5 rounded-xl shadow-2xl border text-xs font-semibold flex items-center space-x-2 ${
-                    type === 'error' ? 'bg-rose-950/90 text-rose-200 border-rose-800' :
-                    type === 'warning' ? 'bg-amber-950/90 text-amber-200 border-amber-800' :
-                    'bg-slate-900/95 text-slate-100 border-slate-700'
-                }`;
-
-                toast.innerHTML = `
-                    <i class="${type === 'error' ? 'fa-solid fa-circle-exclamation text-rose-400' : 'fa-solid fa-circle-check text-cyan-400'}"></i>
-                    <span>${msg}</span>
-                `;
-
-                container.appendChild(toast);
-                requestAnimationFrame(() => {
-                    toast.classList.remove('toast-hidden');
-                    toast.classList.add('toast-visible');
-                });
-
-                setTimeout(() => {
-                    toast.classList.remove('toast-visible');
-                    toast.classList.add('toast-hidden');
-                    setTimeout(() => toast.remove(), 300);
-                }, 2400);
-            }
-
-            const modalUrl = document.getElementById('modal-url');
-            const modalExport = document.getElementById('modal-export');
-
-            document.getElementById('btn-open-url').addEventListener('click', () => modalUrl.classList.remove('hidden'));
-            document.querySelectorAll('.btn-close-modal').forEach(b => {
-                b.addEventListener('click', () => {
-                    modalUrl.classList.add('hidden');
-                    modalExport.classList.add('hidden');
-                });
-            });
-
-            document.getElementById('btn-confirm-url').addEventListener('click', () => {
-                const u = document.getElementById('input-url').value.trim();
-                if (u) {
-                    loadImage(u);
-                    modalUrl.classList.add('hidden');
-                    document.getElementById('input-url').value = '';
-                }
-            });
-
-            let exportFmt = 'css';
-            const exportPreview = document.getElementById('export-preview');
-
-            document.getElementById('btn-export-history').addEventListener('click', () => {
-                updateExport();
-                modalExport.classList.remove('hidden');
-            });
-
-            document.querySelectorAll('.btn-export-tab').forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    document.querySelectorAll('.btn-export-tab').forEach(t => {
-                        t.classList.remove('bg-cyan-600', 'text-white');
-                        t.classList.add('text-slate-400');
-                    });
-                    e.currentTarget.classList.add('bg-cyan-600', 'text-white');
-                    exportFmt = e.currentTarget.getAttribute('data-format');
-                    updateExport();
-                });
-            });
-
-            function updateExport() {
-                const all = [...new Set([...extractedPalette, ...historyColors])];
-                if (exportFmt === 'css') {
-                    exportPreview.value = `:root {\n` + all.map((c, i) => `  --color-${i + 1}: ${c};`).join('\n') + `\n}`;
-                } else if (exportFmt === 'json') {
-                    exportPreview.value = JSON.stringify({ palette: extractedPalette, history: historyColors }, null, 2);
-                } else if (exportFmt === 'txt') {
-                    exportPreview.value = all.join('\n');
-                }
-            }
-
-            document.getElementById('btn-copy-export').addEventListener('click', () => {
-                copyToClipboard(exportPreview.value);
-            });
-
-            loadHistory();
-            updateActiveColor(6, 182, 212, false);
-
-            setTimeout(() => {
-                loadImage('https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1000&q=80');
-            }, 150);
-        });
-    </script>
+    <div id="palette-section" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+      <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-sm" aria-hidden="true"></i>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Paleta Dominante Extraída</h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="btn-copy-palette" class="text-xs text-slate-400 hover:text-cyan-400 flex items-center space-x-1 font-semibold transition-colors" title="Copiar todos los HEX">
+            <i class="fa-regular fa-copy text-[10px]" aria-hidden="true"></i>
+            <span>Copiar</span>
+          </button>
+          <button id="btn-reextract" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 font-semibold transition-colors">
+            <i class="fa-solid fa-arrows-rotate text-[10px]" aria-hidden="true"></i>
+            <span>Reanalizar</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="palette-swatches" class="grid grid-cols-4 sm:grid-cols-8 gap-2" role="list" aria-label="Colores dominantes extraídos">
+        <div class="col-span-full text-center py-3 text-xs text-slate-500 italic">
+          Carga una imagen para extraer automáticamente sus tonos principales.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="lg:col-span-5 xl:col-span-4 flex flex-col space-y-5">
+
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+          <i class="fa-solid fa-droplet text-cyan-400" aria-hidden="true"></i> Color Seleccionado
+        </span>
+        <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-semibold">Activo</span>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <button id="active-swatch" type="button"
+                class="w-16 h-16 rounded-2xl border-2 border-slate-700 shadow-inner flex-shrink-0 cursor-pointer group relative overflow-hidden transition-all duration-200"
+                style="background-color: #06B6D4;" title="Clic para copiar HEX" aria-label="Muestra activa. Clic para copiar el código HEX">
+          <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <i class="fa-regular fa-copy text-white text-xs" aria-hidden="true"></i>
+          </div>
+        </button>
+        <div class="flex-1 min-w-0">
+          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Código HEX</div>
+          <button id="active-hex" type="button" class="block text-left text-2xl font-mono font-black text-white tracking-tight truncate cursor-pointer hover:text-cyan-400 transition-colors" title="Clic para copiar" aria-label="Copiar código HEX">#06B6D4</button>
+          <div id="active-rgb-preview" class="text-xs text-slate-400 font-mono mt-0.5">rgb(6, 182, 212)</div>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-1" id="format-rows">
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HEX</span><span id="fmt-hex" class="text-xs font-mono font-semibold text-slate-200 truncate">#06B6D4</span></div>
+          <button data-copy-target="fmt-hex" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar HEX" aria-label="Copiar HEX"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
+        </div>
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">RGB</span><span id="fmt-rgb" class="text-xs font-mono font-semibold text-slate-200 truncate">rgb(6, 182, 212)</span></div>
+          <button data-copy-target="fmt-rgb" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar RGB" aria-label="Copiar RGB"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
+        </div>
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HSL</span><span id="fmt-hsl" class="text-xs font-mono font-semibold text-slate-200 truncate">hsl(189, 94%, 43%)</span></div>
+          <button data-copy-target="fmt-hsl" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar HSL" aria-label="Copiar HSL"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
+        </div>
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HSV</span><span id="fmt-hsv" class="text-xs font-mono font-semibold text-slate-200 truncate">hsv(189, 97%, 83%)</span></div>
+          <button data-copy-target="fmt-hsv" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar HSV" aria-label="Copiar HSV"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
+        </div>
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">CMYK</span><span id="fmt-cmyk" class="text-xs font-mono font-semibold text-slate-200 truncate">cmyk(97%, 14%, 0%, 17%)</span></div>
+          <button data-copy-target="fmt-cmyk" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar CMYK" aria-label="Copiar CMYK"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-800 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Accesibilidad WCAG 2.1</span>
+          <span id="wcag-suggestion" class="text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-white text-black shadow-sm">Texto Blanco</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span class="w-5 h-5 rounded-full bg-black border border-slate-700 flex items-center justify-center text-[10px] font-bold text-white">A</span>
+              <span id="wcag-black-ratio" class="text-xs font-mono font-bold text-slate-200">8.5:1</span>
+            </div>
+            <span id="wcag-black-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">AAA</span>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[10px] font-bold text-black">A</span>
+              <span id="wcag-white-ratio" class="text-xs font-mono font-bold text-slate-200">2.4:1</span>
+            </div>
+            <span id="wcag-white-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">Falló</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
+          <i class="fa-solid fa-clock-rotate-left text-purple-400" aria-hidden="true"></i>
+          <span>Historial Reciente</span>
+        </span>
+        <div class="flex items-center space-x-2">
+          <button id="btn-export-history" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center space-x-1 transition-colors">
+            <i class="fa-solid fa-download text-[10px]" aria-hidden="true"></i><span>Exportar</span>
+          </button>
+          <button id="btn-clear-history" class="text-[11px] text-slate-500 hover:text-rose-400 font-medium transition-colors">Limpiar</button>
+        </div>
+      </div>
+
+      <div id="history-swatches" class="grid grid-cols-7 gap-2 min-h-[40px]" role="list" aria-label="Colores recientes"></div>
+    </div>
+
+  </aside>
+</main>
+
+<!-- MODAL URL -->
+<div id="modal-url" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-url-title">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+    <div class="flex items-center justify-between">
+      <h3 id="modal-url-title" class="text-sm font-bold text-white flex items-center space-x-2">
+        <i class="fa-solid fa-link text-cyan-400" aria-hidden="true"></i><span>Cargar Imagen desde URL</span>
+      </h3>
+      <button class="btn-close-modal text-slate-400 hover:text-white p-1" aria-label="Cerrar">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+    <p class="text-xs text-slate-400">Pega la URL pública de una imagen (JPG, PNG, WEBP):</p>
+    <input type="url" id="input-url" placeholder="https://images.unsplash.com/photo-..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-mono">
+    <div class="flex justify-end space-x-2 pt-2">
+      <button class="btn-close-modal px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition-colors">Cancelar</button>
+      <button id="btn-confirm-url" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white shadow-md transition-colors">Cargar Imagen</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EXPORT -->
+<div id="modal-export" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-export-title">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+    <div class="flex items-center justify-between">
+      <h3 id="modal-export-title" class="text-sm font-bold text-white flex items-center space-x-2">
+        <i class="fa-solid fa-file-export text-cyan-400" aria-hidden="true"></i><span>Exportar Colores</span>
+      </h3>
+      <button class="btn-close-modal text-slate-400 hover:text-white p-1" aria-label="Cerrar">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="flex space-x-2 border-b border-slate-800 pb-2" role="tablist">
+      <button data-format="css" class="btn-export-tab px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-600 text-white" role="tab" aria-selected="true">Variables CSS</button>
+      <button data-format="json" class="btn-export-tab px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:bg-slate-800" role="tab" aria-selected="false">JSON</button>
+      <button data-format="txt" class="btn-export-tab px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:bg-slate-800" role="tab" aria-selected="false">Lista (HEX)</button>
+    </div>
+
+    <textarea id="export-preview" readonly class="w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-cyan-300 resize-none" aria-label="Previsualización del código exportado"></textarea>
+
+    <div class="flex justify-end space-x-2 pt-2">
+      <button class="btn-close-modal px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 transition-colors">Cerrar</button>
+      <button id="btn-copy-export" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white shadow-md flex items-center space-x-1.5 transition-colors">
+        <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copiar Código</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* =========================================================
+     CONFIGURACIÓN
+     ========================================================= */
+  const CONFIG = {
+    MAX_CANVAS_DIM: 4096,       // Cap de memoria de canvas (~64 MB vs ~190 MB)
+    PALETTE_SIZE: 8,
+    PALETTE_SAMPLE: 100,        // Se muestrea en 100x100 px
+    PALETTE_MIN_DIST: 42,       // Distancia RGB mínima entre colores únicos
+    HISTORY_MAX: 14,
+    MAX_TOASTS: 4,
+    LOUPE_SIZE: 11,             // Matriz 11x11
+    LOUPE_OFFSET_GAP: 6,
+    RESIZE_DEBOUNCE: 180,
+    SECURE_CTX_REQUIRED: true,
+  };
+
+  const SAMPLE_URLS = {
+    neon:         'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1000&q=80',
+    nature:       'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1000&q=80',
+    city:         'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80',
+    illustration: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1000&q=80',
+  };
+
+  /* =========================================================
+     DOM CACHE
+     ========================================================= */
+  const $ = (id) => document.getElementById(id);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  const dom = {
+    dropzone:     $('dropzone'),
+    emptyState:   $('empty-state'),
+    dragOverlay:  $('drag-overlay'),
+    mainCanvas:   $('main-canvas'),
+    loupe:        $('loupe-container'),
+    loupeCanvas:  $('loupe-canvas'),
+    loupeHexTag:  $('loupe-hex-tag'),
+    activeSwatch: $('active-swatch'),
+    activeHex:    $('active-hex'),
+    activeRgb:    $('active-rgb-preview'),
+    imgDims:      $('img-dimensions'),
+    fmt: {
+      hex:  $('fmt-hex'),
+      rgb:  $('fmt-rgb'),
+      hsl:  $('fmt-hsl'),
+      hsv:  $('fmt-hsv'),
+      cmyk: $('fmt-cmyk'),
+    },
+    wcag: {
+      blackRatio:  $('wcag-black-ratio'),
+      blackBadge:  $('wcag-black-badge'),
+      whiteRatio:  $('wcag-white-ratio'),
+      whiteBadge:  $('wcag-white-badge'),
+      suggestion:  $('wcag-suggestion'),
+    },
+    history:      $('history-swatches'),
+    palette:      $('palette-swatches'),
+    samplesMenu:  $('samples-menu'),
+    samplesBtn:   $('btn-samples-toggle'),
+    modalUrl:     $('modal-url'),
+    modalExport:  $('modal-export'),
+    exportPreview:$('export-preview'),
+    toastBox:     $('toast-container'),
+    fileInput:    $('file-input'),
+  };
+
+  const mainCtx = dom.mainCanvas.getContext('2d', { willReadFrequently: true });
+  const loupeCtx = dom.loupeCanvas.getContext('2d', { willReadFrequently: false });
+
+  /* =========================================================
+     ESTADO
+     ========================================================= */
+  let currentImg = null;
+  let activeColor = { r: 6, g: 182, b: 212, hex: '#06B6D4' };
+  let historyColors = [];
+  let extractedPalette = [];
+  let exportFmt = 'css';
+
+  /* =========================================================
+     COLOR MATH (cacheado)
+     ========================================================= */
+  const hexByte = (x) => {
+    const h = Math.min(255, Math.max(0, Math.round(x))).toString(16);
+    return h.length === 1 ? '0' + h : h;
+  };
+
+  const rgbToHex = (r, g, b) => '#' + hexByte(r) + hexByte(g) + hexByte(b);
+
+  const HEX_CACHE = new Map();
+  const hexToRgb = (hex) => {
+    if (HEX_CACHE.has(hex)) return HEX_CACHE.get(hex);
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    const num = parseInt(c, 16);
+    const out = { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    if (HEX_CACHE.size < 500) HEX_CACHE.set(hex, out);
+    return out;
+  };
+
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+  }
+
+  function rgbToHsv(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const d = max - min;
+    const v = max;
+    const s = max === 0 ? 0 : d / max;
+    let h = 0;
+    if (max !== min) {
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return { h: Math.round(h * 360), s: Math.round(s * 100), v: Math.round(v * 100) };
+  }
+
+  function rgbToCmyk(r, g, b) {
+    const c = 1 - r / 255;
+    const m = 1 - g / 255;
+    const y = 1 - b / 255;
+    const k = Math.min(c, m, y);
+    if (k === 1) return { c: 0, m: 0, y: 0, k: 100 };
+    return {
+      c: Math.round(((c - k) / (1 - k)) * 100),
+      m: Math.round(((m - k) / (1 - k)) * 100),
+      y: Math.round(((y - k) / (1 - k)) * 100),
+      k: Math.round(k * 100),
+    };
+  }
+
+  /* =========================================================
+     WCAG
+     ========================================================= */
+  function getLuminance(r, g, b) {
+    const ch = (v) => {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+    return ch(r) * 0.2126 + ch(g) * 0.7152 + ch(b) * 0.0722;
+  }
+
+  const getContrastRatio = (l1, l2) => {
+    const b = Math.max(l1, l2);
+    const d = Math.min(l1, l2);
+    return (b + 0.05) / (d + 0.05);
+  };
+
+  const BADGE_CLASSES = {
+    AAA:  'text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+    AA:   'text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+    AAL:  'text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30',
+    FAIL: 'text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30',
+  };
+
+  function evaluateWCAG(badgeEl, ratio) {
+    let label, cls;
+    if (ratio >= 7)      { label = 'AAA';  cls = BADGE_CLASSES.AAA; }
+    else if (ratio >= 4.5){ label = 'AA';   cls = BADGE_CLASSES.AA; }
+    else if (ratio >= 3)  { label = 'AA Large'; cls = BADGE_CLASSES.AAL; }
+    else                  { label = 'Falló'; cls = BADGE_CLASSES.FAIL; }
+    badgeEl.textContent = label;
+    badgeEl.className = cls;
+  }
+
+  /* =========================================================
+     UPDATE COLOR ACTIVO
+     ========================================================= */
+  function updateActiveColor(r, g, b, saveHist = true) {
+    const hex = rgbToHex(r, g, b);
+    activeColor = { r, g, b, hex };
+
+    dom.activeSwatch.style.backgroundColor = hex;
+    dom.activeHex.textContent = hex;
+    dom.activeRgb.textContent = `rgb(${r}, ${g}, ${b})`;
+    dom.fmt.hex.textContent = hex;
+    dom.fmt.rgb.textContent = `rgb(${r}, ${g}, ${b})`;
+
+    const hsl = rgbToHsl(r, g, b);
+    dom.fmt.hsl.textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+
+    const hsv = rgbToHsv(r, g, b);
+    dom.fmt.hsv.textContent = `hsv(${hsv.h}, ${hsv.s}%, ${hsv.v}%)`;
+
+    const cmyk = rgbToCmyk(r, g, b);
+    dom.fmt.cmyk.textContent = `cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`;
+
+    const lum = getLuminance(r, g, b);
+    const cBlack = getContrastRatio(lum, 0);
+    const cWhite = getContrastRatio(lum, 1);
+
+    dom.wcag.blackRatio.textContent = `${cBlack.toFixed(1)}:1`;
+    dom.wcag.whiteRatio.textContent = `${cWhite.toFixed(1)}:1`;
+    evaluateWCAG(dom.wcag.blackBadge, cBlack);
+    evaluateWCAG(dom.wcag.whiteBadge, cWhite);
+
+    const useWhiteText = cWhite > cBlack;
+    dom.wcag.suggestion.textContent = useWhiteText ? 'Texto Blanco' : 'Texto Negro';
+    dom.wcag.suggestion.className = useWhiteText
+      ? 'text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-white text-black shadow-sm'
+      : 'text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-black text-white shadow-sm border border-slate-700';
+
+    if (saveHist) addToHistory(hex);
+  }
+
+  /* =========================================================
+     LOUPE (throttle por rAF)
+     ========================================================= */
+  let loupePendingEvent = null;
+  let loupeRafId = 0;
+
+  function scheduleLoupe(clientX, clientY) {
+    loupePendingEvent = { clientX, clientY };
+    if (loupeRafId) return;
+    loupeRafId = requestAnimationFrame(() => {
+      loupeRafId = 0;
+      if (loupePendingEvent) {
+        const { clientX, clientY } = loupePendingEvent;
+        loupePendingEvent = null;
+        renderLoupe(clientX, clientY);
+      }
+    });
+  }
+
+  function renderLoupe(clientX, clientY) {
+    if (!currentImg) return null;
+
+    const canvasRect = dom.mainCanvas.getBoundingClientRect();
+    const mouseX = clientX - canvasRect.left;
+    const mouseY = clientY - canvasRect.top;
+
+    if (mouseX < 0 || mouseX >= canvasRect.width || mouseY < 0 || mouseY >= canvasRect.height) {
+      dom.loupe.classList.add('hidden');
+      return null;
+    }
+
+    dom.loupe.classList.remove('hidden');
+
+    const dzRect = dom.dropzone.getBoundingClientRect();
+    const relX = clientX - dzRect.left;
+    const relY = clientY - dzRect.top;
+
+    const lw = dom.loupe.offsetWidth || 128;
+    const lh = dom.loupe.offsetHeight || 128;
+    const GAP = CONFIG.LOUPE_OFFSET_GAP;
+
+    let posX = relX + GAP;
+    let posY = relY - lh - GAP;
+
+    if (posY < 6) posY = relY + GAP + 12;
+    if (posX + lw > dzRect.width - 6) posX = relX - lw - GAP;
+    if (posX < 6) posX = 6;
+    if (posY + lh > dzRect.height - 6) posY = dzRect.height - lh - 6;
+
+    dom.loupe.style.left = posX + 'px';
+    dom.loupe.style.top  = posY + 'px';
+
+    const scaleX = dom.mainCanvas.width / canvasRect.width;
+    const scaleY = dom.mainCanvas.height / canvasRect.height;
+    const imgX = Math.floor(mouseX * scaleX);
+    const imgY = Math.floor(mouseY * scaleY);
+
+    const R = Math.floor(CONFIG.LOUPE_SIZE / 2);
+
+    loupeCtx.imageSmoothingEnabled = false;
+    loupeCtx.fillStyle = '#0f172a';
+    loupeCtx.fillRect(0, 0, 128, 128);
+    loupeCtx.drawImage(dom.mainCanvas, imgX - R, imgY - R, CONFIG.LOUPE_SIZE, CONFIG.LOUPE_SIZE, 0, 0, 128, 128);
+
+    // Grid overlay
+    loupeCtx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+    loupeCtx.lineWidth = 1;
+    const step = 128 / CONFIG.LOUPE_SIZE;
+    for (let i = 0; i <= 128; i += step) {
+      loupeCtx.beginPath(); loupeCtx.moveTo(i, 0); loupeCtx.lineTo(i, 128); loupeCtx.stroke();
+      loupeCtx.beginPath(); loupeCtx.moveTo(0, i); loupeCtx.lineTo(128, i); loupeCtx.stroke();
+    }
+
+    try {
+      const px = mainCtx.getImageData(imgX, imgY, 1, 1).data;
+      const hex = rgbToHex(px[0], px[1], px[2]);
+      dom.loupeHexTag.textContent = hex;
+      return { r: px[0], g: px[1], b: px[2], hex };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /* =========================================================
+     INTERACCIÓN CON CANVAS
+     ========================================================= */
+  dom.mainCanvas.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return; // touch se gestiona aparte
+    scheduleLoupe(e.clientX, e.clientY);
+  }, { passive: true });
+
+  dom.mainCanvas.addEventListener('pointerleave', () => dom.loupe.classList.add('hidden'), { passive: true });
+
+  dom.mainCanvas.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') {
+      e.preventDefault();
+      scheduleLoupe(e.clientX, e.clientY);
+    }
+  }, { passive: false });
+
+  dom.mainCanvas.addEventListener('pointerup', (e) => {
+    const sampled = renderLoupe(e.clientX, e.clientY);
+    dom.loupe.classList.add('hidden');
+    if (sampled) {
+      updateActiveColor(sampled.r, sampled.g, sampled.b);
+      showToast(`Color ${sampled.hex} capturado`);
+    }
+  });
+
+  // Navegación por teclado en el canvas
+  let kbX = 0, kbY = 0;
+  dom.mainCanvas.addEventListener('keydown', (e) => {
+    if (!currentImg) return;
+    const step = e.shiftKey ? 10 : 1;
+    let moved = true;
+    const rect = dom.mainCanvas.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    switch (e.key) {
+      case 'ArrowLeft':  kbX -= step; break;
+      case 'ArrowRight': kbX += step; break;
+      case 'ArrowUp':    kbY -= step; break;
+      case 'ArrowDown':  kbY += step; break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        {
+          const sampled = renderLoupe(cx + kbX, cy + kbY);
+          if (sampled) {
+            updateActiveColor(sampled.r, sampled.g, sampled.b);
+            showToast(`Color ${sampled.hex} capturado`);
+          }
+        }
+        return;
+      default: moved = false;
+    }
+    if (moved) {
+      e.preventDefault();
+      scheduleLoupe(cx + kbX, cy + kbY);
+    }
+  });
+
+  /* =========================================================
+     CARGA DE IMAGEN
+     ========================================================= */
+  function computeCanvasSize(nw, nh) {
+    const max = CONFIG.MAX_CANVAS_DIM;
+    if (nw <= max && nh <= max) return { w: nw, h: nh };
+    const ratio = Math.min(max / nw, max / nh);
+    return { w: Math.round(nw * ratio), h: Math.round(nh * ratio) };
+  }
+
+  function loadImage(src) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      currentImg = img;
+      dom.emptyState.classList.add('hidden');
+      dom.mainCanvas.classList.remove('hidden');
+
+      const { w, h } = computeCanvasSize(img.naturalWidth, img.naturalHeight);
+      dom.imgDims.textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+      if (w !== img.naturalWidth) {
+        dom.imgDims.textContent += ` (escalada a ${w}×${h})`;
+      }
+
+      dom.mainCanvas.width = w;
+      dom.mainCanvas.height = h;
+      mainCtx.drawImage(img, 0, 0, w, h);
+
+      extractPalette();
+      showToast('Imagen cargada con éxito');
+    };
+    img.onerror = () => {
+      if (!img.src.startsWith('data:')) {
+        generateFallbackPattern();
+        showToast('Cargada imagen generada de respaldo', 'warning');
+      } else {
+        showToast('No se pudo cargar la imagen', 'error');
+      }
+    };
+    img.src = src;
+  }
+
+  function generateFallbackPattern() {
+    const cvs = document.createElement('canvas');
+    cvs.width = 800; cvs.height = 600;
+    const ctx = cvs.getContext('2d');
+
+    const g = ctx.createLinearGradient(0, 0, 800, 600);
+    g.addColorStop(0, '#06b6d4');
+    g.addColorStop(0.5, '#ec4899');
+    g.addColorStop(1, '#10b981');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 800, 600);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(400, 300, 140, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Asignar directo (evita recursión si toDataURL falla)
+    const dataUrl = cvs.toDataURL();
+    const img = new Image();
+    img.onload = () => {
+      currentImg = img;
+      dom.emptyState.classList.add('hidden');
+      dom.mainCanvas.classList.remove('hidden');
+      dom.mainCanvas.width = img.naturalWidth;
+      dom.mainCanvas.height = img.naturalHeight;
+      mainCtx.drawImage(img, 0, 0);
+      dom.imgDims.textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+      extractPalette();
+    };
+    img.src = dataUrl;
+  }
+
+  /* =========================================================
+     EXTRACCIÓN DE PALETA
+     ========================================================= */
+  function extractPalette() {
+    if (!currentImg) return;
+
+    const N = CONFIG.PALETTE_SAMPLE;
+    const tmp = document.createElement('canvas');
+    tmp.width = N; tmp.height = N;
+    const ctx = tmp.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(currentImg, 0, 0, N, N);
+
+    const data = ctx.getImageData(0, 0, N, N).data;
+    const buckets = new Map();
+
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] < 128) continue;
+      const r = Math.round(data[i]     / 24) * 24;
+      const g = Math.round(data[i + 1] / 24) * 24;
+      const b = Math.round(data[i + 2] / 24) * 24;
+      const hex = rgbToHex(r, g, b);
+      buckets.set(hex, (buckets.get(hex) || 0) + 1);
+    }
+
+    const sorted = Array.from(buckets.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([hex]) => hex);
+
+    extractedPalette = [];
+    const minDist2 = CONFIG.PALETTE_MIN_DIST * CONFIG.PALETTE_MIN_DIST;
+
+    for (const hex of sorted) {
+      const rgb = hexToRgb(hex);
+      const similar = extractedPalette.some((exHex) => {
+        const ex = hexToRgb(exHex);
+        const dr = rgb.r - ex.r, dg = rgb.g - ex.g, db = rgb.b - ex.b;
+        return (dr * dr + dg * dg + db * db) < minDist2;
+      });
+      if (!similar) extractedPalette.push(hex);
+      if (extractedPalette.length >= CONFIG.PALETTE_SIZE) break;
+    }
+
+    renderPaletteSwatches();
+  }
+
+  function renderPaletteSwatches() {
+    dom.palette.innerHTML = '';
+    if (!extractedPalette.length) {
+      dom.palette.innerHTML = `<div class="col-span-full text-center py-3 text-xs text-slate-500 italic">Sin colores extraídos.</div>`;
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    extractedPalette.forEach((hex) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.setAttribute('role', 'listitem');
+      card.setAttribute('aria-label', `Seleccionar color ${hex}`);
+      card.className = 'flex flex-col items-center bg-slate-950 p-1.5 rounded-xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer group';
+      card.innerHTML = `
+        <div class="w-full h-8 rounded-lg shadow-sm border border-slate-800 transition-transform group-hover:scale-105" style="background-color: ${hex}"></div>
+        <span class="text-[10px] font-mono font-bold text-slate-300 mt-1 group-hover:text-cyan-400">${hex}</span>
+      `;
+      card.addEventListener('click', () => {
+        const rgb = hexToRgb(hex);
+        updateActiveColor(rgb.r, rgb.g, rgb.b);
+        showToast(`Color ${hex} seleccionado`);
+      });
+      frag.appendChild(card);
+    });
+    dom.palette.appendChild(frag);
+  }
+
+  /* =========================================================
+     HISTORIAL
+     ========================================================= */
+  function loadHistory() {
+    try {
+      const saved = localStorage.getItem('cuentagotas_hist');
+      historyColors = saved ? JSON.parse(saved)
+                            : ['#06B6D4', '#EC4899', '#10B981', '#F59E0B', '#3B82F6'];
+    } catch (e) {
+      historyColors = ['#06B6D4', '#EC4899', '#10B981'];
+    }
+    renderHistory();
+  }
+
+  function addToHistory(hex) {
+    if (historyColors[0] === hex) return;
+    historyColors = [hex, ...historyColors.filter(c => c !== hex)].slice(0, CONFIG.HISTORY_MAX);
+    try { localStorage.setItem('cuentagotas_hist', JSON.stringify(historyColors)); } catch (e) {}
+    renderHistory();
+  }
+
+  function renderHistory() {
+    dom.history.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    historyColors.forEach((hex) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.setAttribute('role', 'listitem');
+      btn.setAttribute('aria-label', `Usar color ${hex}`);
+      btn.className = 'w-7 h-7 rounded-lg border border-slate-700 shadow-sm transition-transform hover:scale-110 active:scale-95';
+      btn.style.backgroundColor = hex;
+      btn.title = hex;
+      btn.addEventListener('click', () => {
+        const rgb = hexToRgb(hex);
+        updateActiveColor(rgb.r, rgb.g, rgb.b, false);
+        showToast(`Color ${hex} seleccionado`);
+      });
+      frag.appendChild(btn);
+    });
+    dom.history.appendChild(frag);
+  }
+
+  /* =========================================================
+     CLIPBOARD
+     ========================================================= */
+  async function copyToClipboard(txt) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(txt);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = txt;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      showToast(`Copiado: ${txt.length > 32 ? txt.slice(0, 30) + '…' : txt}`);
+    } catch (err) {
+      showToast('Error al copiar', 'error');
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-copy');
+    if (!btn) return;
+    const tid = btn.getAttribute('data-copy-target');
+    const el = document.getElementById(tid);
+    if (el) copyToClipboard(el.textContent);
+  });
+
+  dom.activeHex.addEventListener('click', () => copyToClipboard(dom.activeHex.textContent.trim()));
+  dom.activeSwatch.addEventListener('click', () => copyToClipboard(dom.activeHex.textContent.trim()));
+
+  $('btn-copy-palette').addEventListener('click', () => {
+    if (!extractedPalette.length) {
+      showToast('No hay paleta para copiar', 'warning');
+      return;
+    }
+    copyToClipboard(extractedPalette.join('\n'));
+  });
+
+  /* =========================================================
+     TOASTS
+     ========================================================= */
+  function showToast(msg, type = 'success') {
+    const box = dom.toastBox;
+    // Limitar número de toasts visibles
+    while (box.children.length >= CONFIG.MAX_TOASTS) {
+      box.removeChild(box.firstChild);
+    }
+
+    const toast = document.createElement('div');
+    const palette = type === 'error'
+      ? 'bg-rose-950/90 text-rose-200 border-rose-800'
+      : type === 'warning'
+      ? 'bg-amber-950/90 text-amber-200 border-amber-800'
+      : 'bg-slate-900/95 text-slate-100 border-slate-700';
+
+    toast.className = `toast-popup toast-hidden px-4 py-2.5 rounded-xl shadow-2xl border text-xs font-semibold flex items-center space-x-2 ${palette}`;
+
+    const icon = type === 'error'
+      ? '<i class="fa-solid fa-circle-exclamation text-rose-400" aria-hidden="true"></i>'
+      : type === 'warning'
+      ? '<i class="fa-solid fa-triangle-exclamation text-amber-400" aria-hidden="true"></i>'
+      : '<i class="fa-solid fa-circle-check text-cyan-400" aria-hidden="true"></i>';
+
+    toast.innerHTML = `${icon}<span></span>`;
+    toast.querySelector('span').textContent = msg; // textContent evita XSS
+
+    box.appendChild(toast);
+    requestAnimationFrame(() => {
+      toast.classList.remove('toast-hidden');
+      toast.classList.add('toast-visible');
+    });
+
+    setTimeout(() => {
+      toast.classList.remove('toast-visible');
+      toast.classList.add('toast-hidden');
+      setTimeout(() => toast.remove(), 300);
+    }, 2400);
+  }
+
+  /* =========================================================
+     MODALES (Escape + focus trap)
+     ========================================================= */
+  let lastFocused = null;
+
+  function openModal(modal, focusEl = null) {
+    lastFocused = document.activeElement;
+    modal.classList.remove('hidden');
+    if (focusEl) setTimeout(() => focusEl.focus(), 50);
+  }
+
+  function closeModal(modal) {
+    modal.classList.add('hidden');
+    if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+  }
+
+  function closeAllModals() {
+    if (!dom.modalUrl.classList.contains('hidden')) closeModal(dom.modalUrl);
+    if (!dom.modalExport.classList.contains('hidden')) closeModal(dom.modalExport);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllModals();
+  });
+
+  $$('.btn-close-modal').forEach((b) => b.addEventListener('click', closeAllModals));
+
+  dom.modalUrl.addEventListener('click', (e) => { if (e.target === dom.modalUrl) closeModal(dom.modalUrl); });
+  dom.modalExport.addEventListener('click', (e) => { if (e.target === dom.modalExport) closeModal(dom.modalExport); });
+
+  $('btn-open-url').addEventListener('click', () => openModal(dom.modalUrl, $('input-url')));
+
+  $('btn-confirm-url').addEventListener('click', () => {
+    const u = $('input-url').value.trim();
+    if (!u) return;
+    loadImage(u);
+    closeModal(dom.modalUrl);
+    $('input-url').value = '';
+  });
+
+  $('input-url').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') $('btn-confirm-url').click();
+  });
+
+  /* =========================================================
+     MENÚ MUESTRAS
+     ========================================================= */
+  dom.samplesBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = !dom.samplesMenu.classList.contains('hidden');
+    dom.samplesMenu.classList.toggle('hidden', isOpen);
+    dom.samplesBtn.setAttribute('aria-expanded', String(!isOpen));
+  });
+
+  document.addEventListener('click', () => {
+    if (!dom.samplesMenu.classList.contains('hidden')) {
+      dom.samplesMenu.classList.add('hidden');
+      dom.samplesBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  dom.samplesMenu.addEventListener('click', (e) => {
+    const btn = e.target.closest('.sample-btn');
+    if (!btn) return;
+    const sample = btn.getAttribute('data-sample');
+    dom.samplesMenu.classList.add('hidden');
+    dom.samplesBtn.setAttribute('aria-expanded', 'false');
+    const url = SAMPLE_URLS[sample];
+    if (url) loadImage(url);
+  });
+
+  /* =========================================================
+     EYEDROPPER
+     ========================================================= */
+  $('btn-native-eyedropper').addEventListener('click', async () => {
+    if (!('EyeDropper' in window)) {
+      showToast('Tu navegador no soporta Cuentagotas de Pantalla', 'error');
+      return;
+    }
+    if (CONFIG.SECURE_CTX_REQUIRED && !window.isSecureContext) {
+      showToast('Requiere HTTPS para el Cuentagotas nativo', 'warning');
+      return;
+    }
+    try {
+      const res = await new EyeDropper().open();
+      const rgb = hexToRgb(res.sRGBHex);
+      updateActiveColor(rgb.r, rgb.g, rgb.b);
+      showToast(`Color ${res.sRGBHex} capturado`);
+    } catch (_) { /* Usuario canceló */ }
+  });
+
+  /* =========================================================
+     CARGA DE ARCHIVOS (file input, drag, paste)
+     ========================================================= */
+  function readImageFile(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('Formato no soportado. Use una imagen.', 'error');
+      return;
+    }
+    const r = new FileReader();
+    r.onload = (e) => loadImage(e.target.result);
+    r.onerror = () => showToast('Error al leer el archivo', 'error');
+    r.readAsDataURL(file);
+  }
+
+  dom.fileInput.addEventListener('change', (e) => {
+    readImageFile(e.target.files[0]);
+    e.target.value = ''; // permite recargar el mismo archivo
+  });
+
+  // Drag & drop
+  const dragOverlay = dom.dragOverlay;
+  ['dragenter', 'dragover'].forEach((ev) => {
+    dom.dropzone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      dragOverlay.classList.remove('hidden');
+    }, { passive: false });
+  });
+  ['dragleave', 'drop'].forEach((ev) => {
+    dom.dropzone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      dragOverlay.classList.add('hidden');
+    }, { passive: false });
+  });
+  dom.dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const f = e.dataTransfer?.files?.[0];
+    if (f) readImageFile(f);
+  });
+
+  // Paste global
+  window.addEventListener('paste', (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        readImageFile(item.getAsFile());
+        showToast('Imagen pegada desde el portapapeles');
+        break;
+      }
+    }
+  });
+
+  /* =========================================================
+     EXPORTACIÓN
+     ========================================================= */
+  $('btn-export-history').addEventListener('click', () => {
+    updateExport();
+    openModal(dom.modalExport, dom.exportPreview);
+  });
+
+  dom.modalExport.addEventListener('click', (e) => {
+    const tab = e.target.closest('.btn-export-tab');
+    if (!tab) return;
+    $$('.btn-export-tab').forEach((t) => {
+      t.classList.remove('bg-cyan-600', 'text-white');
+      t.classList.add('text-slate-400');
+      t.setAttribute('aria-selected', 'false');
+    });
+    tab.classList.add('bg-cyan-600', 'text-white');
+    tab.classList.remove('text-slate-400');
+    tab.setAttribute('aria-selected', 'true');
+    exportFmt = tab.getAttribute('data-format');
+    updateExport();
+  });
+
+  function updateExport() {
+    const all = Array.from(new Set([...extractedPalette, ...historyColors]));
+    if (exportFmt === 'css') {
+      dom.exportPreview.value =
+        ':root {\n' + all.map((c, i) => `  --color-${i + 1}: ${c};`).join('\n') + '\n}';
+    } else if (exportFmt === 'json') {
+      dom.exportPreview.value = JSON.stringify(
+        { palette: extractedPalette, history: historyColors }, null, 2
+      );
+    } else {
+      dom.exportPreview.value = all.join('\n');
+    }
+  }
+
+  $('btn-copy-export').addEventListener('click', () => copyToClipboard(dom.exportPreview.value));
+
+  /* =========================================================
+     HISTORIAL: limpiar + reextract
+     ========================================================= */
+  $('btn-clear-history').addEventListener('click', () => {
+    historyColors = [];
+    localStorage.removeItem('cuentagotas_hist');
+    renderHistory();
+    showToast('Historial borrado');
+  });
+
+  $('btn-reextract').addEventListener('click', () => {
+    if (!currentImg) {
+      showToast('Carga una imagen primero', 'warning');
+      return;
+    }
+    extractPalette();
+    showToast('Paleta reanalizada');
+  });
+
+  /* =========================================================
+     RESIZE (debounced + skip si no cambia)
+     ========================================================= */
+  const debounce = (fn, wait) => {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), wait);
+    };
+  };
+
+  let lastW = 0, lastH = 0;
+  const handleResize = debounce(() => {
+    if (!currentImg) return;
+    const w = window.innerWidth, h = window.innerHeight;
+    if (w === lastW && h === lastH) return;
+    lastW = w; lastH = h;
+    // No re-renderizamos el canvas: mantiene su resolución nativa y el CSS lo escala.
+  }, CONFIG.RESIZE_DEBOUNCE);
+
+  window.addEventListener('resize', handleResize, { passive: true });
+  window.addEventListener('orientationchange', handleResize, { passive: true });
+
+  /* =========================================================
+     INICIALIZACIÓN
+     ========================================================= */
+  loadHistory();
+  updateActiveColor(6, 182, 212, false);
+
+  // Cargar muestra de bienvenida
+  setTimeout(() => loadImage(SAMPLE_URLS.neon), 150);
+
+})();
+</script>
 </body>
 </html>

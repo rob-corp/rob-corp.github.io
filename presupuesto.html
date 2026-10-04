@@ -1,747 +1,1134 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calculadora de Presupuestos</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#090d16">
+<title>Calculadora de Presupuestos</title>
+<link id="favicon" rel="icon" type="image/svg+xml" href="iconos/presupuestador.svg">
 
-    <!-- FAVICON RESTAURADO -->
-    <link id="favicon" rel="icon" type="image/svg+xml" href="iconos/presupuestador.svg">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Frameworks, Iconos, Excel Engine y Supabase SDK -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        screens: { xs: '400px' },
+        colors: { slate: { 850: '#131e2e', 950: '#090d16' }, cyan: { 500: '#06b6d4', 600: '#0891b2' } }
+      }
+    }
+  };
+</script>
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    screens: {
-                        'xs': '400px'
-                    },
-                    colors: {
-                        slate: { 850: '#131e2e', 950: '#090d16' },
-                        cyan: { 500: '#06b6d4', 600: '#0891b2' }
-                    }
-                }
-            }
-        }
-    </script>
+<style>
+  *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
 
-    <style>
-        *, *:focus, *:focus-visible, *:active {
-            outline: none !important;
-            box-shadow: none !important;
-            -webkit-tap-highlight-color: transparent !important;
-        }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #090d16; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #334155; }
-        
-        /* Sintaxis CSS estandarizada para suprimir advertencias de linter */
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-            appearance: textfield;
-        }
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); cursor: pointer; }
+  /* Foco visible SOLO con teclado */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid #06b6d4;
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
 
-        /* PREVENCIÓN DE AUTOFILL DE CHROME (Evita el fondo blanco y texto negro) */
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus, 
-        input:-webkit-autofill:active {
-            -webkit-box-shadow: 0 0 0 30px #090d16 inset !important;
-            -webkit-text-fill-color: #f1f5f9 !important;
-            transition: background-color 5000s ease-in-out 0s;
-        }
-    </style>
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #090d16; }
+  ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none; appearance: none; margin: 0;
+  }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); cursor: pointer; }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #090d16 inset !important;
+    -webkit-text-fill-color: #f1f5f9 !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Control de visibilidad de modales (evita conflicto hidden/flex de Tailwind) */
+  .modal { display: none; }
+  .modal.modal-open { display: flex; }
+
+  /* Botón guardando con spinner */
+  .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
+  .btn-loading::after {
+    content: ''; position: absolute; inset: 0; margin: auto;
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: #fff;
+    animation: btnspin 0.7s linear infinite;
+  }
+  @keyframes btnspin { to { transform: rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-white flex flex-col">
 
-    <!-- CABECERA ADAPTATIVA CORREGIDA -->
-    <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-h-[4rem] py-2 flex items-center justify-between gap-2">
-            
-            <!-- LOGO Y TÍTULO (PROTEGIDO CONTRA DEFORMACIONES) -->
-            <a href="index.html" class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 sm:flex-initial group">
-                <img src="iconos/y.r.svg" alt="Logo YR" class="h-7 sm:h-8 w-auto object-contain flex-shrink-0" onerror="this.style.display='none'">
-                <h1 class="text-xs sm:text-base md:text-lg font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors truncate">
-                    Calculadora de Presupuestos
-                </h1>
-            </a>
+<header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-h-[4rem] py-2 flex items-center justify-between gap-2">
+    <a href="index.html" class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 sm:flex-initial group">
+      <img src="iconos/y.r.svg" alt="Logo YR" class="h-7 sm:h-8 w-auto object-contain flex-shrink-0" onerror="this.style.display='none'">
+      <h1 class="text-xs sm:text-base md:text-lg font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors truncate">
+        Calculadora de Presupuestos
+      </h1>
+    </a>
 
-            <!-- INFORMACIÓN DE USUARIO (COMPACTA Y ADAPTABLE) -->
-            <div class="flex items-center space-x-2 flex-shrink-0">
-                <div id="user-info-bar" class="hidden items-center space-x-1.5 sm:space-x-2 bg-slate-800/90 border border-slate-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl shadow-inner">
-                    <span class="text-xs">👤</span>
-                    <span id="user-email-display" class="text-[11px] sm:text-xs font-mono text-cyan-300 font-semibold max-w-[80px] xs:max-w-[130px] sm:max-w-[200px] truncate">Cargando...</span>
-                    <button onclick="logout()" class="text-slate-400 hover:text-rose-400 ml-0.5 sm:ml-1 text-xs transition-colors p-0.5" title="Cerrar Sesión">
-                        🚪
-                    </button>
-                </div>
+    <div class="flex items-center space-x-2 flex-shrink-0">
+      <div id="user-info-bar" class="hidden items-center space-x-1.5 sm:space-x-2 bg-slate-800/90 border border-slate-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl shadow-inner">
+        <i class="fa-solid fa-user text-cyan-400 text-xs" aria-hidden="true"></i>
+        <span id="user-email-display" class="text-[11px] sm:text-xs font-mono text-cyan-300 font-semibold max-w-[80px] xs:max-w-[130px] sm:max-w-[200px] truncate">Cargando…</span>
+        <button type="button" id="btn-logout" class="text-slate-400 hover:text-rose-400 ml-0.5 sm:ml-1 text-xs transition-colors p-0.5" title="Cerrar sesión" aria-label="Cerrar sesión">
+          <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+        </button>
+      </div>
 
-                <button id="btn-login-modal" onclick="openModal('modal-auth')" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center space-x-1.5 transition-all whitespace-nowrap">
-                    <span>🔑 <span class="hidden xs:inline">Iniciar Sesión / </span>Registro</span>
-                </button>
-            </div>
+      <button type="button" id="btn-login-modal" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center space-x-1.5 transition-all whitespace-nowrap">
+        <i class="fa-solid fa-key" aria-hidden="true"></i>
+        <span><span class="hidden xs:inline">Iniciar Sesión / </span>Registro</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+  <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-3 sm:p-4 flex items-center justify-between shadow-md">
+    <div class="flex items-center space-x-2.5 text-xs text-slate-300 font-medium">
+      <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-600" aria-hidden="true"></span>
+      <span id="sync-status" aria-live="polite">Consultando cotización…</span>
+    </div>
+    <div class="text-right">
+      <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 block">Dólar Blue Venta</span>
+      <span id="dollar-price" class="text-base sm:text-lg font-mono font-extrabold text-emerald-400">ARS $0</span>
+    </div>
+  </div>
+</div>
+
+<main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+
+  <section class="lg:col-span-7 xl:col-span-8 flex flex-col space-y-5">
+
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Parámetros del Trabajo</h2>
+        <span id="current-rate-badge" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-950 border border-slate-800 text-slate-400">USD $10/h</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div class="space-y-1">
+          <label for="client" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Cliente (Autocompletado)</label>
+          <input type="text" id="client" autocomplete="off" name="calc_client_field" list="clients-autocomplete" placeholder="Ej: Juan Pérez" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-medium">
+          <datalist id="clients-autocomplete"></datalist>
         </div>
-    </header>
 
-    <!-- BARRA DÓLAR BLUE -->
-    <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-3 sm:p-4 flex items-center justify-between shadow-md">
-            <div class="flex items-center space-x-2.5 text-xs text-slate-300 font-medium">
-                <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-                <span id="sync-status">Consultando cotización...</span>
-            </div>
-            <div class="text-right">
-                <span class="text-[10px] uppercase tracking-wider font-bold text-slate-400 block">Dólar Blue Venta</span>
-                <span id="dollar-price" class="text-base sm:text-lg font-mono font-extrabold text-emerald-400">ARS $0</span>
-            </div>
+        <div class="space-y-1">
+          <label for="jobDetail" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Detalle del Trabajo</label>
+          <input type="text" id="jobDetail" autocomplete="off" name="calc_job_field" placeholder="Ej: Impresión 3D / Diseño" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-medium">
         </div>
+
+        <div class="space-y-1">
+          <label for="difficulty" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Dificultad / Tipo</label>
+          <select id="difficulty" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:border-cyan-500 font-medium">
+            <option value="7">Baja ($7 USD/hs)</option>
+            <option value="10" selected>Media ($10 USD/hs)</option>
+            <option value="15">Alta ($15 USD/hs)</option>
+            <option value="custom">Personalizada…</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label for="estimatedHours" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Horas Estimadas</label>
+          <input type="number" id="estimatedHours" min="0" step="0.5" placeholder="Ej: 2" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-mono">
+        </div>
+
+        <div class="space-y-1">
+          <label for="materialCost" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Costo de Insumos (ARS)</label>
+          <input type="number" id="materialCost" min="0" step="0.01" placeholder="Ej: 1500,50" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-mono">
+        </div>
+
+        <div class="space-y-1">
+          <label for="margin" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Margen de Imprevistos (%)</label>
+          <select id="margin" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:border-cyan-500 font-medium">
+            <option value="5">5% - Riesgo Bajo</option>
+            <option value="10">10% - Estándar</option>
+            <option value="15" selected>15% - Riesgo Medio</option>
+            <option value="20">20% - Alto / Complejo</option>
+          </select>
+        </div>
+      </div>
+
+      <input type="hidden" id="hourlyRate" value="10">
     </div>
 
-    <!-- MAIN GRID -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4 flex-1">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Mis Presupuestos Guardados</h2>
+        <span id="records-count" class="text-[11px] font-mono text-slate-500" aria-live="polite">0 registros</span>
+      </div>
 
-        <!-- PARÁMETROS DE CÁLCULO Y CATÁLOGO -->
-        <section class="lg:col-span-7 xl:col-span-8 flex flex-col space-y-5">
-            
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-                <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Parámetros del Trabajo</h2>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Cliente (Autocompletado)</label>
-                        <input type="text" id="client" autocomplete="off" name="calc_client_field" list="clients-autocomplete" placeholder="Ej: Juan Pérez" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-medium">
-                        <datalist id="clients-autocomplete"></datalist>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Detalle del Trabajo</label>
-                        <input type="text" id="jobDetail" autocomplete="off" name="calc_job_field" placeholder="Ej: Impresión 3D / Diseño" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-medium">
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Dificultad / Tipo</label>
-                        <select id="difficulty" onchange="handleDifficultyChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:border-cyan-500 font-medium">
-                            <option value="7">Baja ($7 USD/hs)</option>
-                            <option value="10" selected>Media ($10 USD/hs)</option>
-                            <option value="15">Alta ($15 USD/hs)</option>
-                            <option value="custom">Personalizada...</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Horas Estimadas</label>
-                        <input type="number" id="estimatedHours" placeholder="Ej: 2" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-mono">
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Costo de Insumos (ARS)</label>
-                        <input type="number" id="materialCost" placeholder="Ej: 1500,50" oninput="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-mono">
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Margen de Imprevistos (%)</label>
-                        <select id="margin" onchange="calculate()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:border-cyan-500 font-medium">
-                            <option value="5">5% - Riesgo Bajo</option>
-                            <option value="10">10% - Estándar</option>
-                            <option value="15" selected>15% - Riesgo Medio</option>
-                            <option value="20">20% - Alto / Complejo</option>
-                        </select>
-                    </div>
-                </div>
-
-                <input type="hidden" id="hourlyRate" value="10">
-            </div>
-
-            <!-- REGISTRO E HISTORIAL (AUTOFILL BLOQUEADO Y ESTILO OSCURO) -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4 flex-1">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Mis Presupuestos Guardados</h2>
-                    <span id="records-count" class="text-[11px] font-mono text-slate-500">0 registros</span>
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-2.5">
-                    <div class="relative flex-1">
-                        <input type="text" id="search-filter" autocomplete="off" name="search_history_query" placeholder="🔍 Buscar por cliente o detalle..." oninput="renderHistory()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500">
-                    </div>
-                    <select id="sort-order" onchange="renderHistory()" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:border-cyan-500">
-                        <option value="newest">Más recientes</option>
-                        <option value="az">Cliente (A-Z)</option>
-                    </select>
-                </div>
-
-                <div id="history-container" class="space-y-2 min-h-[120px]">
-                    <p class="text-xs text-slate-500 py-6 text-center italic">No hay presupuestos guardados aún.</p>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- PANEL DE RESUMEN DE COSTOS -->
-        <aside class="lg:col-span-5 xl:col-span-4 flex flex-col space-y-5">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4 sticky top-20">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Resumen de Costos</span>
-                </div>
-
-                <div class="space-y-2 text-xs">
-                    <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
-                        <span class="text-slate-400 font-medium">Mano de obra</span>
-                        <span id="res-labor" class="font-mono font-bold text-slate-200">ARS $0</span>
-                    </div>
-                    <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
-                        <span class="text-slate-400 font-medium">Insumos / Materiales</span>
-                        <span id="res-materials" class="font-mono font-bold text-slate-200">ARS $0</span>
-                    </div>
-                    <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
-                        <span class="text-slate-400 font-medium">Margen de seguridad</span>
-                        <span id="res-margin" class="font-mono font-bold text-slate-200">ARS $0</span>
-                    </div>
-                </div>
-
-                <div class="bg-gradient-to-b from-cyan-950/20 to-slate-950 border border-cyan-500/40 rounded-2xl p-4 text-center shadow-inner space-y-1">
-                    <span class="text-[10px] uppercase font-bold text-cyan-400 tracking-wider">Total sugerido a cobrar</span>
-                    <div id="res-total" class="text-2xl sm:text-3xl font-mono font-black text-emerald-400 tracking-tight">ARS $0</div>
-                    <div id="res-usd" class="text-xs font-mono text-slate-400">Equivalente a: USD $0.00</div>
-                </div>
-
-                <div class="space-y-2 pt-1">
-                    <button id="btn-save-trigger" onclick="openSaveModal()" class="w-full py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-all shadow-lg shadow-cyan-600/20 active:scale-95 flex items-center justify-center space-x-2">
-                        <span>Guardar Presupuesto</span>
-                    </button>
-
-                    <button id="btn-cancel-edit" onclick="resetForm()" class="hidden w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-semibold border border-slate-700 transition-all">
-                        Cancelar Edición
-                    </button>
-
-                    <button onclick="exportToExcelAndClear()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-lg shadow-emerald-600/20 active:scale-95 flex items-center justify-center space-x-2">
-                        <span>📊 Exportar a Excel y Limpiar</span>
-                    </button>
-                </div>
-            </div>
-        </aside>
-
-    </main>
-
-    <!-- MODAL AUTENTICACIÓN / NUBE -->
-    <div id="modal-auth" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 class="text-sm font-bold text-white" id="auth-modal-title">🔑 Iniciar Sesión</h3>
-                <button onclick="closeModal('modal-auth')" class="text-slate-400 hover:text-white p-1">✕</button>
-            </div>
-
-            <div class="space-y-3">
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Correo Electrónico</label>
-                    <input type="email" id="auth-email" autocomplete="email" placeholder="tu@email.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Contraseña</label>
-                    <input type="password" id="auth-password" autocomplete="current-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
-                </div>
-            </div>
-
-            <div class="space-y-2 pt-2">
-                <button id="btn-auth-submit" onclick="handleAuthSubmit()" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-all shadow-md">
-                    Ingresar
-                </button>
-                <button id="btn-auth-toggle" onclick="toggleAuthMode()" class="w-full py-2 rounded-xl text-xs text-slate-400 hover:text-cyan-300">
-                    ¿No tienes cuenta? Regístrate gratis
-                </button>
-            </div>
+      <div class="flex flex-col sm:flex-row gap-2.5">
+        <div class="relative flex-1">
+          <input type="text" id="search-filter" autocomplete="off" name="search_history_query" placeholder="🔍 Buscar por cliente o detalle…" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500">
         </div>
+        <select id="sort-order" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:border-cyan-500" aria-label="Ordenar historial">
+          <option value="newest">Más recientes</option>
+          <option value="az">Cliente (A-Z)</option>
+          <option value="amount">Mayor monto</option>
+        </select>
+      </div>
+
+      <div id="history-container" class="space-y-2 min-h-[120px]"></div>
     </div>
 
-    <!-- MODAL ARCHIVAR / COMPLETAR PERFIL -->
-    <div id="modal-save-profile" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
-            <h3 class="text-sm font-bold text-white">Archivar / Completar Perfil</h3>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Teléfono Cliente</label>
-                    <input type="tel" id="modal-phone" autocomplete="off" placeholder="Ej: +54 9 351..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Fecha de Inicio</label>
-                    <input type="date" id="modal-startDate" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100">
-                </div>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[10px] font-bold text-slate-400 uppercase">Notas / Bitácora</label>
-                <textarea id="modal-notes" rows="3" placeholder="Comentarios sobre insumos o requerimientos especiales..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 resize-none"></textarea>
-            </div>
-            <div class="flex justify-end space-x-2">
-                <button onclick="closeModal('modal-save-profile')" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800">Cancelar</button>
-                <button onclick="confirmSaveProfile()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 text-white">Confirmar Guardado</button>
-            </div>
+  </section>
+
+  <aside class="lg:col-span-5 xl:col-span-4 flex flex-col space-y-5">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4 sticky top-20">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Resumen de Costos</span>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
+          <span class="text-slate-400 font-medium">Mano de obra</span>
+          <span id="res-labor" class="font-mono font-bold text-slate-200">ARS $0</span>
         </div>
+        <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
+          <span class="text-slate-400 font-medium">Insumos / Materiales</span>
+          <span id="res-materials" class="font-mono font-bold text-slate-200">ARS $0</span>
+        </div>
+        <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
+          <span class="text-slate-400 font-medium">Margen de seguridad</span>
+          <span id="res-margin" class="font-mono font-bold text-slate-200">ARS $0</span>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-b from-cyan-950/20 to-slate-950 border border-cyan-500/40 rounded-2xl p-4 text-center shadow-inner space-y-1">
+        <span class="text-[10px] uppercase font-bold text-cyan-400 tracking-wider">Total sugerido a cobrar</span>
+        <div id="res-total" class="text-2xl sm:text-3xl font-mono font-black text-emerald-400 tracking-tight">ARS $0</div>
+        <div id="res-usd" class="text-xs font-mono text-slate-400">Equivalente a: USD $0.00</div>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <button type="button" id="btn-save-trigger" class="w-full py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-all shadow-lg shadow-cyan-600/20 active:scale-95 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+          <span>Guardar Presupuesto</span>
+        </button>
+
+        <button type="button" id="btn-cancel-edit" class="hidden w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-all">
+          Cancelar Edición
+        </button>
+
+        <button type="button" id="btn-export" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-lg shadow-emerald-600/20 active:scale-95 flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-file-excel" aria-hidden="true"></i>
+          <span>Exportar a Excel y Limpiar</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+</main>
+
+<!-- MODAL AUTH -->
+<div id="modal-auth" class="modal fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h3 class="text-sm font-bold text-white" id="auth-modal-title">🔑 Iniciar Sesión</h3>
+      <button type="button" data-close-modal="modal-auth" class="text-slate-400 hover:text-white p-1" aria-label="Cerrar">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
     </div>
 
-    <!-- MODAL CONFIRMACIÓN BORRAR -->
-    <div id="modal-confirm-delete" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
-            <h3 class="text-sm font-bold text-rose-400">¿Eliminar presupuesto?</h3>
-            <p class="text-xs text-slate-300">Esta acción quitará el presupuesto del registro. ¿Querés continuar?</p>
-            <div class="flex justify-end space-x-2">
-                <button onclick="closeModal('modal-confirm-delete')" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800">Cancelar</button>
-                <button onclick="confirmDeleteAction()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 text-white">Eliminar</button>
-            </div>
-        </div>
+    <div class="space-y-3">
+      <div class="space-y-1">
+        <label for="auth-email" class="text-[10px] font-bold text-slate-400 uppercase">Correo Electrónico</label>
+        <input type="email" id="auth-email" autocomplete="email" placeholder="tu@email.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
+      </div>
+      <div class="space-y-1">
+        <label for="auth-password" class="text-[10px] font-bold text-slate-400 uppercase">Contraseña</label>
+        <input type="password" id="auth-password" autocomplete="current-password" placeholder="••••••••" minlength="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
+      </div>
+      <p id="auth-error" class="hidden text-[11px] text-rose-400 font-medium" role="alert"></p>
     </div>
 
-    <!-- MODAL TARIFA PERSONALIZADA -->
-    <div id="modal-custom-rate" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
-            <h3 class="text-sm font-bold text-white">Tarifa Personalizada</h3>
-            <p class="text-xs text-slate-400">Ingresá el valor de tu hora de trabajo en USD:</p>
-            <input type="number" id="custom-rate-input" placeholder="Ej: 12" min="1" step="0.5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
-            <div class="flex justify-end space-x-2">
-                <button onclick="closeModal('modal-custom-rate')" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800">Cancelar</button>
-                <button onclick="confirmCustomRate()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 text-white">Aceptar</button>
-            </div>
-        </div>
+    <div class="space-y-2 pt-2">
+      <button type="button" id="btn-auth-submit" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-all shadow-md">
+        Ingresar
+      </button>
+      <button type="button" id="btn-auth-toggle" class="w-full py-2 rounded-xl text-xs text-slate-400 hover:text-cyan-300">
+        ¿No tienes cuenta? Regístrate gratis
+      </button>
     </div>
+  </div>
+</div>
 
-    <!-- MODAL ALERTAS DEL SISTEMA -->
-    <div id="modal-alert" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
-            <h3 id="alert-modal-title" class="text-sm font-bold text-white">Atención</h3>
-            <p id="alert-modal-msg" class="text-xs text-slate-300">Mensaje del sistema</p>
-            <div class="flex justify-end">
-                <button onclick="closeModal('modal-alert')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 text-white">Aceptar</button>
-            </div>
-        </div>
+<!-- MODAL SAVE PROFILE -->
+<div id="modal-save-profile" class="modal fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+    <h3 class="text-sm font-bold text-white">Archivar / Completar Perfil</h3>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="space-y-1">
+        <label for="modal-phone" class="text-[10px] font-bold text-slate-400 uppercase">Teléfono Cliente</label>
+        <input type="tel" id="modal-phone" autocomplete="off" placeholder="Ej: +54 9 351…" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
+      </div>
+      <div class="space-y-1">
+        <label for="modal-startDate" class="text-[10px] font-bold text-slate-400 uppercase">Fecha de Inicio</label>
+        <input type="date" id="modal-startDate" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100">
+      </div>
     </div>
+    <div class="space-y-1">
+      <label for="modal-notes" class="text-[10px] font-bold text-slate-400 uppercase">Notas / Bitácora</label>
+      <textarea id="modal-notes" rows="3" placeholder="Comentarios sobre insumos o requerimientos especiales…" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 resize-none"></textarea>
+    </div>
+    <div class="flex justify-end space-x-2">
+      <button type="button" data-close-modal="modal-save-profile" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800">Cancelar</button>
+      <button type="button" id="btn-confirm-save" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 text-white">Confirmar Guardado</button>
+    </div>
+  </div>
+</div>
 
-    <script>
-        /* CONFIGURACIÓN CONEXIÓN SUPABASE */
-        const SUPABASE_URL = 'https://btjgctebliydjyqopvjo.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0amdjdGVibGl5ZGp5cW9wdmpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1Mzk2MDMsImV4cCI6MjEwNjExNTYwM30.MrJcVSAiWbxsKmeezRE76sAuwUjXVyugCUEKvXLCbnw'; 
+<!-- MODAL CONFIRM DELETE -->
+<div id="modal-confirm-delete" class="modal fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+    <h3 class="text-sm font-bold text-rose-400">¿Eliminar presupuesto?</h3>
+    <p class="text-xs text-slate-300">Esta acción quitará el presupuesto del registro. ¿Querés continuar?</p>
+    <div class="flex justify-end space-x-2">
+      <button type="button" data-close-modal="modal-confirm-delete" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800">Cancelar</button>
+      <button type="button" id="btn-confirm-delete" class="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 text-white">Eliminar</button>
+    </div>
+  </div>
+</div>
 
-        const _supabase = (SUPABASE_URL.startsWith('http') && !SUPABASE_URL.includes('tu-proyecto')) 
-            ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                auth: {
-                    persistSession: true,
-                    autoRefreshToken: true,
-                    detectSessionInUrl: true
-                }
-            }) 
-            : null;
+<!-- MODAL CUSTOM RATE -->
+<div id="modal-custom-rate" class="modal fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+    <h3 class="text-sm font-bold text-white">Tarifa Personalizada</h3>
+    <p class="text-xs text-slate-400">Ingresá el valor de tu hora de trabajo en USD:</p>
+    <input type="number" id="custom-rate-input" placeholder="Ej: 12" min="1" step="0.5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 font-mono">
+    <div class="flex justify-end space-x-2">
+      <button type="button" data-close-modal="modal-custom-rate" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800">Cancelar</button>
+      <button type="button" id="btn-confirm-custom-rate" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 text-white">Aceptar</button>
+    </div>
+  </div>
+</div>
 
-        let dollarRate = 0;
-        let editingId = null;
-        let pendingDeleteId = null;
-        let currentUser = null;
-        let userQuotes = [];
-        let isSignUpMode = false;
+<!-- MODAL ALERT -->
+<div id="modal-alert" class="modal fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="alert-modal-title">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+    <h3 id="alert-modal-title" class="text-sm font-bold text-white">Atención</h3>
+    <p id="alert-modal-msg" class="text-xs text-slate-300">Mensaje del sistema</p>
+    <div class="flex justify-end">
+      <button type="button" data-close-modal="modal-alert" class="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-600 text-white">Aceptar</button>
+    </div>
+  </div>
+</div>
 
-        function escapeHTML(str) {
-            return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   CONFIGURACIÓN
+   ========================================================= */
+const SUPABASE_URL = 'https://btjgctebliydjyqopvjo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0amdjdGVibGl5ZGp5cW9wdmpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1Mzk2MDMsImV4cCI6MjEwNjExNTYwM30.MrJcVSAiWbxsKmeezRE76sAuwUjXVyugCUEKvXLCbnw';
+
+const CONFIG = {
+  STORAGE_KEY: 'presupuestos_db',
+  DOLLAR_FALLBACK_KEY: 'dollarFallback',
+  DOLLAR_FALLBACK_DEFAULT: 1300,
+  DOLLAR_API: 'https://dolarapi.com/v1/dolares/blue',
+  DOLLAR_RETRIES: 3,
+  DOLLAR_RETRY_DELAY: 800,
+  SEARCH_DEBOUNCE: 120,
+  MIN_PWD_LEN: 6,
+};
+
+const _supabase = (SUPABASE_URL.startsWith('http') && !SUPABASE_URL.includes('tu-proyecto'))
+  ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    })
+  : null;
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+let dollarRate = 0;
+let editingId = null;
+let pendingDeleteId = null;
+let currentUser = null;
+let userQuotes = [];
+let isSignUpMode = false;
+let lastFocusedBeforeModal = null;
+
+/* =========================================================
+   DOM CACHE
+   ========================================================= */
+const $ = (id) => document.getElementById(id);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+const dom = {
+  client:       $('client'),
+  jobDetail:    $('jobDetail'),
+  difficulty:   $('difficulty'),
+  estimatedHours: $('estimatedHours'),
+  materialCost: $('materialCost'),
+  margin:       $('margin'),
+  hourlyRate:   $('hourlyRate'),
+  currentRateBadge: $('current-rate-badge'),
+  searchFilter: $('search-filter'),
+  sortOrder:    $('sort-order'),
+  history:      $('history-container'),
+  recordsCount: $('records-count'),
+  datalist:     $('clients-autocomplete'),
+  results: {
+    labor:     $('res-labor'),
+    materials: $('res-materials'),
+    margin:    $('res-margin'),
+    total:     $('res-total'),
+    usd:       $('res-usd'),
+  },
+  dollar: {
+    price:  $('dollar-price'),
+    status: $('sync-status'),
+    dot:    $('status-dot'),
+  },
+  btnSaveTrigger:  $('btn-save-trigger'),
+  btnCancelEdit:   $('btn-cancel-edit'),
+  btnExport:       $('btn-export'),
+  modalSave:       $('modal-save-profile'),
+  modalAlert:      $('modal-alert'),
+  modalDelete:     $('modal-confirm-delete'),
+  modalRate:       $('modal-custom-rate'),
+  modalAuth:       $('modal-auth'),
+  alertTitle:      $('alert-modal-title'),
+  alertMsg:        $('alert-modal-msg'),
+  authError:       $('auth-error'),
+};
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+const escapeHTML = (str) => String(str ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]));
+
+const formatARS = (amount) => 'ARS $' + Math.round(Number(amount) || 0).toLocaleString('es-AR');
+
+const debounce = (fn, wait) => {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
+};
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+/* Normaliza la clave de ordenación (local id numérico vs UUID cloud) */
+const getSortKey = (q) => {
+  if (typeof q.id === 'number') return q.id;
+  if (q.created_at) return new Date(q.created_at).getTime();
+  if (q.id && /^\d+$/.test(String(q.id))) return parseInt(q.id, 10);
+  return 0;
+};
+
+const getDollarFallback = () => {
+  try {
+    const v = parseFloat(localStorage.getItem(CONFIG.DOLLAR_FALLBACK_KEY));
+    return Number.isFinite(v) && v > 0 ? v : CONFIG.DOLLAR_FALLBACK_DEFAULT;
+  } catch { return CONFIG.DOLLAR_FALLBACK_DEFAULT; }
+};
+
+/* =========================================================
+   MODALES (con focus trap + Escape)
+   ========================================================= */
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (!el || el.classList.contains('modal-open')) return;
+
+  lastFocusedBeforeModal = document.activeElement;
+  el.classList.add('modal-open');
+
+  // Foco en el primer input/botón significativo
+  const focusable = el.querySelector('input:not([type=hidden]):not([disabled]), select, textarea, button:not([data-close-modal]):not([disabled])');
+  if (focusable) setTimeout(() => focusable.focus(), 60);
+}
+
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('modal-open');
+  if (lastFocusedBeforeModal && typeof lastFocusedBeforeModal.focus === 'function') {
+    lastFocusedBeforeModal.focus();
+    lastFocusedBeforeModal = null;
+  }
+}
+
+function closeAllModals() {
+  $$('.modal.modal-open').forEach(m => m.classList.remove('modal-open'));
+}
+
+// Escape cierra modales + click en backdrop
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAllModals();
+});
+
+document.addEventListener('click', (e) => {
+  const closer = e.target.closest('[data-close-modal]');
+  if (closer) {
+    closeModal(closer.getAttribute('data-close-modal'));
+    return;
+  }
+  // Click en backdrop
+  const modal = e.target.closest('.modal');
+  if (modal && e.target === modal) modal.classList.remove('modal-open');
+});
+
+/* =========================================================
+   ALERT MODAL
+   ========================================================= */
+function showAlertModal(title, message) {
+  dom.alertTitle.textContent = title;
+  dom.alertMsg.textContent = message;
+  openModal('modal-alert');
+}
+
+/* =========================================================
+   FOCUS TRAP (Tab dentro del modal abierto)
+   ========================================================= */
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Tab') return;
+  const modal = document.querySelector('.modal.modal-open');
+  if (!modal) return;
+
+  const focusables = Array.from(modal.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([type=hidden]):not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+  )).filter(el => el.offsetParent !== null);
+  if (!focusables.length) return;
+
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault(); last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault(); first.focus();
+  }
+});
+
+/* =========================================================
+   SESIÓN SUPABASE
+   ========================================================= */
+async function initAuthSession() {
+  if (!_supabase) return;
+
+  const { data: { session } } = await _supabase.auth.getSession();
+  updateSessionState(session);
+
+  _supabase.auth.onAuthStateChange((_e, session) => updateSessionState(session));
+}
+
+function updateSessionState(session) {
+  const infoBar = $('user-info-bar');
+  const emailDisplay = $('user-email-display');
+  const loginBtn = $('btn-login-modal');
+
+  if (session && session.user) {
+    currentUser = session.user;
+    if (emailDisplay) emailDisplay.textContent = currentUser.email;
+    if (infoBar) { infoBar.classList.remove('hidden'); infoBar.classList.add('flex'); }
+    if (loginBtn) loginBtn.classList.add('hidden');
+    fetchUserQuotes();
+  } else {
+    currentUser = null;
+    if (infoBar) { infoBar.classList.add('hidden'); infoBar.classList.remove('flex'); }
+    if (loginBtn) loginBtn.classList.remove('hidden');
+    userQuotes = [];
+    renderHistory();
+  }
+}
+
+/* =========================================================
+   DÓLAR BLUE
+   ========================================================= */
+async function fetchDollar(attempt = 1) {
+  const { price, status, dot } = dom.dollar;
+
+  try {
+    const res = await fetch(CONFIG.DOLLAR_API, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const data = await res.json();
+    const venta = Number(data?.venta);
+    if (!Number.isFinite(venta) || venta <= 0) throw new Error('Precio inválido');
+
+    dollarRate = venta;
+    price.textContent = formatARS(dollarRate);
+    status.textContent = 'Dólar Blue en tiempo real';
+    dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
+
+  } catch (err) {
+    if (attempt < CONFIG.DOLLAR_RETRIES) {
+      await sleep(CONFIG.DOLLAR_RETRY_DELAY * attempt);
+      return fetchDollar(attempt + 1);
+    }
+    dollarRate = getDollarFallback();
+    price.textContent = formatARS(dollarRate) + ' (Base)';
+    status.textContent = 'Dólar de respaldo (sin conexión)';
+    dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
+  }
+
+  calculate();
+  renderHistory();
+}
+
+/* =========================================================
+   CÁLCULO
+   ========================================================= */
+function calculate() {
+  if (dollarRate === 0) return null;
+
+  const hours            = parseFloat(dom.estimatedHours.value) || 0;
+  const hourlyRateUSD    = parseFloat(dom.hourlyRate.value) || 0;
+  const materialCostARS  = parseFloat(dom.materialCost.value) || 0;
+  const marginPercent    = parseFloat(dom.margin.value) || 0;
+
+  const laborUSD   = hours * hourlyRateUSD;
+  const laborARS   = laborUSD * dollarRate;
+  const subtotal   = laborARS + materialCostARS;
+  const marginARS  = subtotal * (marginPercent / 100);
+  const totalARS   = subtotal + marginARS;
+  const totalUSD   = totalARS / dollarRate;
+
+  dom.results.labor.textContent     = formatARS(laborARS);
+  dom.results.materials.textContent = formatARS(materialCostARS);
+  dom.results.margin.textContent    = formatARS(marginARS);
+  dom.results.total.textContent     = formatARS(totalARS);
+  dom.results.usd.textContent       = `Equivalente a: USD $${totalUSD.toFixed(2)}`;
+
+  dom.currentRateBadge.textContent = `USD $${hourlyRateUSD}/h`;
+
+  return {
+    hours, laborARS, laborUSD, materialCostARS, marginARS, marginPercent,
+    totalARS, totalUSD, hourlyRateUSD,
+  };
+}
+
+/* =========================================================
+   STORAGE LOCAL (con try/catch)
+   ========================================================= */
+function getLocalQuotes() {
+  try {
+    const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalQuotes(quotes) {
+  try {
+    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(quotes));
+    return true;
+  } catch (err) {
+    console.warn('localStorage lleno o no disponible', err);
+    showAlertModal('Almacenamiento', 'No se pudo guardar localmente. ¿Modo privado activo?');
+    return false;
+  }
+}
+
+/* =========================================================
+   HANDLERS DE UI
+   ========================================================= */
+$('btn-login-modal').addEventListener('click', () => {
+  dom.authError.classList.add('hidden');
+  openModal('modal-auth');
+});
+
+$('btn-logout').addEventListener('click', async () => {
+  if (!confirm('¿Cerrar sesión? Los presupuestos guardados en la nube seguirán disponibles al volver a entrar.')) return;
+  if (_supabase) await _supabase.auth.signOut();
+  currentUser = null;
+  userQuotes = [];
+  resetForm();
+  renderHistory();
+});
+
+dom.difficulty.addEventListener('change', () => {
+  if (dom.difficulty.value === 'custom') {
+    $('custom-rate-input').value = dom.hourlyRate.value || '';
+    openModal('modal-custom-rate');
+  } else {
+    dom.hourlyRate.value = dom.difficulty.value;
+    calculate();
+  }
+});
+
+$('btn-confirm-custom-rate').addEventListener('click', () => {
+  const val = parseFloat($('custom-rate-input').value);
+  if (!Number.isFinite(val) || val <= 0) {
+    showAlertModal('Atención', 'Ingresá un valor numérico válido mayor a 0.');
+    return;
+  }
+  dom.hourlyRate.value = val;
+  const customOpt = dom.difficulty.querySelector('option[value="custom"]');
+  customOpt.textContent = `Personalizada ($${val} USD/hs)`;
+  closeModal('modal-custom-rate');
+  calculate();
+});
+
+// Recalcular en cualquier input relevante
+['estimatedHours', 'materialCost'].forEach(id => {
+  $(id).addEventListener('input', calculate);
+});
+dom.margin.addEventListener('change', calculate);
+
+/* =========================================================
+   GUARDAR PRESUPUESTO
+   ========================================================= */
+$('btn-save-trigger').addEventListener('click', () => {
+  const calc = calculate();
+  if (!calc || calc.totalARS === 0) {
+    showAlertModal('Presupuesto Vacío', 'Ingresá al menos horas de trabajo o costo de insumos antes de guardar.');
+    return;
+  }
+  const today = new Date().toISOString().split('T')[0];
+  if (!$('modal-startDate').value) $('modal-startDate').value = today;
+
+  if (editingId === null) {
+    $('modal-phone').value = '';
+    $('modal-notes').value = '';
+  }
+  openModal('modal-save-profile');
+});
+
+$('btn-confirm-save').addEventListener('click', async () => {
+  const btn = $('btn-confirm-save');
+  btn.classList.add('btn-loading');
+  btn.disabled = true;
+
+  try {
+    const client = dom.client.value.trim() || 'Cliente Sin Nombre';
+    const jobDetail = dom.jobDetail.value.trim() || 'Servicio General';
+    const phone = $('modal-phone').value.trim();
+    const startDate = $('modal-startDate').value;
+    const notes = $('modal-notes').value.trim();
+    const calc = calculate();
+
+    if (_supabase && currentUser) {
+      const payload = {
+        client, job_detail: jobDetail, phone, start_date: startDate, notes,
+        difficulty: dom.difficulty.value,
+        totals: calc,
+        saved_at: new Date().toLocaleDateString('es-AR'),
+      };
+
+      const { error } = editingId
+        ? await _supabase.from('presupuestos').update(payload).eq('id', editingId)
+        : await _supabase.from('presupuestos').insert([payload]);
+
+      if (error) throw error;
+      await fetchUserQuotes();
+    } else {
+      const quote = {
+        id: editingId ?? Date.now(),
+        client, jobDetail, phone, startDate, notes,
+        difficulty: dom.difficulty.value,
+        totals: calc,
+        savedAt: new Date().toLocaleDateString('es-AR'),
+      };
+      const quotes = getLocalQuotes();
+      if (editingId !== null) {
+        const idx = quotes.findIndex(q => String(q.id) === String(editingId));
+        if (idx !== -1) quotes[idx] = quote;
+        else quotes.unshift(quote);
+      } else {
+        quotes.unshift(quote);
+      }
+      if (!saveLocalQuotes(quotes)) return;
+      renderHistory();
+    }
+
+    closeModal('modal-save-profile');
+    resetForm();
+  } catch (err) {
+    console.error('[save]', err);
+    showAlertModal('Error al guardar', err.message || 'Intentá de nuevo.');
+  } finally {
+    btn.classList.remove('btn-loading');
+    btn.disabled = false;
+  }
+});
+
+/* =========================================================
+   RENDER DEL HISTORIAL (con delegación de eventos)
+   ========================================================= */
+function renderHistory() {
+  const allQuotes = (_supabase && currentUser) ? userQuotes : getLocalQuotes();
+
+  // Datalist con DOM API (sin innerHTML)
+  const uniqueClients = Array.from(new Set(
+    allQuotes.map(q => q.client || q.job_detail).filter(Boolean)
+  ));
+  dom.datalist.replaceChildren(...uniqueClients.map(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    return opt;
+  }));
+
+  dom.recordsCount.textContent = `${allQuotes.length} registro${allQuotes.length === 1 ? '' : 's'}`;
+
+  if (!allQuotes.length) {
+    dom.history.innerHTML = '<p class="text-xs text-slate-500 py-6 text-center italic">No hay presupuestos guardados aún.</p>';
+    return;
+  }
+
+  const search = dom.searchFilter.value.toLowerCase().trim();
+  const sort = dom.sortOrder.value;
+
+  let filtered = allQuotes.filter(q => {
+    if (!search) return true;
+    const c = (q.client || '').toLowerCase();
+    const d = (q.jobDetail || q.job_detail || '').toLowerCase();
+    return c.includes(search) || d.includes(search);
+  });
+
+  if (sort === 'az') {
+    filtered.sort((a, b) => (a.client || '').localeCompare(b.client || '', 'es'));
+  } else if (sort === 'amount') {
+    filtered.sort((a, b) => (b.totals?.totalARS || 0) - (a.totals?.totalARS || 0));
+  } else {
+    filtered.sort((a, b) => getSortKey(b) - getSortKey(a));
+  }
+
+  if (!filtered.length) {
+    dom.history.innerHTML = '<p class="text-xs text-slate-500 py-6 text-center italic">No se encontraron coincidencias.</p>';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+
+  filtered.forEach(q => {
+    const row = document.createElement('div');
+    row.className = 'flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 transition-colors cursor-pointer group';
+    row.dataset.id = String(q.id);
+    row.setAttribute('role', 'button');
+    row.setAttribute('tabindex', '0');
+
+    const info = document.createElement('div');
+    info.className = 'min-w-0 pr-2';
+
+    const strong = document.createElement('strong');
+    strong.className = 'text-xs font-bold text-slate-200 block truncate group-hover:text-cyan-300';
+    strong.textContent = q.client || 'Sin cliente';
+
+    const sub = document.createElement('span');
+    sub.className = 'text-[11px] text-slate-500 block truncate';
+    sub.textContent = `${q.jobDetail || q.job_detail || 'Sin detalle'} • ${q.savedAt || q.saved_at || ''}`;
+
+    info.append(strong, sub);
+
+    const actions = document.createElement('div');
+    actions.className = 'flex items-center space-x-3 flex-shrink-0';
+
+    const amount = document.createElement('span');
+    amount.className = 'text-xs font-mono font-bold text-emerald-400';
+    amount.textContent = formatARS(q.totals?.totalARS || 0);
+
+    const btnEdit = document.createElement('button');
+    btnEdit.type = 'button';
+    btnEdit.className = 'p-1.5 text-slate-400 hover:text-cyan-400 text-xs';
+    btnEdit.title = 'Editar / Cargar';
+    btnEdit.setAttribute('aria-label', 'Editar presupuesto');
+    btnEdit.dataset.action = 'edit';
+    btnEdit.innerHTML = '<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>';
+
+    const btnDel = document.createElement('button');
+    btnDel.type = 'button';
+    btnDel.className = 'p-1.5 text-slate-400 hover:text-rose-400 text-xs';
+    btnDel.title = 'Eliminar';
+    btnDel.setAttribute('aria-label', 'Eliminar presupuesto');
+    btnDel.dataset.action = 'delete';
+    btnDel.innerHTML = '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
+
+    actions.append(amount, btnEdit, btnDel);
+    row.append(info, actions);
+    frag.appendChild(row);
+  });
+
+  dom.history.replaceChildren(frag);
+}
+
+/* Delegación: 1 listener para todas las filas */
+dom.history.addEventListener('click', (e) => {
+  const actionBtn = e.target.closest('[data-action]');
+  const row = e.target.closest('[data-id]');
+  if (!row) return;
+
+  const id = row.dataset.id;
+
+  if (actionBtn) {
+    e.stopPropagation();
+    if (actionBtn.dataset.action === 'edit') loadQuoteIntoForm(id);
+    else if (actionBtn.dataset.action === 'delete') {
+      pendingDeleteId = id;
+      openModal('modal-confirm-delete');
+    }
+    return;
+  }
+  loadQuoteIntoForm(id);
+});
+
+dom.history.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const row = e.target.closest('[data-id]');
+  if (!row || e.target !== row) return;
+  e.preventDefault();
+  loadQuoteIntoForm(row.dataset.id);
+});
+
+function loadQuoteIntoForm(id) {
+  const quotes = (_supabase && currentUser) ? userQuotes : getLocalQuotes();
+  const q = quotes.find(item => String(item.id) === String(id));
+  if (!q) return;
+
+  editingId = q.id;
+  dom.client.value = q.client || '';
+  dom.jobDetail.value = q.jobDetail || q.job_detail || '';
+  dom.estimatedHours.value = q.totals?.hours || '';
+  dom.materialCost.value = q.totals?.materialCostARS || '';
+  dom.margin.value = q.totals?.marginPercent ?? '15';
+  dom.difficulty.value = q.difficulty || '10';
+  dom.hourlyRate.value = q.totals?.hourlyRateUSD || '10';
+
+  $('modal-phone').value = q.phone || '';
+  $('modal-startDate').value = q.startDate || q.start_date || '';
+  $('modal-notes').value = q.notes || '';
+
+  dom.btnSaveTrigger.querySelector('span').textContent = 'Actualizar Presupuesto';
+  dom.btnCancelEdit.classList.remove('hidden');
+
+  calculate();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+  editingId = null;
+  dom.client.value = '';
+  dom.jobDetail.value = '';
+  dom.estimatedHours.value = '';
+  dom.materialCost.value = '';
+  dom.difficulty.value = '10';
+  dom.hourlyRate.value = '10';
+  dom.margin.value = '15';
+  dom.btnSaveTrigger.querySelector('span').textContent = 'Guardar Presupuesto';
+  dom.btnCancelEdit.classList.add('hidden');
+  calculate();
+}
+
+dom.btnCancelEdit.addEventListener('click', resetForm);
+
+/* =========================================================
+   ELIMINAR
+   ========================================================= */
+$('btn-confirm-delete').addEventListener('click', async () => {
+  if (pendingDeleteId === null) return;
+
+  try {
+    if (_supabase && currentUser) {
+      const { error } = await _supabase.from('presupuestos').delete().eq('id', pendingDeleteId);
+      if (error) throw error;
+      await fetchUserQuotes();
+    } else {
+      const quotes = getLocalQuotes().filter(q => String(q.id) !== String(pendingDeleteId));
+      saveLocalQuotes(quotes);
+      renderHistory();
+    }
+
+    if (String(editingId) === String(pendingDeleteId)) resetForm();
+    pendingDeleteId = null;
+    closeModal('modal-confirm-delete');
+  } catch (err) {
+    console.error('[delete]', err);
+    showAlertModal('Error al eliminar', err.message || 'Intentá de nuevo.');
+  }
+});
+
+/* =========================================================
+   BÚSQUEDA DEBOUNCED
+   ========================================================= */
+dom.searchFilter.addEventListener('input', debounce(renderHistory, CONFIG.SEARCH_DEBOUNCE));
+dom.sortOrder.addEventListener('change', renderHistory);
+
+/* =========================================================
+   EXPORTAR EXCEL
+   ========================================================= */
+dom.btnExport.addEventListener('click', async () => {
+  const quotes = (_supabase && currentUser) ? userQuotes : getLocalQuotes();
+  if (!quotes.length) {
+    showAlertModal('Exportar', 'No hay presupuestos guardados para exportar a Excel.');
+    return;
+  }
+
+  try {
+    const headers = ['CLIENTE','DETALLE DEL TRABAJO','FECHA','HORAS','TARIFA USD/h','INSUMOS (ARS)','MARGEN (%)','TOTAL (ARS)','TOTAL (USD)','NOTAS'];
+    const rows = quotes.map(q => [
+      q.client || '',
+      q.jobDetail || q.job_detail || '',
+      q.savedAt || q.saved_at || '',
+      Number(q.totals?.hours) || 0,
+      Number(q.totals?.hourlyRateUSD) || 0,
+      Number(q.totals?.materialCostARS) || 0,
+      `${q.totals?.marginPercent || 0}%`,
+      Number(q.totals?.totalARS) || 0,
+      Number(q.totals?.totalUSD) || 0,
+      q.notes || '',
+    ]);
+
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    ws['!cols'] = [{wch:20},{wch:32},{wch:12},{wch:8},{wch:12},{wch:15},{wch:12},{wch:15},{wch:12},{wch:28}];
+
+    // Aplicar formato de moneda a las columnas de dinero
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = 1; R <= range.e.r; R++) {
+      for (const C of [7, 8]) {
+        const addr = XLSX.utils.encode_cell({ r: R, c: C });
+        if (ws[addr] && typeof ws[addr].v === 'number') {
+          ws[addr].z = '"$"#,##0.00';
         }
+      }
+    }
 
-        function formatARS(amount) {
-            return 'ARS $' + Math.round(amount).toLocaleString('es-AR');
-        }
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Presupuestos');
 
-        /* INICIALIZACIÓN Y SUSCRIPCIÓN EN TIEMPO REAL A LA SESIÓN */
-        async function initAuthSession() {
-            if (!_supabase) return;
+    const filename = `presupuestos_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, filename);
 
-            const { data: { session } } = await _supabase.auth.getSession();
-            updateSessionState(session);
+    if (!_supabase || !currentUser) {
+      try { localStorage.removeItem(CONFIG.STORAGE_KEY); } catch {}
+    }
+    resetForm();
+    renderHistory();
+    showAlertModal('Éxito', `Se descargó "${filename}" y se limpió el historial local.`);
+  } catch (err) {
+    console.error('[export]', err);
+    showAlertModal('Error al exportar', err.message || 'Intentá de nuevo.');
+  }
+});
 
-            _supabase.auth.onAuthStateChange((_event, session) => {
-                updateSessionState(session);
-            });
-        }
+/* =========================================================
+   AUTENTICACIÓN
+   ========================================================= */
+$('btn-auth-toggle').addEventListener('click', () => {
+  isSignUpMode = !isSignUpMode;
+  $('auth-modal-title').textContent = isSignUpMode ? '🔑 Crear Cuenta' : '🔑 Iniciar Sesión';
+  $('btn-auth-submit').textContent = isSignUpMode ? 'Registrarme' : 'Ingresar';
+  $('btn-auth-toggle').textContent = isSignUpMode ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate gratis';
+  dom.authError.classList.add('hidden');
+});
 
-        function updateSessionState(session) {
-            const infoBar = document.getElementById('user-info-bar');
-            const emailDisplay = document.getElementById('user-email-display');
-            const loginBtn = document.getElementById('btn-login-modal');
+function showAuthError(msg) {
+  dom.authError.textContent = msg;
+  dom.authError.classList.remove('hidden');
+}
 
-            if (session && session.user) {
-                currentUser = session.user;
-                if (emailDisplay) emailDisplay.textContent = currentUser.email;
-                if (infoBar) { infoBar.classList.remove('hidden'); infoBar.classList.add('flex'); }
-                if (loginBtn) loginBtn.classList.add('hidden');
-                fetchUserQuotes();
-            } else {
-                currentUser = null;
-                if (infoBar) { infoBar.classList.add('hidden'); infoBar.classList.remove('flex'); }
-                if (loginBtn) loginBtn.classList.remove('hidden');
-                userQuotes = [];
-                renderHistory();
-            }
-        }
+$('btn-auth-submit').addEventListener('click', async () => {
+  if (!_supabase) {
+    showAlertModal('Configuración', 'Supabase no está configurado. La app funciona en modo local.');
+    return;
+  }
 
-        /* OBTENCIÓN DÓLAR BLUE */
-        async function fetchDollar() {
-            const priceEl = document.getElementById('dollar-price');
-            const statusEl = document.getElementById('sync-status');
-            const dotEl = document.getElementById('status-dot');
+  const email = $('auth-email').value.trim();
+  const password = $('auth-password').value;
+  dom.authError.classList.add('hidden');
 
-            try {
-                const response = await fetch('https://dolarapi.com/v1/dolares/blue');
-                const data = await response.json();
-                dollarRate = data.venta;
-                priceEl.innerText = formatARS(dollarRate);
-                statusEl.innerText = 'Dólar Blue en tiempo real';
-                dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
-            } catch (error) {
-                dollarRate = 1300;
-                priceEl.innerText = formatARS(dollarRate) + ' (Base)';
-                statusEl.innerText = 'Dólar de respaldo';
-                dotEl.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
-            }
-            calculate();
-            renderHistory();
-        }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showAuthError('Ingresá un correo válido.');
+  if (!password || password.length < CONFIG.MIN_PWD_LEN) return showAuthError(`La contraseña debe tener al menos ${CONFIG.MIN_PWD_LEN} caracteres.`);
 
-        function handleDifficultyChange() {
-            const select = document.getElementById('difficulty');
-            const hiddenRate = document.getElementById('hourlyRate');
+  const btn = $('btn-auth-submit');
+  btn.classList.add('btn-loading');
+  btn.disabled = true;
 
-            if (select.value === 'custom') {
-                document.getElementById('custom-rate-input').value = hiddenRate.value || '';
-                openModal('modal-custom-rate');
-            } else {
-                hiddenRate.value = select.value;
-                calculate();
-            }
-        }
+  try {
+    if (isSignUpMode) {
+      const { error } = await _supabase.auth.signUp({ email, password });
+      if (error) return showAuthError(error.message);
+      showAlertModal('Éxito', 'Cuenta creada. Revisá tu correo para confirmar (si tu proyecto lo requiere) y luego iniciá sesión.');
+      isSignUpMode = false;
+      $('auth-modal-title').textContent = '🔑 Iniciar Sesión';
+      $('btn-auth-submit').textContent = 'Ingresar';
+      $('btn-auth-toggle').textContent = '¿No tienes cuenta? Regístrate gratis';
+    } else {
+      const { error, data } = await _supabase.auth.signInWithPassword({ email, password });
+      if (error) return showAuthError(error.message);
+      currentUser = data.user;
+      closeModal('modal-auth');
+      $('auth-email').value = '';
+      $('auth-password').value = '';
+      await fetchUserQuotes();
+    }
+  } catch (err) {
+    showAuthError(err.message || 'Error inesperado.');
+  } finally {
+    btn.classList.remove('btn-loading');
+    btn.disabled = false;
+  }
+});
 
-        function confirmCustomRate() {
-            const val = parseFloat(document.getElementById('custom-rate-input').value);
-            const select = document.getElementById('difficulty');
-            const hiddenRate = document.getElementById('hourlyRate');
+// Enter en los inputs de auth envía
+['auth-email', 'auth-password'].forEach(id => {
+  $(id).addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); $('btn-auth-submit').click(); }
+  });
+});
 
-            if (val && val > 0) {
-                hiddenRate.value = val;
-                const customOpt = select.querySelector('option[value="custom"]');
-                customOpt.textContent = `Personalizada ($${val} USD/hs)`;
-                closeModal('modal-custom-rate');
-                calculate();
-            } else {
-                showAlertModal('Atención', 'Ingresá un valor numérico válido mayor a 0.');
-            }
-        }
+/* =========================================================
+   CLOUD FETCH
+   ========================================================= */
+async function fetchUserQuotes() {
+  if (!_supabase || !currentUser) return;
+  try {
+    const { data, error } = await _supabase
+      .from('presupuestos')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    userQuotes = data || [];
+    renderHistory();
+  } catch (err) {
+    console.error('[fetchUserQuotes]', err);
+    showAlertModal('Error de sincronización', 'No se pudieron cargar los presupuestos desde la nube.');
+  }
+}
 
-        function calculate() {
-            if (dollarRate === 0) return;
+/* =========================================================
+   INIT
+   ========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  renderHistory();
+  initAuthSession();
+  fetchDollar();
+});
 
-            const hours = parseFloat(document.getElementById('estimatedHours').value) || 0;
-            const hourlyRateUSD = parseFloat(document.getElementById('hourlyRate').value) || 0;
-            const materialCostARS = parseFloat(document.getElementById('materialCost').value) || 0;
-            const marginPercent = parseFloat(document.getElementById('margin').value) || 0;
-
-            const laborUSD = hours * hourlyRateUSD;
-            const laborARS = laborUSD * dollarRate;
-            const subtotalARS = laborARS + materialCostARS;
-            const marginARS = subtotalARS * (marginPercent / 100);
-            const totalARS = subtotalARS + marginARS;
-            const totalUSD = totalARS / dollarRate;
-
-            document.getElementById('res-labor').innerText = formatARS(laborARS);
-            document.getElementById('res-materials').innerText = formatARS(materialCostARS);
-            document.getElementById('res-margin').innerText = formatARS(marginARS);
-            document.getElementById('res-total').innerText = formatARS(totalARS);
-            document.getElementById('res-usd').innerText = `Equivalente a: USD $${totalUSD.toFixed(2)}`;
-
-            return { hours, laborARS, materialCostARS, marginARS, totalARS, totalUSD, hourlyRateUSD, marginPercent };
-        }
-
-        /* GUARDADO Y MANEJO DE HISTORIAL */
-        function getLocalQuotes() {
-            const data = localStorage.getItem('presupuestos_db');
-            return data ? JSON.parse(data) : [];
-        }
-
-        function saveLocalQuotes(quotes) {
-            localStorage.setItem('presupuestos_db', JSON.stringify(quotes));
-        }
-
-        async function confirmSaveProfile() {
-            const client = document.getElementById('client').value.trim() || 'Cliente Sin Nombre';
-            const jobDetail = document.getElementById('jobDetail').value.trim() || 'Servicio General';
-            const phone = document.getElementById('modal-phone').value.trim() || '';
-            const startDate = document.getElementById('modal-startDate').value || '';
-            const notes = document.getElementById('modal-notes').value.trim() || '';
-
-            const calc = calculate();
-            const quoteData = {
-                id: editingId || Date.now(),
-                client,
-                jobDetail,
-                phone,
-                startDate,
-                notes,
-                difficulty: document.getElementById('difficulty').value,
-                totals: calc,
-                savedAt: new Date().toLocaleDateString('es-AR')
-            };
-
-            if (_supabase && currentUser) {
-                const payload = {
-                    client, job_detail: jobDetail, phone, start_date: startDate, notes,
-                    difficulty: document.getElementById('difficulty').value,
-                    totals: calc, saved_at: quoteData.savedAt
-                };
-                if (editingId) await _supabase.from('presupuestos').update(payload).eq('id', editingId);
-                else await _supabase.from('presupuestos').insert([payload]);
-                fetchUserQuotes();
-            } else {
-                const quotes = getLocalQuotes();
-                if (editingId !== null) {
-                    const idx = quotes.findIndex(q => q.id == editingId);
-                    if (idx !== -1) quotes[idx] = quoteData;
-                } else {
-                    quotes.unshift(quoteData);
-                }
-                saveLocalQuotes(quotes);
-                renderHistory();
-            }
-
-            closeModal('modal-save-profile');
-            resetForm();
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('history-container');
-            const recordsCount = document.getElementById('records-count');
-            const datalist = document.getElementById('clients-autocomplete');
-            if (!container) return;
-
-            const allQuotes = (_supabase && currentUser) ? userQuotes : getLocalQuotes();
-
-            if (datalist) {
-                const uniqueClients = [...new Set(allQuotes.map(q => q.client || q.job_detail).filter(Boolean))];
-                datalist.innerHTML = uniqueClients.map(c => `<option value="${escapeHTML(c)}">`).join('');
-            }
-
-            if (recordsCount) recordsCount.innerText = `${allQuotes.length} registros`;
-
-            if (allQuotes.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-500 py-6 text-center italic">No hay presupuestos guardados aún.</p>';
-                return;
-            }
-
-            const searchInput = document.getElementById('search-filter');
-            const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
-            const sortSelect = document.getElementById('sort-order');
-            const sort = sortSelect ? sortSelect.value : 'newest';
-
-            let filtered = allQuotes.filter(q => {
-                if (!search) return true;
-                const c = (q.client || '').toLowerCase();
-                const d = (q.jobDetail || q.job_detail || '').toLowerCase();
-                return c.includes(search) || d.includes(search);
-            });
-
-            if (sort === 'az') filtered.sort((a, b) => (a.client || '').localeCompare(b.client || ''));
-            else filtered.sort((a, b) => (b.id || 0) - (a.id || 0));
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-500 py-6 text-center italic">No se encontraron coincidencias.</p>';
-                return;
-            }
-
-            container.innerHTML = filtered.map(q => `
-                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 transition-colors cursor-pointer group" onclick="editQuote(${q.id})">
-                    <div class="min-w-0 pr-2">
-                        <strong class="text-xs font-bold text-slate-200 block truncate group-hover:text-cyan-300">${escapeHTML(q.client || 'Sin cliente')}</strong>
-                        <span class="text-[11px] text-slate-500 block truncate">${escapeHTML(q.jobDetail || q.job_detail || 'Sin detalle')} • ${q.savedAt || q.saved_at || ''}</span>
-                    </div>
-                    <div class="flex items-center space-x-3 flex-shrink-0" onclick="event.stopPropagation()">
-                        <span class="text-xs font-mono font-bold text-emerald-400">${formatARS(q.totals?.totalARS || 0)}</span>
-                        <button onclick="editQuote(${q.id})" class="p-1.5 text-slate-400 hover:text-cyan-400 text-xs" title="Editar / Cargar">✏️</button>
-                        <button onclick="openDeleteModal(${q.id})" class="p-1.5 text-slate-400 hover:text-rose-400 text-xs" title="Eliminar">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function editQuote(id) {
-            const quotes = (_supabase && currentUser) ? userQuotes : getLocalQuotes();
-            const q = quotes.find(item => item.id == id);
-            if (!q) return;
-
-            editingId = q.id;
-            document.getElementById('client').value = q.client || '';
-            document.getElementById('jobDetail').value = q.jobDetail || q.job_detail || '';
-            document.getElementById('estimatedHours').value = q.totals?.hours || '';
-            document.getElementById('materialCost').value = q.totals?.materialCostARS || '';
-            document.getElementById('margin').value = q.totals?.marginPercent || '15';
-            document.getElementById('difficulty').value = q.difficulty || '10';
-            document.getElementById('hourlyRate').value = q.totals?.hourlyRateUSD || '10';
-
-            document.getElementById('modal-phone').value = q.phone || '';
-            document.getElementById('modal-startDate').value = q.startDate || q.start_date || '';
-            document.getElementById('modal-notes').value = q.notes || '';
-
-            document.getElementById('btn-save-trigger').innerText = 'Actualizar Presupuesto';
-            document.getElementById('btn-cancel-edit').classList.remove('hidden');
-
-            calculate();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function resetForm() {
-            editingId = null;
-            document.getElementById('client').value = '';
-            document.getElementById('jobDetail').value = '';
-            document.getElementById('estimatedHours').value = '';
-            document.getElementById('materialCost').value = '';
-            document.getElementById('difficulty').value = '10';
-            document.getElementById('hourlyRate').value = '10';
-            document.getElementById('margin').value = '15';
-
-            document.getElementById('btn-save-trigger').innerText = 'Guardar Presupuesto';
-            document.getElementById('btn-cancel-edit').classList.add('hidden');
-            calculate();
-        }
-
-        function openDeleteModal(id) {
-            pendingDeleteId = id;
-            openModal('modal-confirm-delete');
-        }
-
-        async function confirmDeleteAction() {
-            if (pendingDeleteId === null) return;
-            if (_supabase && currentUser) {
-                await _supabase.from('presupuestos').delete().eq('id', pendingDeleteId);
-                fetchUserQuotes();
-            } else {
-                const quotes = getLocalQuotes().filter(q => q.id != pendingDeleteId);
-                saveLocalQuotes(quotes);
-            }
-            if (editingId == pendingDeleteId) resetForm();
-            pendingDeleteId = null;
-            closeModal('modal-confirm-delete');
-            renderHistory();
-        }
-
-        function openSaveModal() {
-            const calc = calculate();
-            if (!calc || calc.totalARS === 0) {
-                showAlertModal('Presupuesto Vacío', 'Ingresá al menos horas de trabajo o costo de insumos antes de guardar.');
-                return;
-            }
-            const today = new Date().toISOString().split('T')[0];
-            if (!document.getElementById('modal-startDate').value) {
-                document.getElementById('modal-startDate').value = today;
-            }
-            openModal('modal-save-profile');
-        }
-
-        function exportToExcelAndClear() {
-            const quotes = (_supabase && currentUser) ? userQuotes : getLocalQuotes();
-            if (quotes.length === 0) {
-                showAlertModal('Exportar', 'No hay presupuestos guardados para exportar a Excel.');
-                return;
-            }
-
-            const wb = XLSX.utils.book_new();
-            const dataSheet = [
-                ["CLIENTE", "DETALLE DEL TRABAJO", "FECHA", "HORAS", "INSUMOS (ARS)", "MARGEN (%)", "TOTAL (ARS)", "TOTAL (USD)", "NOTAS"],
-                ...quotes.map(q => [
-                    q.client, q.jobDetail || q.job_detail, q.savedAt || q.saved_at,
-                    q.totals?.hours || 0, q.totals?.materialCostARS || 0,
-                    `${q.totals?.marginPercent || 0}%`,
-                    q.totals?.totalARS || 0,
-                    `$${(q.totals?.totalUSD || 0).toFixed(2)}`,
-                    q.notes || ''
-                ])
-            ];
-
-            const ws = XLSX.utils.aoa_to_sheet(dataSheet);
-            ws['!cols'] = [{ wch: 20 }, { wch: 30 }, { wch: 12 }, { wch: 8 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, { wch: 25 }];
-
-            XLSX.utils.book_append_sheet(wb, ws, "Presupuestos");
-            XLSX.writeFile(wb, "presupuesto.xlsx");
-
-            if (!_supabase || !currentUser) {
-                localStorage.removeItem('presupuestos_db');
-            }
-            resetForm();
-            renderHistory();
-            showAlertModal('Éxito', 'Se descargó "presupuesto.xlsx" y se limpió el historial.');
-        }
-
-        /* OPERACIONES DE AUTENTICACIÓN Y NUBE */
-        async function fetchUserQuotes() {
-            if (!_supabase || !currentUser) return;
-            const { data } = await _supabase.from('presupuestos').select('*').order('created_at', { ascending: false });
-            userQuotes = data || [];
-            renderHistory();
-        }
-
-        function toggleAuthMode() {
-            isSignUpMode = !isSignUpMode;
-            document.getElementById('auth-modal-title').textContent = isSignUpMode ? '🔑 Crear Cuenta' : '🔑 Iniciar Sesión';
-            document.getElementById('btn-auth-submit').textContent = isSignUpMode ? 'Registrarme' : 'Ingresar';
-            document.getElementById('btn-auth-toggle').textContent = isSignUpMode ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate gratis';
-        }
-
-        async function handleAuthSubmit() {
-            if (!_supabase) return showAlertModal('Configuración', 'Ingresa tus claves de Supabase en el código JS para activar la nube.');
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value.trim();
-            if (!email || !password) return showAlertModal('Atención', 'Ingresa correo y contraseña.');
-
-            if (isSignUpMode) {
-                const { error } = await _supabase.auth.signUp({ email, password });
-                if (error) showAlertModal('Error', error.message);
-                else { showAlertModal('Éxito', 'Cuenta creada con éxito.'); closeModal('modal-auth'); }
-            } else {
-                const { error, data } = await _supabase.auth.signInWithPassword({ email, password });
-                if (error) showAlertModal('Error', error.message);
-                else {
-                    currentUser = data.user;
-                    closeModal('modal-auth');
-                    fetchUserQuotes();
-                }
-            }
-        }
-
-        async function logout() {
-            if (_supabase) await _supabase.auth.signOut();
-            currentUser = null;
-            userQuotes = [];
-            resetForm();
-            renderHistory();
-        }
-
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-        function showAlertModal(title, message) {
-            document.getElementById('alert-modal-title').innerText = title;
-            document.getElementById('alert-modal-msg').innerText = message;
-            openModal('modal-alert');
-        }
-
-        /* INICIALIZACIÓN GENERAL AL CÁRGAR EL DOM */
-        document.addEventListener('DOMContentLoaded', () => {
-            initAuthSession();
-            fetchDollar();
-        });
-    </script>
+})();
+</script>
 </body>
 </html>

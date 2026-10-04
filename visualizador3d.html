@@ -1,942 +1,1181 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Visualizador 3D</title>
-  <link id="favicon" rel="icon" type="image/svg+xml" href="iconos/visualizador3d.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0d1117">
+<title>Visualizador 3D</title>
+<link id="favicon" rel="icon" type="image/svg+xml" href="iconos/visualizador3d.svg">
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    }
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-header: #161b22;
+    --bg-panel: #11161d;
+    --bg-card: #161b22;
+    --border: #21262d;
+    --border-strong: #30363d;
+    --text: #e2e8f0;
+    --text-dim: #8b949e;
+    --text-soft: #c9d1d9;
+    --accent: #e05e1b;
+    --accent-soft: #1c1917;
+    --radius: 6px;
+    --tr: 0.2s ease;
+  }
 
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0d1117;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #212c3d;
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
 
-    body {
-      background-color: #0d1117;
-      color: #e2e8f0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      height: 100dvh; /* Soporte para Viewport Height dinámico en navegadores móviles */
-      overflow: hidden;
-    }
+  html, body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    .header {
-      background-color: #161b22;
-      padding: 0 18px;
-      border-bottom: 1px solid #21262d;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      height: 46px;
-      flex-shrink: 0;
-      z-index: 20;
-    }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #212c3d; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
-    .header-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      color: #f8fafc;
-      text-decoration: none;
-      cursor: pointer;
-      transition: opacity 0.2s ease;
-    }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+  }
 
-    .header-title:hover {
-      opacity: 0.85;
-    }
+  /* ===================== HEADER ===================== */
+  .header {
+    background-color: var(--bg-header);
+    padding: 0 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 46px;
+    flex-shrink: 0;
+    z-index: 20;
+  }
 
-    .header-icon {
-      width: 22px;
-      height: 22px;
-      display: block;
-    }
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #f8fafc;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity var(--tr);
+    border-radius: 4px;
+  }
 
-    .app-layout {
-      display: flex;
-      flex: 1;
-      height: calc(100vh - 46px);
-      height: calc(100dvh - 46px);
-      overflow: hidden;
-      flex-direction: row;
-    }
+  .header-title:hover { opacity: 0.85; }
 
-    .sidebar {
-      width: 310px;
-      background-color: #11161d;
-      border-right: 1px solid #21262d;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow-y: auto;
-      flex-shrink: 0;
-      z-index: 10;
-    }
+  .header-title:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 
-    .card-section {
-      background-color: #161b22;
-      border: 1px solid #21262d;
-      border-radius: 6px;
-      padding: 12px;
-    }
+  .header-icon { width: 22px; height: 22px; display: block; }
 
-    .card-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #8b949e;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 10px;
-    }
+  /* ===================== LAYOUT ===================== */
+  .app-layout {
+    display: flex;
+    flex: 1;
+    height: calc(100dvh - 46px);
+    overflow: hidden;
+    flex-direction: row;
+  }
 
-    .upload-box {
-      border: 2px dashed #30363d;
-      background-color: #0d1117;
-      border-radius: 6px;
-      min-height: 90px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: center;
-    }
+  .sidebar {
+    width: 310px;
+    background-color: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    z-index: 10;
+  }
 
-    .upload-box.dragover,
-    .upload-box:hover {
-      border-color: #e05e1b;
-      background-color: #1c1917;
-    }
+  .card-section {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+  }
 
-    .upload-box span {
-      font-size: 12px;
-      color: #c9d1d9;
-      margin-top: 6px;
-    }
+  .card-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
 
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-      border-bottom: 1px solid #21262d;
-      font-size: 12px;
-    }
+  /* ===================== UPLOAD BOX ===================== */
+  .upload-box {
+    border: 2px dashed var(--border-strong);
+    background-color: var(--bg);
+    border-radius: var(--radius);
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    cursor: pointer;
+    transition: all var(--tr);
+    text-align: center;
+    color: inherit;
+    font: inherit;
+    width: 100%;
+    gap: 6px;
+  }
 
-    .info-row:last-child {
-      border-bottom: none;
-    }
+  .upload-box.dragover,
+  .upload-box:hover {
+    border-color: var(--accent);
+    background-color: var(--accent-soft);
+  }
 
-    .info-label {
-      color: #8b949e;
-    }
+  .upload-box:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 
-    .info-value {
-      color: #f8fafc;
-      font-weight: 600;
-      text-align: right;
-      max-width: 160px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+  .upload-box span {
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  /* ===================== INFO ===================== */
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+
+  .info-row:last-child { border-bottom: none; }
+
+  .info-label { color: var(--text-dim); }
+
+  .info-value {
+    color: #f8fafc;
+    font-weight: 600;
+    text-align: right;
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .info-value.ok { color: #22c55e; }
+
+  /* ===================== VIEWPORT ===================== */
+  .viewport-container {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(ellipse at center, #0d1119 0%, #05070a 100%);
+    overflow: hidden;
+  }
+
+  #webgl-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    outline: none;
+  }
+
+  #webgl-canvas:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  #viewcube-wrapper {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 180px;
+    height: 180px;
+    z-index: 10;
+    user-select: none;
+    pointer-events: none;
+    transition: width var(--tr), height var(--tr);
+  }
+
+  #viewcube-canvas {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    pointer-events: auto;
+    border-radius: 4px;
+  }
+
+  #viewcube-canvas:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Reset button */
+  .viewport-actions {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+
+  .btn-reset {
+    background: rgba(22, 27, 34, 0.9);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--tr);
+    backdrop-filter: blur(8px);
+  }
+
+  .btn-reset:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-reset:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Drag overlay */
+  .viewport-container.dragover::after {
+    content: '📥 Suelta el archivo aquí';
+    position: absolute;
+    inset: 0;
+    background: rgba(224, 94, 27, 0.15);
+    border: 3px dashed var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    z-index: 15;
+    pointer-events: none;
+  }
+
+  /* Loading spinner */
+  #loading {
+    position: absolute;
+    inset: 0;
+    background: rgba(13, 17, 23, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 18;
+    backdrop-filter: blur(2px);
+  }
+
+  #loading.active { display: flex; }
+
+  #loading::after {
+    content: '';
+    width: 42px;
+    height: 42px;
+    border: 3px solid var(--border-strong);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0);
+    white-space: nowrap; border: 0;
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 768px) {
+    .app-layout { flex-direction: column-reverse; }
 
     .viewport-container {
       flex: 1;
-      position: relative;
-      background: radial-gradient(ellipse at center, #0d1119 0%, #05070a 100%);
-      overflow: hidden;
-    }
-
-    #webgl-canvas {
       width: 100%;
-      height: 100%;
-      display: block;
+      min-height: 50vh;
     }
 
-    #viewcube-wrapper {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 180px;
-      height: 180px;
-      z-index: 10;
-      user-select: none;
-      pointer-events: none;
-      transition: width 0.3s ease, height 0.3s ease;
-    }
-
-    #viewcube-canvas {
+    .sidebar {
       width: 100%;
-      height: 100%;
-      cursor: pointer;
-      pointer-events: auto;
+      height: auto;
+      max-height: 40vh;
+      border-right: none;
+      border-top: 1px solid var(--border);
+      padding: 10px;
+      gap: 8px;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4);
     }
 
-    /* Reglas Adaptativas / Media Queries para Dispositivos Móviles y Tabletas */
-    @media (max-width: 768px) {
-      .app-layout {
-        flex-direction: column-reverse;
-      }
+    .card-section { padding: 8px 10px; }
+    .upload-box { min-height: 65px; padding: 8px; }
+    .upload-box svg { width: 20px; height: 20px; }
+    .upload-box span { font-size: 11px; }
 
-      .viewport-container {
-        flex: 1;
-        width: 100%;
-        min-height: 50vh;
-      }
+    #viewcube-wrapper { width: 110px; height: 110px; top: 8px; right: 8px; }
+  }
 
-      .sidebar {
-        width: 100%;
-        height: auto;
-        max-height: 40vh;
-        border-right: none;
-        border-top: 1px solid #21262d;
-        padding: 10px;
-        gap: 8px;
-        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4);
-      }
+  @media (max-width: 480px) {
+    .header { padding: 0 12px; height: 40px; }
+    .header-title { font-size: 13px; }
+    .app-layout { height: calc(100dvh - 40px); }
+    .sidebar { max-height: 45vh; }
+    .info-row { padding: 4px 0; font-size: 11px; }
+    #viewcube-wrapper { width: 90px; height: 90px; }
+    .btn-reset { padding: 5px 10px; font-size: 11px; }
+  }
 
-      .card-section {
-        padding: 8px 10px;
-      }
-
-      .upload-box {
-        min-height: 65px;
-        padding: 8px;
-      }
-
-      .upload-box svg {
-        width: 20px;
-        height: 20px;
-      }
-
-      .upload-box span {
-        font-size: 11px;
-      }
-
-      #viewcube-wrapper {
-        width: 110px;
-        height: 110px;
-        top: 8px;
-        right: 8px;
-      }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
     }
-
-    @media (max-width: 480px) {
-      .header {
-        padding: 0 12px;
-        height: 40px;
-      }
-
-      .header-title {
-        font-size: 13px;
-      }
-
-      .app-layout {
-        height: calc(100vh - 40px);
-        height: calc(100dvh - 40px);
-      }
-
-      .sidebar {
-        max-height: 45vh;
-      }
-
-      .info-row {
-        padding: 4px 0;
-        font-size: 11px;
-      }
-
-      #viewcube-wrapper {
-        width: 90px;
-        height: 90px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
-  <div class="header">
-    <a href="index.html" class="header-title" title="Ir a inicio">
-      <img src="iconos/visualizador3d.svg" alt="Visualizador 3D" class="header-icon">
-      <span>Visualizador 3D</span>
-    </a>
-  </div>
+<header class="header">
+  <a href="index.html" class="header-title" title="Ir a inicio">
+    <img src="iconos/visualizador3d.svg" alt="" class="header-icon" aria-hidden="true">
+    <span>Visualizador 3D</span>
+  </a>
+</header>
 
-  <div class="app-layout">
-    <div class="sidebar">
-      <div class="card-section">
-        <div class="card-title">CARGAR MODELO</div>
-        <div class="upload-box" id="drop-zone">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e05e1b" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          <span>Seleccionar o arrastrar STL, OBJ o G-code</span>
-          <input type="file" id="file-input" accept=".stl,.obj,.gcode" style="display:none">
-        </div>
+<div class="app-layout">
+  <aside class="sidebar" aria-label="Panel de control del modelo">
+    <section class="card-section">
+      <h2 class="card-title">Cargar modelo</h2>
+      <div class="upload-box" id="drop-zone" role="button" tabindex="0"
+           aria-label="Cargar modelo: seleccionar o arrastrar archivo STL, OBJ o G-code">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="#e05e1b" stroke-width="2" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <span>Seleccionar o arrastrar STL, OBJ o G-code</span>
+        <input type="file" id="file-input" accept=".stl,.obj,.gcode" hidden>
       </div>
+    </section>
 
-      <div class="card-section">
-        <div class="card-title">INFORMACIÓN DEL MODELO</div>
-        <div class="info-row">
-          <span class="info-label">Nombre del objeto:</span>
-          <span class="info-value" id="info-name">-</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Formato / Tipo:</span>
-          <span class="info-value" id="info-type">-</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Tamaño (X×Y×Z):</span>
-          <span class="info-value" id="info-size">-</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Volumen:</span>
-          <span class="info-value" id="info-volume">-</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Triángulos / Entidades:</span>
-          <span class="info-value" id="info-triangles">-</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Asentamiento Base:</span>
-          <span class="info-value" id="info-z-ground" style="color: #22c55e;">-</span>
-        </div>
-      </div>
+    <section class="card-section" aria-live="polite" aria-atomic="true">
+      <h2 class="card-title">Información del modelo</h2>
+      <div class="info-row"><span class="info-label">Nombre del objeto:</span><span class="info-value" id="info-name">—</span></div>
+      <div class="info-row"><span class="info-label">Formato / Tipo:</span><span class="info-value" id="info-type">—</span></div>
+      <div class="info-row"><span class="info-label">Tamaño (X×Y×Z):</span><span class="info-value" id="info-size">—</span></div>
+      <div class="info-row"><span class="info-label">Volumen:</span><span class="info-value" id="info-volume">—</span></div>
+      <div class="info-row"><span class="info-label">Triángulos / Entidades:</span><span class="info-value" id="info-triangles">—</span></div>
+      <div class="info-row"><span class="info-label">Asentamiento Base:</span><span class="info-value ok" id="info-z-ground">—</span></div>
+    </section>
+  </aside>
+
+  <div class="viewport-container" id="viewport">
+    <canvas id="webgl-canvas" tabindex="0" aria-label="Visor 3D interactivo"></canvas>
+
+    <div id="viewcube-wrapper">
+      <canvas id="viewcube-canvas" tabindex="0" role="button"
+              aria-label="Cubo de vistas. Haz clic en una cara para orientar la cámara."></canvas>
     </div>
 
-    <div class="viewport-container" id="viewport">
-      <canvas id="webgl-canvas"></canvas>
-      <div id="viewcube-wrapper">
-        <canvas id="viewcube-canvas"></canvas>
-      </div>
+    <div class="viewport-actions">
+      <button type="button" class="btn-reset" id="btn-reset">Reencuadrar</button>
+    </div>
+
+    <div id="loading" role="status" aria-label="Procesando modelo">
+      <span class="sr-only">Procesando modelo…</span>
     </div>
   </div>
+</div>
 
-  <!-- Three.js + Controles + Loaders -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GCodeLoader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GCodeLoader.js"></script>
 
-  <script>
-    let scene, camera, renderer, controls, currentObject;
-    let cubeScene, cubeCamera, cubeRenderer, cubeMesh, highlightBlock, raycaster, mouse;
-    let activeTargetVector = null;
+<script>
+(() => {
+'use strict';
 
-    let isAnimatingCamera = false;
-    const animStartPos = new THREE.Vector3();
-    const animEndPos = new THREE.Vector3();
-    let animProgress = 0;
+/* ============================================================
+   CONFIGURACIÓN
+   ============================================================ */
+const CONFIG = {
+  BED_SIZE: 235,
+  CUBE_SIZE: 1.6,
+  CAM_DIST: 320,
+  CUBE_CAM_DIST: 10,
+  MAX_PIXEL_RATIO: 2,
+  MAX_PIXEL_RATIO_MOBILE: 1.5,
+  MAX_FILE_MB: 200,
+  ACCENT: 0xe05e1b,
+  RESIZE_DEBOUNCE: 120,
+  CAM_ANIM_SPEED: 0.08,
+};
 
-    const container = document.getElementById('viewport');
-    const canvas = document.getElementById('webgl-canvas');
-    const cubeWrapper = document.getElementById('viewcube-wrapper');
-    const cubeCanvas = document.getElementById('viewcube-canvas');
+const EXT_TYPE_MAP = {
+  stl: 'STL (Malla Poligonal)',
+  obj: 'OBJ (Geometría 3D)',
+  gcode: 'G-Code (Trayectoria CNC/3D)',
+};
 
-    const MAINSAIL_ORANGE = 0xe05e1b;
-    const BED_SIZE_X = 235;
-    const BED_SIZE_Y = 235;
-    const CUBE_SIZE = 1.6;
-    const CELL_SIZE = CUBE_SIZE / 3;
+/* ============================================================
+   DOM CACHE
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+const dom = {
+  viewport:    $('viewport'),
+  canvas:      $('webgl-canvas'),
+  cubeWrapper: $('viewcube-wrapper'),
+  cubeCanvas:  $('viewcube-canvas'),
+  dropZone:    $('drop-zone'),
+  fileInput:   $('file-input'),
+  btnReset:    $('btn-reset'),
+  loading:     $('loading'),
+  info: {
+    name:      $('info-name'),
+    type:      $('info-type'),
+    size:      $('info-size'),
+    volume:    $('info-volume'),
+    triangles: $('info-triangles'),
+    zGround:   $('info-z-ground'),
+  },
+};
 
-    function parseSTLEmbedded(buffer) {
-      const dataView = new DataView(buffer);
-      let isBinary = true;
+/* ============================================================
+   ESTADO
+   ============================================================ */
+let scene, camera, renderer, controls, currentObject = null;
+let cubeScene, cubeCamera, cubeRenderer, cubeMesh, highlightBlock;
+let raycaster, cubePointer;
+let activeTargetVector = null;
+let isAnimatingCamera = false;
+let animProgress = 0;
+const animStartPos = new THREE.Vector3();
+const animEndPos = new THREE.Vector3();
 
-      if (buffer.byteLength < 84) {
-        isBinary = false;
-      } else {
-        const numTriangles = dataView.getUint32(80, true);
-        const expectedSize = 84 + numTriangles * 50;
-        if (buffer.byteLength < expectedSize || numTriangles === 0) {
-          const headerStr = new TextDecoder().decode(buffer.slice(0, 80));
-          if (headerStr.trim().toLowerCase().startsWith('solid')) {
-            isBinary = false;
-          }
-        }
-      }
+const isMobile = matchMedia('(max-width: 768px)').matches;
+const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      const geometry = new THREE.BufferGeometry();
-      const vertices = [];
-      const normals = [];
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+const debounce = (fn, wait) => {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+};
 
-      if (isBinary) {
-        const numTriangles = dataView.getUint32(80, true);
-        let offset = 84;
-        for (let i = 0; i < numTriangles; i++) {
-          if (offset + 50 > buffer.byteLength) break;
+const readFileAsync = (file, as = 'text') => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload  = (e) => resolve(e.target.result);
+  reader.onerror = () => reject(reader.error || new Error('Error leyendo archivo'));
+  if (as === 'buffer') reader.readAsArrayBuffer(file);
+  else reader.readAsText(file);
+});
 
-          const nx = dataView.getFloat32(offset, true);
-          const ny = dataView.getFloat32(offset + 4, true);
-          const nz = dataView.getFloat32(offset + 8, true);
-          offset += 12;
+const setLoading = (on) => dom.loading.classList.toggle('active', !!on);
 
-          for (let j = 0; j < 3; j++) {
-            vertices.push(
-              dataView.getFloat32(offset, true),
-              dataView.getFloat32(offset + 4, true),
-              dataView.getFloat32(offset + 8, true)
-            );
-            normals.push(nx, ny, nz);
-            offset += 12;
-          }
-          offset += 2;
-        }
-      } else {
-        const text = new TextDecoder().decode(buffer);
-        const lines = text.split('\n');
-        let currentNormal = [0, 0, 1];
+const setInfo = (key, value, okClass = false) => {
+  const el = dom.info[key];
+  if (!el) return;
+  el.textContent = value;
+  el.classList.toggle('ok', okClass);
+};
 
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i].trim().toLowerCase();
-          if (line.startsWith('facet normal')) {
-            const parts = line.split(/\s+/);
-            if (parts.length >= 4) {
-              currentNormal = [parseFloat(parts[2]), parseFloat(parts[3]), parseFloat(parts[4])];
-            }
-          } else if (line.startsWith('vertex')) {
-            const parts = line.split(/\s+/);
-            if (parts.length >= 4) {
-              vertices.push(parseFloat(parts[1]), parseFloat(parts[2]), parseFloat(parts[3]));
-              normals.push(currentNormal[0], currentNormal[1], currentNormal[2]);
-            }
-          }
-        }
-      }
+const resetInfo = () => {
+  ['name','type','size','volume','triangles'].forEach(k => setInfo(k, '—'));
+  setInfo('zGround', '—');
+};
 
-      geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-      if (normals.length === vertices.length && normals.length > 0) {
-        geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-      } else {
-        geometry.computeVertexNormals();
-      }
-      return geometry;
+/* ============================================================
+   PARSER STL (ASCII + BINARIO)
+   ============================================================ */
+function parseSTLEmbedded(buffer) {
+  if (!buffer || buffer.byteLength < 15) {
+    throw new Error('Archivo STL demasiado pequeño o corrupto');
+  }
+
+  const dataView = new DataView(buffer);
+  let isBinary = true;
+
+  if (buffer.byteLength >= 84) {
+    const numTriangles = dataView.getUint32(80, true);
+    const expectedSize = 84 + numTriangles * 50;
+    if (buffer.byteLength < expectedSize || numTriangles === 0) {
+      // Heurística adicional: ¿empieza con "solid"? → probablemente ASCII
+      const headerStr = new TextDecoder().decode(buffer.slice(0, Math.min(80, buffer.byteLength)));
+      if (headerStr.trim().toLowerCase().startsWith('solid')) isBinary = false;
     }
+  } else {
+    isBinary = false;
+  }
 
-    function init() {
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x090d13);
+  const geometry = new THREE.BufferGeometry();
+  const vertices = [];
+  const normals  = [];
 
-      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 3000);
-      camera.up.set(0, 0, 1);
-      camera.position.set(117.5, -300, 240);
-
-      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.target.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, 0);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
-
-      const gridPrimary = new THREE.GridHelper(BED_SIZE_X, 47, 0x384454, 0x1c2430);
-      gridPrimary.rotation.x = Math.PI / 2;
-      gridPrimary.position.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, 0);
-      scene.add(gridPrimary);
-
-      const gridSecondary = new THREE.GridHelper(BED_SIZE_X, 235, 0x18202a, 0x121720);
-      gridSecondary.rotation.x = Math.PI / 2;
-      gridSecondary.position.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, -0.1);
-      scene.add(gridSecondary);
-
-      const bedOutlineShape = new THREE.Shape();
-      bedOutlineShape.moveTo(0, 0);
-      bedOutlineShape.lineTo(BED_SIZE_X, 0);
-      bedOutlineShape.lineTo(BED_SIZE_X, BED_SIZE_Y);
-      bedOutlineShape.lineTo(0, BED_SIZE_Y);
-      bedOutlineShape.lineTo(0, 0);
-      const bedOutlineGeom = new THREE.BufferGeometry().setFromPoints(bedOutlineShape.getPoints());
-      const bedOutline = new THREE.LineLoop(
-        bedOutlineGeom,
-        new THREE.LineBasicMaterial({ color: MAINSAIL_ORANGE, linewidth: 2, transparent: true, opacity: 0.9 })
-      );
-      bedOutline.position.z = 0.05;
-      scene.add(bedOutline);
-
-      const originMarker = new THREE.Mesh(
-        new THREE.CircleGeometry(3, 24),
-        new THREE.MeshBasicMaterial({ color: MAINSAIL_ORANGE, transparent: true, opacity: 0.6 })
-      );
-      originMarker.position.set(0, 0, 0.06);
-      scene.add(originMarker);
-
-      addCornerCartesianAxes();
-
-      scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-      const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
-      light1.position.set(100, -100, 250);
-      scene.add(light1);
-
-      const light2 = new THREE.DirectionalLight(0xffffff, 0.3);
-      light2.position.set(-100, 100, -100);
-      scene.add(light2);
-
-      initViewCube();
-      setupFileHandlers();
-      animate();
-    }
-
-    function addCornerCartesianAxes() {
-      const len = 35;
-      const origin = new THREE.Vector3(0, 0, 0);
-      scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), origin, len, 0xef4444, 5, 3));
-      scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), origin, len, 0x22c55e, 5, 3));
-      scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), origin, len, 0x3b82f6, 5, 3));
-    }
-
-    function createOrcaFaceTexture(text, rotationDeg = 0) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 256;
-      canvas.height = 256;
-      const ctx = canvas.getContext('2d');
-
-      ctx.fillStyle = '#2f343d';
-      ctx.fillRect(0, 0, 256, 256);
-
-      ctx.strokeStyle = '#434a56';
-      ctx.lineWidth = 2;
-      const step = 256 / 3;
-
-      for (let i = 1; i < 3; i++) {
-        ctx.beginPath(); ctx.moveTo(i * step, 0); ctx.lineTo(i * step, 256); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(0, i * step); ctx.lineTo(256, i * step); ctx.stroke();
-      }
-
-      ctx.strokeStyle = '#555e6d';
-      ctx.lineWidth = 4;
-      ctx.strokeRect(0, 0, 256, 256);
-
-      ctx.save();
-      ctx.translate(128, 128);
-      ctx.rotate((rotationDeg || 0) * Math.PI / 180);
-
-      ctx.fillStyle = '#f8fafc';
-      ctx.font = 'italic 700 40px "Segoe UI", system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(text, 0, 0);
-      ctx.restore();
-
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.anisotropy = 4;
-      return texture;
-    }
-
-    function createAxisLabelTexture(text, color) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 64;
-      canvas.height = 64;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = color;
-      ctx.font = 'Bold 46px "Segoe UI", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(text, 32, 32);
-      return new THREE.CanvasTexture(canvas);
-    }
-
-    function initViewCube() {
-      cubeScene = new THREE.Scene();
-
-      const d = 2.1;
-      cubeCamera = new THREE.OrthographicCamera(-d, d, d, -d, 0.1, 100);
-      cubeCamera.up.set(0, 0, 1);
-
-      cubeRenderer = new THREE.WebGLRenderer({ canvas: cubeCanvas, alpha: true, antialias: true });
-      cubeRenderer.setSize(cubeWrapper.clientWidth, cubeWrapper.clientHeight);
-      cubeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      const materials = [
-        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Derecha', 270), transparent: true, opacity: 0.9 }),
-        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Izquierda', 90), transparent: true, opacity: 0.9 }),
-        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Trasera', 180), transparent: true, opacity: 0.9 }),
-        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Frontal', 0), transparent: true, opacity: 0.9 }),
-        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Superior', 0), transparent: true, opacity: 0.9 }),
-        new THREE.MeshBasicMaterial({ map: createOrcaFaceTexture('Inferior', 180), transparent: true, opacity: 0.9 })
-      ];
-
-      const geometry = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
-      cubeMesh = new THREE.Mesh(geometry, materials);
-      cubeScene.add(cubeMesh);
-
-      const h = CUBE_SIZE / 2;
-      const cornerOrigin = new THREE.Vector3(-h, -h, -h);
-      const axisLen = CUBE_SIZE * 1.05;
-
-      const matX = new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 3, depthTest: false });
-      const lineX = new THREE.Line(new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h + axisLen, -h, -h)]), matX);
-      lineX.renderOrder = 999;
-      cubeScene.add(lineX);
-
-      const labelX = new THREE.Sprite(new THREE.SpriteMaterial({ map: createAxisLabelTexture('X', '#ef4444'), depthTest: false }));
-      labelX.position.set(-h + axisLen + 0.18, -h, -h);
-      labelX.scale.set(0.24, 0.24, 1);
-      labelX.renderOrder = 1000;
-      cubeScene.add(labelX);
-
-      const matY = new THREE.LineBasicMaterial({ color: 0x22c55e, linewidth: 3, depthTest: false });
-      const lineY = new THREE.Line(new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h, -h + axisLen, -h)]), matY);
-      lineY.renderOrder = 999;
-      cubeScene.add(lineY);
-
-      const labelY = new THREE.Sprite(new THREE.SpriteMaterial({ map: createAxisLabelTexture('Y', '#22c55e'), depthTest: false }));
-      labelY.position.set(-h, -h + axisLen + 0.18, -h);
-      labelY.scale.set(0.24, 0.24, 1);
-      labelY.renderOrder = 1000;
-      cubeScene.add(labelY);
-
-      const matZ = new THREE.LineBasicMaterial({ color: 0x3b82f6, linewidth: 3, depthTest: false });
-      const lineZ = new THREE.Line(new THREE.BufferGeometry().setFromPoints([cornerOrigin, new THREE.Vector3(-h, -h, -h + axisLen)]), matZ);
-      lineZ.renderOrder = 999;
-      cubeScene.add(lineZ);
-
-      const labelZ = new THREE.Sprite(new THREE.SpriteMaterial({ map: createAxisLabelTexture('Z', '#3b82f6'), depthTest: false }));
-      labelZ.position.set(-h, -h, -h + axisLen + 0.18);
-      labelZ.scale.set(0.24, 0.24, 1);
-      labelZ.renderOrder = 1000;
-      cubeScene.add(labelZ);
-
-      const hlGeom = new THREE.BoxGeometry(CELL_SIZE * 0.98, CELL_SIZE * 0.98, CELL_SIZE * 0.98);
-      const hlMat = new THREE.MeshBasicMaterial({ color: 0xb86d3b, depthTest: false, transparent: false });
-      highlightBlock = new THREE.Mesh(hlGeom, hlMat);
-      highlightBlock.visible = false;
-      highlightBlock.renderOrder = 1001;
-      cubeScene.add(highlightBlock);
-
-      raycaster = new THREE.Raycaster();
-      mouse = new THREE.Vector2();
-
-      cubeCanvas.addEventListener('pointermove', onCubeHover);
-      cubeCanvas.addEventListener('pointerleave', () => { highlightBlock.visible = false; });
-      cubeCanvas.addEventListener('click', onCubeClick);
-    }
-
-    function onCubeHover(event) {
-      if (isAnimatingCamera) {
-        highlightBlock.visible = false;
-        return;
-      }
-
-      const rect = event.target.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, cubeCamera);
-      const intersects = raycaster.intersectObject(cubeMesh);
-
-      if (intersects.length > 0) {
-        const point = intersects[0].point;
-        const th = CELL_SIZE / 2;
-
-        const ix = point.x > th ? 1 : (point.x < -th ? -1 : 0);
-        const iy = point.y > th ? 1 : (point.y < -th ? -1 : 0);
-        const iz = point.z > th ? 1 : (point.z < -th ? -1 : 0);
-
-        highlightBlock.position.set(ix * CELL_SIZE, iy * CELL_SIZE, iz * CELL_SIZE);
-        highlightBlock.visible = true;
-
-        activeTargetVector = new THREE.Vector3(ix, iy, iz).normalize();
-      } else {
-        highlightBlock.visible = false;
-        activeTargetVector = null;
-      }
-    }
-
-    function onCubeClick() {
-      if (activeTargetVector && activeTargetVector.lengthSq() > 0) {
-        highlightBlock.visible = false;
-
-        const dist = 320;
-        const target = controls.target.clone();
-
-        animStartPos.copy(camera.position);
-        animEndPos.set(
-          target.x + activeTargetVector.x * dist,
-          target.y + activeTargetVector.y * dist,
-          target.z + activeTargetVector.z * dist
+  if (isBinary) {
+    const numTriangles = dataView.getUint32(80, true);
+    let offset = 84;
+    for (let i = 0; i < numTriangles; i++) {
+      if (offset + 50 > buffer.byteLength) break;
+      const nx = dataView.getFloat32(offset, true);
+      const ny = dataView.getFloat32(offset + 4, true);
+      const nz = dataView.getFloat32(offset + 8, true);
+      offset += 12;
+      for (let j = 0; j < 3; j++) {
+        vertices.push(
+          dataView.getFloat32(offset, true),
+          dataView.getFloat32(offset + 4, true),
+          dataView.getFloat32(offset + 8, true)
         );
-        animProgress = 0;
-        isAnimatingCamera = true;
+        normals.push(nx, ny, nz);
+        offset += 12;
+      }
+      offset += 2;
+    }
+  } else {
+    const text = new TextDecoder().decode(buffer);
+    const lines = text.split('\n');
+    let cx = 0, cy = 0, cz = 1;
+    for (let i = 0, n = lines.length; i < n; i++) {
+      const line = lines[i].trim().toLowerCase();
+      if (line.startsWith('facet normal')) {
+        const p = line.split(/\s+/);
+        if (p.length >= 5) {
+          cx = parseFloat(p[2]);
+          cy = parseFloat(p[3]);
+          cz = parseFloat(p[4]);
+        }
+      } else if (line.startsWith('vertex')) {
+        const p = line.split(/\s+/);
+        if (p.length >= 4) {
+          vertices.push(parseFloat(p[1]), parseFloat(p[2]), parseFloat(p[3]));
+          normals.push(cx, cy, cz);
+        }
       }
     }
+  }
 
-    function centerAndGroundObject(object) {
-      object.position.set(0, 0, 0);
-      object.rotation.set(0, 0, 0);
-      object.scale.set(1, 1, 1);
-      object.updateMatrixWorld(true);
+  if (vertices.length === 0) throw new Error('El STL no contiene geometría');
 
-      const box = new THREE.Box3().setFromObject(object);
-      const center = new THREE.Vector3();
-      box.getCenter(center);
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  if (normals.length === vertices.length && normals.length > 0) {
+    geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+  } else {
+    geometry.computeVertexNormals();
+  }
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
 
-      const offsetX = (BED_SIZE_X / 2) - center.x;
-      const offsetY = (BED_SIZE_Y / 2) - center.y;
-      const offsetZ = -box.min.z;
+/* ============================================================
+   ESCENA PRINCIPAL
+   ============================================================ */
+function init() {
+  const { viewport } = dom;
+  const w = viewport.clientWidth;
+  const h = viewport.clientHeight;
 
-      object.position.set(offsetX, offsetY, offsetZ);
-      object.updateMatrixWorld(true);
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x090d13);
 
-      const updatedBox = new THREE.Box3().setFromObject(object);
-      const height = updatedBox.max.z - updatedBox.min.z;
-      controls.target.set(BED_SIZE_X / 2, BED_SIZE_Y / 2, height / 2);
+  camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 3000);
+  camera.up.set(0, 0, 1);
+  camera.position.set(CONFIG.BED_SIZE / 2, -300, 240);
+
+  renderer = new THREE.WebGLRenderer({ canvas: dom.canvas, antialias: true, powerPreference: 'high-performance' });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(
+    window.devicePixelRatio,
+    isMobile ? CONFIG.MAX_PIXEL_RATIO_MOBILE : CONFIG.MAX_PIXEL_RATIO
+  ));
+
+  // Context loss handling (importante en móviles)
+  dom.canvas.addEventListener('webglcontextlost', (e) => e.preventDefault(), false);
+  dom.canvas.addEventListener('webglcontextrestored', () => {
+    // Re-render básico; three.js ya gestiona la restauración de recursos
+    if (renderer) renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+  }, false);
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.target.set(CONFIG.BED_SIZE / 2, CONFIG.BED_SIZE / 2, 0);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.screenSpacePanning = true;
+
+  buildBed();
+  addCornerCartesianAxes();
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+  const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+  light1.position.set(100, -100, 250);
+  scene.add(light1);
+  const light2 = new THREE.DirectionalLight(0xffffff, 0.3);
+  light2.position.set(-100, 100, -100);
+  scene.add(light2);
+
+  initViewCube();
+  setupFileHandlers();
+  setupKeyboardShortcuts();
+  setupResize();
+
+  renderer.setAnimationLoop(animate);
+}
+
+function buildBed() {
+  const half = CONFIG.BED_SIZE / 2;
+
+  const gridPrimary = new THREE.GridHelper(CONFIG.BED_SIZE, 47, 0x384454, 0x1c2430);
+  gridPrimary.rotation.x = Math.PI / 2;
+  gridPrimary.position.set(half, half, 0);
+  scene.add(gridPrimary);
+
+  const gridSecondary = new THREE.GridHelper(CONFIG.BED_SIZE, 235, 0x18202a, 0x121720);
+  gridSecondary.rotation.x = Math.PI / 2;
+  gridSecondary.position.set(half, half, -0.1);
+  scene.add(gridSecondary);
+
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  shape.lineTo(CONFIG.BED_SIZE, 0);
+  shape.lineTo(CONFIG.BED_SIZE, CONFIG.BED_SIZE);
+  shape.lineTo(0, CONFIG.BED_SIZE);
+  shape.lineTo(0, 0);
+
+  const outline = new THREE.LineLoop(
+    new THREE.BufferGeometry().setFromPoints(shape.getPoints()),
+    new THREE.LineBasicMaterial({ color: CONFIG.ACCENT, transparent: true, opacity: 0.9 })
+  );
+  outline.position.z = 0.05;
+  scene.add(outline);
+
+  const originMarker = new THREE.Mesh(
+    new THREE.CircleGeometry(3, 24),
+    new THREE.MeshBasicMaterial({ color: CONFIG.ACCENT, transparent: true, opacity: 0.6 })
+  );
+  originMarker.position.set(0, 0, 0.06);
+  scene.add(originMarker);
+}
+
+function addCornerCartesianAxes() {
+  const len = 35;
+  const origin = new THREE.Vector3(0, 0, 0);
+  scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), origin, len, 0xef4444, 5, 3));
+  scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), origin, len, 0x22c55e, 5, 3));
+  scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), origin, len, 0x3b82f6, 5, 3));
+}
+
+/* ============================================================
+   VIEW CUBE
+   ============================================================ */
+function createOrcaFaceTexture(text, rotationDeg = 0) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#2f343d';
+  ctx.fillRect(0, 0, 256, 256);
+
+  ctx.strokeStyle = '#434a56';
+  ctx.lineWidth = 2;
+  const step = 256 / 3;
+  for (let i = 1; i < 3; i++) {
+    ctx.beginPath(); ctx.moveTo(i * step, 0); ctx.lineTo(i * step, 256); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i * step); ctx.lineTo(256, i * step); ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#555e6d';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(0, 0, 256, 256);
+
+  ctx.save();
+  ctx.translate(128, 128);
+  ctx.rotate(rotationDeg * Math.PI / 180);
+  ctx.fillStyle = '#f8fafc';
+  ctx.font = 'italic 700 40px "Segoe UI", system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 0, 0);
+  ctx.restore();
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.anisotropy = 4;
+  return texture;
+}
+
+function createAxisLabelTexture(text, color) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = color;
+  ctx.font = 'Bold 46px "Segoe UI", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 32, 32);
+  return new THREE.CanvasTexture(canvas);
+}
+
+function initViewCube() {
+  cubeScene = new THREE.Scene();
+
+  const d = 2.1;
+  cubeCamera = new THREE.OrthographicCamera(-d, d, d, -d, 0.1, 100);
+  cubeCamera.up.set(0, 0, 1);
+
+  cubeRenderer = new THREE.WebGLRenderer({ canvas: dom.cubeCanvas, alpha: true, antialias: true });
+  cubeRenderer.setSize(dom.cubeWrapper.clientWidth, dom.cubeWrapper.clientHeight);
+  cubeRenderer.setPixelRatio(Math.min(
+    window.devicePixelRatio,
+    isMobile ? CONFIG.MAX_PIXEL_RATIO_MOBILE : CONFIG.MAX_PIXEL_RATIO
+  ));
+
+  const faceMat = (t, r) => new THREE.MeshBasicMaterial({
+    map: createOrcaFaceTexture(t, r), transparent: true, opacity: 0.9
+  });
+  const materials = [
+    faceMat('Derecha', 270), faceMat('Izquierda', 90),
+    faceMat('Trasera', 180), faceMat('Frontal', 0),
+    faceMat('Superior', 0),  faceMat('Inferior', 180),
+  ];
+
+  cubeMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE, CONFIG.CUBE_SIZE),
+    materials
+  );
+  cubeScene.add(cubeMesh);
+
+  // Ejes del viewcube
+  const h = CONFIG.CUBE_SIZE / 2;
+  const origin = new THREE.Vector3(-h, -h, -h);
+  const axisLen = CONFIG.CUBE_SIZE * 1.05;
+
+  const addAxis = (dir, color, label, labelPos) => {
+    const line = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([origin, labelPos]),
+      new THREE.LineBasicMaterial({ color, depthTest: false })
+    );
+    line.renderOrder = 999;
+    cubeScene.add(line);
+
+    const sprite = new THREE.Sprite(
+      new THREE.SpriteMaterial({ map: createAxisLabelTexture(label, '#' + color.toString(16).padStart(6, '0')), depthTest: false })
+    );
+    sprite.position.copy(labelPos).multiplyScalar(1.08);
+    sprite.scale.set(0.24, 0.24, 1);
+    sprite.renderOrder = 1000;
+    cubeScene.add(sprite);
+  };
+
+  addAxis('x', 0xef4444, 'X', new THREE.Vector3(-h + axisLen, -h, -h));
+  addAxis('y', 0x22c55e, 'Y', new THREE.Vector3(-h, -h + axisLen, -h));
+  addAxis('z', 0x3b82f6, 'Z', new THREE.Vector3(-h, -h, -h + axisLen));
+
+  // Highlight
+  const cellSize = CONFIG.CUBE_SIZE / 3;
+  highlightBlock = new THREE.Mesh(
+    new THREE.BoxGeometry(cellSize * 0.98, cellSize * 0.98, cellSize * 0.98),
+    new THREE.MeshBasicMaterial({ color: 0xb86d3b, depthTest: false })
+  );
+  highlightBlock.visible = false;
+  highlightBlock.renderOrder = 1001;
+  cubeScene.add(highlightBlock);
+
+  raycaster = new THREE.Raycaster();
+  cubePointer = new THREE.Vector2();
+
+  dom.cubeCanvas.addEventListener('pointermove', onCubeHover, { passive: true });
+  dom.cubeCanvas.addEventListener('pointerleave', () => {
+    highlightBlock.visible = false;
+    activeTargetVector = null;
+  }, { passive: true });
+  dom.cubeCanvas.addEventListener('click', onCubeClick);
+}
+
+function onCubeHover(event) {
+  if (isAnimatingCamera) {
+    if (highlightBlock.visible) highlightBlock.visible = false;
+    return;
+  }
+
+  const rect = dom.cubeCanvas.getBoundingClientRect();
+  cubePointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  cubePointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(cubePointer, cubeCamera);
+  const hit = raycaster.intersectObject(cubeMesh, false);
+
+  if (hit.length) {
+    const p = hit[0].point;
+    const cell = CONFIG.CUBE_SIZE / 6;
+    const ix = p.x >  cell ? 1 : (p.x < -cell ? -1 : 0);
+    const iy = p.y >  cell ? 1 : (p.y < -cell ? -1 : 0);
+    const iz = p.z >  cell ? 1 : (p.z < -cell ? -1 : 0);
+
+    const cs = CONFIG.CUBE_SIZE / 3;
+    highlightBlock.position.set(ix * cs, iy * cs, iz * cs);
+    highlightBlock.visible = true;
+    activeTargetVector = new THREE.Vector3(ix, iy, iz).normalize();
+  } else {
+    highlightBlock.visible = false;
+    activeTargetVector = null;
+  }
+}
+
+function onCubeClick() {
+  if (!activeTargetVector || activeTargetVector.lengthSq() === 0) return;
+  highlightBlock.visible = false;
+
+  const target = controls.target;
+  animStartPos.copy(camera.position);
+  animEndPos.set(
+    target.x + activeTargetVector.x * CONFIG.CAM_DIST,
+    target.y + activeTargetVector.y * CONFIG.CAM_DIST,
+    target.z + activeTargetVector.z * CONFIG.CAM_DIST
+  );
+  animProgress = 0;
+  isAnimatingCamera = true;
+}
+
+/* ============================================================
+   CARGA Y CENTRADO DE MODELOS
+   ============================================================ */
+function centerAndGroundObject(object) {
+  object.position.set(0, 0, 0);
+  object.rotation.set(0, 0, 0);
+  object.scale.set(1, 1, 1);
+  object.updateMatrixWorld(true);
+
+  const box = new THREE.Box3().setFromObject(object);
+  const center = box.getCenter(new THREE.Vector3());
+
+  object.position.set(
+    CONFIG.BED_SIZE / 2 - center.x,
+    CONFIG.BED_SIZE / 2 - center.y,
+    -box.min.z
+  );
+  object.updateMatrixWorld(true);
+
+  const updated = new THREE.Box3().setFromObject(object);
+  const height = updated.max.z - updated.min.z;
+  controls.target.set(CONFIG.BED_SIZE / 2, CONFIG.BED_SIZE / 2, height / 2);
+}
+
+function calculateVolume(geometry) {
+  const pos = geometry?.attributes?.position;
+  if (!pos) return 0;
+
+  let vol = 0;
+  const n = pos.count;
+  for (let i = 0; i < n; i += 3) {
+    const x1 = pos.getX(i), y1 = pos.getY(i), z1 = pos.getZ(i);
+    const x2 = pos.getX(i+1), y2 = pos.getY(i+1), z2 = pos.getZ(i+1);
+    const x3 = pos.getX(i+2), y3 = pos.getY(i+2), z3 = pos.getZ(i+2);
+
+    vol += (-x3 * y2 * z1 + x2 * y3 * z1 + x3 * y1 * z2
+          - x1 * y3 * z2 - x2 * y1 * z3 + x1 * y2 * z3) / 6.0;
+  }
+  return Math.abs(vol);
+}
+
+function updateInfo(object, fileName, ext) {
+  const box = new THREE.Box3().setFromObject(object);
+  const dx = (box.max.x - box.min.x).toFixed(2);
+  const dy = (box.max.y - box.min.y).toFixed(2);
+  const dz = (box.max.z - box.min.z).toFixed(2);
+
+  setInfo('name', fileName);
+  setInfo('type', EXT_TYPE_MAP[ext] || ext.toUpperCase());
+  setInfo('size', `${dx} × ${dy} × ${dz} mm`);
+  setInfo('zGround', '0.00 mm (Alineado)', true);
+
+  if (ext === 'gcode') {
+    setInfo('volume', 'N/A (G-Code)');
+    setInfo('triangles', 'N/A (Líneas Vectoriales)');
+    return;
+  }
+
+  let totalTriangles = 0;
+  let totalVolume = 0;
+
+  object.traverse((child) => {
+    if (!child.isMesh || !child.geometry) return;
+    const pos = child.geometry.attributes.position;
+    if (!pos) return;
+
+    totalTriangles += child.geometry.index
+      ? child.geometry.index.count / 3
+      : pos.count / 3;
+
+    try {
+      totalVolume += calculateVolume(child.geometry);
+    } catch (_) { /* geometría no triangular */ }
+  });
+
+  setInfo('volume', totalVolume > 0 ? `${totalVolume.toFixed(2)} mm³` : 'N/A');
+  setInfo('triangles', totalTriangles.toLocaleString());
+}
+
+function disposeMaterial(material) {
+  if (!material) return;
+  if (Array.isArray(material)) {
+    material.forEach(disposeMaterial);
+    return;
+  }
+  // Texturas
+  for (const key of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap']) {
+    if (material[key] && typeof material[key].dispose === 'function') {
+      material[key].dispose();
+      material[key] = null;
     }
+  }
+  if (typeof material.dispose === 'function') material.dispose();
+}
 
-    function calculateVolume(geometry) {
-      if (!geometry || !geometry.attributes.position) return 0;
-      let volume = 0;
-      const pos = geometry.attributes.position;
-      const totalTriangles = pos.count / 3;
+function removeCurrentObject() {
+  if (!currentObject) return;
+  scene.remove(currentObject);
+  currentObject.traverse((child) => {
+    if (child.geometry) child.geometry.dispose();
+    if (child.material) disposeMaterial(child.material);
+  });
+  currentObject = null;
+  resetInfo();
+}
 
-      for (let i = 0; i < totalTriangles; i++) {
-        let p1 = { x: pos.getX(i * 3), y: pos.getY(i * 3), z: pos.getZ(i * 3) };
-        let p2 = { x: pos.getX(i * 3 + 1), y: pos.getY(i * 3 + 1), z: pos.getZ(i * 3 + 1) };
-        let p3 = { x: pos.getX(i * 3 + 2), y: pos.getY(i * 3 + 2), z: pos.getZ(i * 3 + 2) };
+/* ============================================================
+   PROCESAMIENTO DE ARCHIVOS
+   ============================================================ */
+async function processFile(file) {
+  if (!file) return;
 
-        volume += (-p3.x * p2.y * p1.z + p2.x * p3.y * p1.z + p3.x * p1.y * p2.z - p1.x * p3.y * p2.z - p2.x * p1.y * p3.z + p1.x * p2.y * p3.z) / 6.0;
-      }
-      return Math.abs(volume);
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!EXT_TYPE_MAP[ext]) {
+    alert(`Formato no soportado (.${ext}). Use .stl, .obj o .gcode.`);
+    return;
+  }
+  if (file.size > CONFIG.MAX_FILE_MB * 1024 * 1024) {
+    alert(`El archivo supera el límite de ${CONFIG.MAX_FILE_MB} MB.`);
+    return;
+  }
+
+  setLoading(true);
+  try {
+    removeCurrentObject();
+
+    if (ext === 'stl') {
+      const buffer = await readFileAsync(file, 'buffer');
+      const geometry = parseSTLEmbedded(buffer);
+      const material = new THREE.MeshStandardMaterial({
+        color: CONFIG.ACCENT, roughness: 0.35, metalness: 0.1, side: THREE.DoubleSide,
+      });
+      currentObject = new THREE.Mesh(geometry, material);
     }
-
-    function updateInfo(object, fileName, fileExt) {
-      const box = new THREE.Box3().setFromObject(object);
-      const dx = (box.max.x - box.min.x).toFixed(2);
-      const dy = (box.max.y - box.min.y).toFixed(2);
-      const dz = (box.max.z - box.min.z).toFixed(2);
-
-      const typeMap = {
-        'stl': 'STL (Malla Poligonal)',
-        'obj': 'OBJ (Geometría 3D)',
-        'gcode': 'G-Code (Trayectoria CNC/3D)'
-      };
-
-      document.getElementById('info-name').innerText = fileName;
-      document.getElementById('info-type').innerText = typeMap[fileExt] || fileExt.toUpperCase();
-      document.getElementById('info-size').innerText = `${dx} × ${dy} × ${dz} mm`;
-      document.getElementById('info-z-ground').innerText = '0.00 mm (Alineado)';
-
-      if (fileExt === 'gcode') {
-        document.getElementById('info-volume').innerText = 'N/A (G-Code)';
-        document.getElementById('info-triangles').innerText = 'N/A (Líneas Vectoriales)';
-        return;
-      }
-
-      let totalTriangles = 0;
-      let totalVolume = 0;
-
-      object.traverse((child) => {
-        if (child.isMesh && child.geometry) {
-          const pos = child.geometry.attributes.position;
-          if (pos) {
-            totalTriangles += child.geometry.index ? child.geometry.index.count / 3 : pos.count / 3;
-            totalVolume += calculateVolume(child.geometry);
-          }
+    else if (ext === 'obj') {
+      const text = await readFileAsync(file, 'text');
+      const loader = new THREE.OBJLoader();
+      currentObject = loader.parse(text);
+      currentObject.traverse((child) => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshStandardMaterial({
+            color: CONFIG.ACCENT, roughness: 0.35, metalness: 0.1, side: THREE.DoubleSide,
+          });
         }
       });
-
-      document.getElementById('info-volume').innerText = totalVolume > 0 ? `${totalVolume.toFixed(2)} mm³` : 'N/A';
-      document.getElementById('info-triangles').innerText = totalTriangles.toLocaleString();
+    }
+    else if (ext === 'gcode') {
+      const text = await readFileAsync(file, 'text');
+      const loader = new THREE.GCodeLoader();
+      currentObject = loader.parse(text);
     }
 
-    function removeCurrentObject() {
-      if (currentObject) {
-        scene.remove(currentObject);
-        currentObject.traverse((child) => {
-          if (child.geometry) child.geometry.dispose();
-          if (child.material) {
-            if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
-            else child.material.dispose();
-          }
-        });
-        currentObject = null;
-      }
+    if (!currentObject) throw new Error('El parser no devolvió geometría.');
+
+    scene.add(currentObject);
+    centerAndGroundObject(currentObject);
+    updateInfo(currentObject, file.name, ext);
+
+  } catch (err) {
+    console.error('[processFile]', err);
+    alert('Error procesando el archivo: ' + (err.message || err));
+    removeCurrentObject();
+  } finally {
+    setLoading(false);
+    if (dom.fileInput) dom.fileInput.value = '';
+  }
+}
+
+/* ============================================================
+   HANDLERS DE ENTRADA
+   ============================================================ */
+function setupFileHandlers() {
+  const { dropZone, fileInput, viewport } = dom;
+
+  // Click / teclado en drop-zone
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInput.click();
     }
+  });
 
-    function processFile(file) {
-      if (!file) return;
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) processFile(e.target.files[0]);
+  });
 
-      const fileName = file.name;
-      const ext = fileName.split('.').pop().toLowerCase();
+  // Prevenir navegación por drag sobre toda la ventana
+  const prevent = (e) => { e.preventDefault(); e.stopPropagation(); };
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((ev) =>
+    document.addEventListener(ev, prevent, { passive: false })
+  );
 
-      if (!['stl', 'obj', 'gcode'].includes(ext)) {
-        alert('Formato no soportado. Por favor use archivos .stl, .obj o .gcode');
-        return;
-      }
-
-      const reader = new FileReader();
-
-      if (ext === 'stl') {
-        reader.onload = function (e) {
-          try {
-            removeCurrentObject();
-            const geometry = parseSTLEmbedded(e.target.result);
-            const material = new THREE.MeshStandardMaterial({
-              color: MAINSAIL_ORANGE,
-              roughness: 0.35,
-              metalness: 0.1,
-              side: THREE.DoubleSide
-            });
-
-            currentObject = new THREE.Mesh(geometry, material);
-            scene.add(currentObject);
-            centerAndGroundObject(currentObject);
-            updateInfo(currentObject, fileName, 'stl');
-          } catch (err) {
-            console.error(err);
-            alert('Error al procesar STL: ' + err.message);
-          }
-        };
-        reader.readAsArrayBuffer(file);
-      } else if (ext === 'obj') {
-        reader.onload = function (e) {
-          try {
-            removeCurrentObject();
-            const loader = new THREE.OBJLoader();
-            currentObject = loader.parse(e.target.result);
-
-            currentObject.traverse((child) => {
-              if (child.isMesh) {
-                child.material = new THREE.MeshStandardMaterial({
-                  color: MAINSAIL_ORANGE,
-                  roughness: 0.35,
-                  metalness: 0.1,
-                  side: THREE.DoubleSide
-                });
-              }
-            });
-
-            scene.add(currentObject);
-            centerAndGroundObject(currentObject);
-            updateInfo(currentObject, fileName, 'obj');
-          } catch (err) {
-            console.error(err);
-            alert('Error al procesar OBJ: ' + err.message);
-          }
-        };
-        reader.readAsText(file);
-      } else if (ext === 'gcode') {
-        reader.onload = function (e) {
-          try {
-            removeCurrentObject();
-            const loader = new THREE.GCodeLoader();
-            currentObject = loader.parse(e.target.result);
-
-            scene.add(currentObject);
-            centerAndGroundObject(currentObject);
-            updateInfo(currentObject, fileName, 'gcode');
-          } catch (err) {
-            console.error(err);
-            alert('Error al procesar G-code: ' + err.message);
-          }
-        };
-        reader.readAsText(file);
-      }
+  const onDragEnter = (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+    viewport.classList.add('dragover');
+  };
+  const onDragLeave = (e) => {
+    // Solo quitar si salimos del viewport/dropzone (relatedTarget fuera)
+    if (!e.relatedTarget || !viewport.contains(e.relatedTarget)) {
+      dropZone.classList.remove('dragover');
+      viewport.classList.remove('dragover');
     }
+  };
+  const onDrop = (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    viewport.classList.remove('dragover');
+    const files = e.dataTransfer?.files;
+    if (files && files.length) processFile(files[0]);
+  };
 
-    function setupFileHandlers() {
-      const dropZone = document.getElementById('drop-zone');
-      const fileInput = document.getElementById('file-input');
-      const viewportEl = document.getElementById('viewport');
+  [dropZone, viewport].forEach((el) => {
+    el.addEventListener('dragenter', onDragEnter, { passive: false });
+    el.addEventListener('dragover', onDragEnter, { passive: false });
+    el.addEventListener('dragleave', onDragLeave, { passive: false });
+    el.addEventListener('drop', onDrop, { passive: false });
+  });
+}
 
-      dropZone.addEventListener('click', () => fileInput.click());
-
-      fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) processFile(e.target.files[0]);
-      });
-
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-        viewportEl.addEventListener(eventName, preventDefaults, false);
-        document.body.addEventListener(eventName, preventDefaults, false);
-      });
-
-      function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-
-      ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
-      });
-
-      ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
-      });
-
-      function handleDrop(e) {
-        const files = e.dataTransfer.files;
-        if (files && files.length > 0) processFile(files[0]);
-      }
-
-      dropZone.addEventListener('drop', handleDrop, false);
-      viewportEl.addEventListener('drop', handleDrop, false);
+function setupKeyboardShortcuts() {
+  // Tecla "R" o "0" reencuadra; Escape resetea la cámara
+  window.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea')) return;
+    if (e.key === 'r' || e.key === 'R' || e.key === '0') {
+      e.preventDefault();
+      refocusCamera();
     }
+  });
 
-    function animate() {
-      requestAnimationFrame(animate);
+  dom.btnReset.addEventListener('click', refocusCamera);
 
-      if (isAnimatingCamera) {
-        animProgress += 0.08;
-        if (animProgress >= 1) {
-          animProgress = 1;
-          isAnimatingCamera = false;
-        }
-        const t = animProgress * animProgress * (3 - 2 * animProgress);
-        camera.position.lerpVectors(animStartPos, animEndPos, t);
-        camera.lookAt(controls.target);
-      }
+  // Doble clic en el viewport = reencuadrar
+  dom.canvas.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    refocusCamera();
+  });
+}
 
-      controls.update();
+function refocusCamera() {
+  if (!controls) return;
+  const target = controls.target;
+  const dist = currentObject ? 320 : 300;
+  animStartPos.copy(camera.position);
+  animEndPos.set(target.x, target.y - dist, target.z + dist * 0.8);
+  animProgress = 0;
+  isAnimatingCamera = true;
+}
 
-      cubeCamera.position.copy(camera.position).sub(controls.target).setLength(10);
-      cubeCamera.lookAt(0, 0, 0);
+/* ============================================================
+   RESIZE
+   ============================================================ */
+function setupResize() {
+  const handle = debounce(() => {
+    const w = dom.viewport.clientWidth;
+    const h = dom.viewport.clientHeight;
+    if (!w || !h) return;
 
-      renderer.render(scene, camera);
-      cubeRenderer.render(cubeScene, cubeCamera);
-    }
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
 
-    // Manejo adaptativo del cambio de tamaño de pantalla
-    window.addEventListener('resize', () => {
-      const width = container.clientWidth;
-      const height = container.clientHeight;
+    const cw = dom.cubeWrapper.clientWidth;
+    const ch = dom.cubeWrapper.clientHeight;
+    if (cw && ch) cubeRenderer.setSize(cw, ch);
+  }, CONFIG.RESIZE_DEBOUNCE);
 
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
+  window.addEventListener('resize', handle, { passive: true });
+  window.addEventListener('orientationchange', handle, { passive: true });
 
-      const cubeWidth = cubeWrapper.clientWidth;
-      const cubeHeight = cubeWrapper.clientHeight;
-      cubeRenderer.setSize(cubeWidth, cubeHeight);
-    });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', handle, { passive: true });
+  }
+}
 
-    init();
-  </script>
+/* ============================================================
+   LOOP DE ANIMACIÓN
+   ============================================================ */
+function animate() {
+  if (isAnimatingCamera) {
+    animProgress += CONFIG.CAM_ANIM_SPEED;
+    if (animProgress >= 1) { animProgress = 1; isAnimatingCamera = false; }
+    const t = animProgress * animProgress * (3 - 2 * animProgress); // smoothstep
+    camera.position.lerpVectors(animStartPos, animEndPos, t);
+    camera.lookAt(controls.target);
+  }
+
+  controls.update();
+
+  // Orientar la cámara del viewcube
+  cubeCamera.position.copy(camera.position).sub(controls.target).setLength(CONFIG.CUBE_CAM_DIST);
+  cubeCamera.lookAt(0, 0, 0);
+
+  renderer.render(scene, camera);
+  cubeRenderer.render(cubeScene, cubeCamera);
+}
+
+/* ============================================================
+   GO
+   ============================================================ */
+init();
+
+})();
+</script>
 </body>
 </html>

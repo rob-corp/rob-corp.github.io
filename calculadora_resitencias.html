@@ -1,733 +1,711 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calculadora de Resistencias</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#090d16">
+<title>Calculadora de Resistencias · RobCorp</title>
+<link rel="icon" type="image/svg+xml" href="iconos/omega.svg">
 
-    <!-- FAVICON: Ruta exacta hacia iconos/omega.svg -->
-    <link rel="icon" type="image/svg+xml" href="iconos/omega.svg">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- CSS Frameworks & Icon Libraries -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        slate: {
-                            850: '#131e2e',
-                            950: '#090d16'
-                        },
-                        cyan: {
-                            500: '#06b6d4',
-                            600: '#0891b2'
-                        }
-                    }
-                }
-            }
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          slate: { 850: '#131e2e', 950: '#090d16' },
+          cyan: { 500: '#06b6d4', 600: '#0891b2' }
         }
-    </script>
-    
-    <style>
-        /* Strict Focus & Outline Reset */
-        *, *::before, *::after,
-        a, button, input, select, textarea {
-            outline: none !important;
-            -webkit-tap-highlight-color: transparent !important;
-        }
-        *:focus, *:focus-visible, *:active,
-        button:focus, button:focus-visible, button:active,
-        a:focus, a:focus-visible, a:active,
-        input:focus, input:focus-visible, input:active,
-        textarea:focus, textarea:focus-visible, textarea:active {
-            outline: none !important;
-            outline-style: none !important;
-            box-shadow: none !important;
-            -webkit-tap-highlight-color: transparent !important;
-        }
+      }
+    }
+  };
+</script>
 
-        /* Custom Global Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #090d16;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
+<style>
+  *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
 
-        /* Toast Popup Animation */
-        .toast-popup {
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .toast-hidden {
-            transform: translateY(1rem) scale(0.95);
-            opacity: 0;
-            pointer-events: none;
-        }
-        .toast-visible {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
+  /* Foco visible SOLO con teclado (sin recuadro al clic/tap) */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid #06b6d4;
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
 
-        /* Selected Color Pill Highlight */
-        .color-pill-selected {
-            box-shadow: 0 0 0 2px #ffffff, 0 0 12px rgba(6, 182, 212, 0.8) !important;
-            border-color: #ffffff !important;
-            transform: scale(1.02);
-            z-index: 10;
-        }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #090d16; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  html { scrollbar-color: #334155 #090d16; scrollbar-width: thin; }
 
-        /* Linter Fix for Number & Select Input Appearance */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            appearance: none;
-            margin: 0; 
-        }
-        input[type=number] {
-            -webkit-appearance: textfield;
-            -moz-appearance: textfield;
-            appearance: textfield;
-        }
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-    </style>
+  /* Toasts */
+  .toast-popup { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+  .toast-hidden { transform: translateY(1rem) scale(0.95); opacity: 0; pointer-events: none; }
+  .toast-visible { transform: translateY(0) scale(1); opacity: 1; }
+
+  /* Selección de color */
+  .color-pill-selected {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 12px rgba(6, 182, 212, 0.8) !important;
+    border-color: #ffffff !important;
+    transform: scale(1.02);
+    z-index: 10;
+  }
+
+  /* Inputs numéricos sin spinners */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none; appearance: none; margin: 0;
+  }
+  input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+  select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-white flex flex-col">
 
-    <!-- ENCABEZADO SUPERIOR -->
-    <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <!-- Enlace del Título y Logo Suelto sin Contenedor ni Fondos -->
-            <a href="index.html" class="flex items-center space-x-3 group focus:outline-none focus:ring-0 active:outline-none p-1 transition-all">
-                <img src="iconos/omega.svg" alt="Logo Ω" class="w-7 h-7 object-contain transition-transform group-hover:scale-110 duration-200 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)]">
-                <h1 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors">
-                    Calculadora de Resistencias
-                </h1>
-            </a>
+<!-- ==================== HEADER ==================== -->
+<header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+    <a href="index.html" class="flex items-center space-x-3 group p-1 rounded-lg min-w-0">
+      <img src="iconos/omega.svg" alt="Logo Ω" class="w-7 h-7 object-contain transition-transform group-hover:scale-110 duration-200 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)] flex-shrink-0">
+      <h1 class="text-lg sm:text-2xl font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors truncate">
+        Calculadora de Resistencias
+      </h1>
+    </a>
 
-            <!-- Selector de Modos de Bandas Header -->
-            <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shadow-inner">
-                <button id="btn-mode-4" onclick="setBandMode(4)" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-cyan-600 text-white shadow-md">4 Bandas</button>
-                <button id="btn-mode-5" onclick="setBandMode(5)" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">5 Bandas</button>
-                <button id="btn-mode-6" onclick="setBandMode(6)" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">6 Bandas</button>
-            </div>
+    <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shadow-inner flex-shrink-0" role="tablist" aria-label="Modo de bandas">
+      <button id="btn-mode-4" data-mode="4" role="tab" aria-selected="true"  class="mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-cyan-600 text-white shadow-md">4 Bandas</button>
+      <button id="btn-mode-5" data-mode="5" role="tab" aria-selected="false" class="mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">5 Bandas</button>
+      <button id="btn-mode-6" data-mode="6" role="tab" aria-selected="false" class="mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">6 Bandas</button>
+    </div>
+  </div>
+</header>
+
+<main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-5">
+
+  <!-- ==================== RESISTENCIA 3D + RESULTADO ==================== -->
+  <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4">
+
+    <!-- SVG Resistencia Fotorrealista -->
+    <div class="w-full flex items-center justify-center py-6 bg-slate-950/70 rounded-xl border border-slate-800/80 shadow-inner overflow-hidden relative">
+      <svg id="resistor-svg" viewBox="0 0 500 160" class="w-full max-w-xl h-auto drop-shadow-[0_12px_24px_rgba(0,0,0,0.85)]" role="img" aria-label="Representación visual de la resistencia con sus bandas de color">
+        <defs>
+          <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#fdfbf7" />
+            <stop offset="12%" stop-color="#f5e8d3" />
+            <stop offset="35%" stop-color="#ebd5b7" />
+            <stop offset="65%" stop-color="#cca985" />
+            <stop offset="88%" stop-color="#997754" />
+            <stop offset="100%" stop-color="#664b30" />
+          </linearGradient>
+
+          <linearGradient id="metalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#334155" />
+            <stop offset="20%" stop-color="#94a3b8" />
+            <stop offset="45%" stop-color="#ffffff" />
+            <stop offset="70%" stop-color="#cbd5e1" />
+            <stop offset="100%" stop-color="#1e293b" />
+          </linearGradient>
+
+          <linearGradient id="cylinderShadow" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#000000" stop-opacity="0.25" />
+            <stop offset="20%" stop-color="#000000" stop-opacity="0.0" />
+            <stop offset="80%" stop-color="#000000" stop-opacity="0.0" />
+            <stop offset="100%" stop-color="#000000" stop-opacity="0.55" />
+          </linearGradient>
+
+          <linearGradient id="glossGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5" />
+            <stop offset="18%" stop-color="#ffffff" stop-opacity="0.12" />
+            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.0" />
+            <stop offset="82%" stop-color="#000000" stop-opacity="0.15" />
+            <stop offset="100%" stop-color="#000000" stop-opacity="0.6" />
+          </linearGradient>
+
+          <clipPath id="resistorBodyClip">
+            <path d="M 110 80 Q 110 32 135 32 Q 165 32 175 42 L 325 42 Q 335 32 365 32 Q 390 32 390 80 Q 390 128 365 128 Q 335 128 325 118 L 175 118 Q 165 128 135 128 Q 110 128 110 80 Z" />
+          </clipPath>
+
+          <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="10" stdDeviation="7" flood-color="#000000" flood-opacity="0.6" />
+          </filter>
+        </defs>
+
+        <ellipse cx="250" cy="142" rx="145" ry="10" fill="#000000" opacity="0.45" />
+
+        <line x1="10" y1="80" x2="110" y2="80" stroke="url(#metalGrad)" stroke-width="8" stroke-linecap="round" filter="url(#softShadow)"/>
+        <line x1="390" y1="80" x2="490" y2="80" stroke="url(#metalGrad)" stroke-width="8" stroke-linecap="round" filter="url(#softShadow)"/>
+
+        <rect x="98" y="66" width="15" height="28" rx="3" fill="url(#metalGrad)" filter="url(#softShadow)"/>
+        <rect x="387" y="66" width="15" height="28" rx="3" fill="url(#metalGrad)" filter="url(#softShadow)"/>
+
+        <path d="M 110 80 Q 110 32 135 32 Q 165 32 175 42 L 325 42 Q 335 32 365 32 Q 390 32 390 80 Q 390 128 365 128 Q 335 128 325 118 L 175 118 Q 165 128 135 128 Q 110 128 110 80 Z"
+              fill="url(#bodyGrad)" stroke="#705335" stroke-width="1.2" filter="url(#softShadow)"/>
+
+        <g clip-path="url(#resistorBodyClip)">
+          <rect id="svg-band-1" x="130" y="25" width="18" height="110" fill="#78350f" rx="1"/>
+          <rect id="svg-band-2" x="180" y="25" width="18" height="110" fill="#dc2626" rx="1"/>
+          <rect id="svg-band-3" x="225" y="25" width="18" height="110" fill="#ea580c" rx="1"/>
+          <rect id="svg-band-4" x="270" y="25" width="18" height="110" fill="#ca8a04" rx="1"/>
+          <rect id="svg-band-5" x="345" y="25" width="18" height="110" fill="#d97706" rx="1"/>
+          <rect id="svg-band-6" x="362" y="25" width="16" height="110" fill="#2563eb" rx="1"/>
+
+          <path d="M 110 80 Q 110 32 135 32 Q 165 32 175 42 L 325 42 Q 335 32 365 32 Q 390 32 390 80 Q 390 128 365 128 Q 335 128 325 118 L 175 118 Q 165 128 135 128 Q 110 128 110 80 Z" fill="url(#cylinderShadow)"/>
+        </g>
+
+        <path d="M 110 80 Q 110 32 135 32 Q 165 32 175 42 L 325 42 Q 335 32 365 32 Q 390 32 390 80 Q 390 128 365 128 Q 335 128 325 118 L 175 118 Q 165 128 135 128 Q 110 128 110 80 Z"
+              fill="url(#glossGrad)" pointer-events="none"/>
+      </svg>
+    </div>
+
+    <!-- Resultado -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+      <div class="text-center sm:text-left">
+        <span class="text-[11px] uppercase font-extrabold text-slate-400 tracking-wider">Valor Calculado</span>
+        <div id="resistor-value-display" class="text-3xl sm:text-4xl font-mono font-extrabold text-cyan-400 tracking-tight">
+          12 kΩ ±5%
         </div>
-    </header>
-
-    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-5">
-
-        <!-- SECCIÓN SUPERIOR: RESISTENCIA 3D FOTORREALISTA BULBOSA & RESULTADO -->
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4">
-            
-            <!-- Resistencia SVG Fotorrealista con Forma Bulbosa Anatómica -->
-            <div class="w-full flex items-center justify-center py-6 bg-slate-950/70 rounded-xl border border-slate-800/80 shadow-inner overflow-hidden relative">
-                <svg id="resistor-svg" viewBox="0 0 500 160" class="w-full max-w-xl h-auto drop-shadow-[0_12px_24px_rgba(0,0,0,0.85)]">
-                    <defs>
-                        <!-- Gradiente del Cuerpo Cerámico Beige/Crema -->
-                        <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="#fdfbf7" />
-                            <stop offset="12%" stop-color="#f5e8d3" />
-                            <stop offset="35%" stop-color="#ebd5b7" />
-                            <stop offset="65%" stop-color="#cca985" />
-                            <stop offset="88%" stop-color="#997754" />
-                            <stop offset="100%" stop-color="#664b30" />
-                        </linearGradient>
-
-                        <!-- Gradiente Metalizado Pulido para Terminales y Anillos Metálicos -->
-                        <linearGradient id="metalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="#334155" />
-                            <stop offset="20%" stop-color="#94a3b8" />
-                            <stop offset="45%" stop-color="#ffffff" />
-                            <stop offset="70%" stop-color="#cbd5e1" />
-                            <stop offset="100%" stop-color="#1e293b" />
-                        </linearGradient>
-
-                        <!-- Sombras de Profundidad Cilíndrica -->
-                        <linearGradient id="cylinderShadow" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="#000000" stop-opacity="0.25" />
-                            <stop offset="20%" stop-color="#000000" stop-opacity="0.0" />
-                            <stop offset="80%" stop-color="#000000" stop-opacity="0.0" />
-                            <stop offset="100%" stop-color="#000000" stop-opacity="0.55" />
-                        </linearGradient>
-
-                        <!-- Capa de Brillo Especular Cilíndrico Superior (Shine Overlay) -->
-                        <linearGradient id="glossGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5" />
-                            <stop offset="18%" stop-color="#ffffff" stop-opacity="0.12" />
-                            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.0" />
-                            <stop offset="82%" stop-color="#000000" stop-opacity="0.15" />
-                            <stop offset="100%" stop-color="#000000" stop-opacity="0.6" />
-                        </linearGradient>
-
-                        <!-- Máscara de Recorte para la Anatomía Bulbosa Perfecta -->
-                        <clipPath id="resistorBodyClip">
-                            <path d="M 110 80 Q 110 32 135 32 Q 165 32 175 42 L 325 42 Q 335 32 365 32 Q 390 32 390 80 Q 390 128 365 128 Q 335 128 325 118 L 175 118 Q 165 128 135 128 Q 110 128 110 80 Z" />
-                        </clipPath>
-
-                        <!-- Filtro de Sombra Suave Global -->
-                        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="0" dy="10" stdDeviation="7" flood-color="#000000" flood-opacity="0.6" />
-                        </filter>
-                    </defs>
-
-                    <!-- Sombra proyectada en el suelo -->
-                    <ellipse cx="250" cy="142" rx="145" ry="10" fill="#000000" opacity="0.45" />
-
-                    <!-- Terminales Metálicos Laterales (Leads) -->
-                    <line x1="10" y1="80" x2="110" y2="80" stroke="url(#metalGrad)" stroke-width="8" stroke-linecap="round" filter="url(#softShadow)"/>
-                    <line x1="390" y1="80" x2="490" y2="80" stroke="url(#metalGrad)" stroke-width="8" stroke-linecap="round" filter="url(#softShadow)"/>
-
-                    <!-- Cuellos/Anillos de Acople Metálicos de los Extremos -->
-                    <rect x="98" y="66" width="15" height="28" rx="3" fill="url(#metalGrad)" filter="url(#softShadow)"/>
-                    <rect x="387" y="66" width="15" height="28" rx="3" fill="url(#metalGrad)" filter="url(#softShadow)"/>
-
-                    <!-- Cuerpo Cerámico Principal con Forma Bulbosa -->
-                    <path d="M 110 80 Q 110 32 135 32 Q 165 32 175 42 L 325 42 Q 335 32 365 32 Q 390 32 390 80 Q 390 128 365 128 Q 335 128 325 118 L 175 118 Q 165 128 135 128 Q 110 128 110 80 Z" 
-                          fill="url(#bodyGrad)" stroke="#705335" stroke-width="1.2" filter="url(#softShadow)"/>
-
-                    <!-- GRUPO DE BANDAS DE COLOR RECORTADAS CON LA FORMA ANATÓMICA DEL CUERPO -->
-                    <g clip-path="url(#resistorBodyClip)">
-                        <rect id="svg-band-1" x="130" y="25" width="18" height="110" fill="#78350f" rx="1"/>
-                        <rect id="svg-band-2" x="180" y="25" width="18" height="110" fill="#dc2626" rx="1"/>
-                        <rect id="svg-band-3" x="225" y="25" width="18" height="110" fill="#ea580c" rx="1"/>
-                        <rect id="svg-band-4" x="270" y="25" width="18" height="110" fill="#ca8a04" rx="1"/>
-                        <rect id="svg-band-5" x="345" y="25" width="18" height="110" fill="#d97706" rx="1"/>
-                        <rect id="svg-band-6" x="362" y="25" width="16" height="110" fill="#2563eb" rx="1"/>
-
-                        <!-- Sombras Cilíndricas sobre las Bandas -->
-                        <path d="M 110 80 Q 110 32 135 32 Q 165 32 175 42 L 325 42 Q 335 32 365 32 Q 390 32 390 80 Q 390 128 365 128 Q 335 128 325 118 L 175 118 Q 165 128 135 128 Q 110 128 110 80 Z" fill="url(#cylinderShadow)"/>
-                    </g>
-
-                    <!-- Capa de Brillo Especular Cilíndrico Superior (Shine Overlay) -->
-                    <path d="M 110 80 Q 110 32 135 32 Q 165 32 175 42 L 325 42 Q 335 32 365 32 Q 390 32 390 80 Q 390 128 365 128 Q 335 128 325 118 L 175 118 Q 165 128 135 128 Q 110 128 110 80 Z" 
-                          fill="url(#glossGrad)" pointer-events="none"/>
-                </svg>
-            </div>
-
-            <!-- Pantalla Principal de Resultado -->
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
-                <div class="text-center sm:text-left">
-                    <span class="text-[11px] uppercase font-extrabold text-slate-400 tracking-wider">Valor Calculado</span>
-                    <div id="resistor-value-display" class="text-3xl sm:text-4xl font-mono font-extrabold text-cyan-400 tracking-tight">
-                        12 kΩ ±5%
-                    </div>
-                    <div id="resistor-subtext" class="text-xs text-slate-400 font-mono mt-1">
-                        Rango: 11.4 kΩ — 12.6 kΩ
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-2">
-                    <button onclick="copyResults()" class="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center space-x-2 border border-slate-700 transition-all shadow-md">
-                        <i class="fa-regular fa-copy text-cyan-400"></i>
-                        <span>Copiar Valor</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Alerta de Clasificación de Valor Estándar (IEC 60063) -->
-            <div id="standard-status-box" class="p-3.5 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs transition-all bg-emerald-950/40 border-emerald-800/80 text-emerald-300">
-                <div class="flex items-center space-x-2.5">
-                    <i id="status-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
-                    <span id="status-text" class="font-semibold">
-                        Valor comercial estándar reconocido (Serie E24).
-                    </span>
-                </div>
-                <button id="btn-apply-nearest" onclick="applyNearestStandard()" class="hidden bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 px-3.5 py-1.5 rounded-lg font-bold transition-all shadow-md text-xs">
-                    Corregir a 1.2 kΩ
-                </button>
-            </div>
-        </section>
-
-        <!-- SECCIÓN DE SELECCIÓN POR COLUMNAS -->
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-1">
-                <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                    <span>🎨</span>
-                    <span>SELECCIÓN DE COLORES POR BANDA</span>
-                </h2>
-                <span class="text-[11px] text-slate-400 font-medium">
-                    Haz clic en los colores para modificar la resistencia
-                </span>
-            </div>
-
-            <!-- Grid de Columnas (Sin barra de desplazamiento vertical interno) -->
-            <div id="color-columns-grid" class="grid gap-2 sm:gap-3">
-                <!-- Generado dinámicamente desde JavaScript -->
-            </div>
-        </section>
-
-        <!-- BÚSQUEDA INVERSA: VALOR A CÓDIGO DE COLORES -->
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-4">
-            <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
-                <i class="fa-solid fa-calculator text-cyan-400"></i>
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">
-                    Búsqueda Inversa (Ingresar Valor de Resistencia)
-                </h2>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-                <!-- Entrada Numérica -->
-                <div class="sm:col-span-5 space-y-1">
-                    <label for="input-reverse-value" class="text-[11px] font-extrabold text-slate-400 uppercase">Valor Deseado</label>
-                    <input type="number" id="input-reverse-value" placeholder="Ej. 1.1 o 12" step="any" min="0.01" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
-                </div>
-
-                <!-- Unidad -->
-                <div class="sm:col-span-3 space-y-1">
-                    <label for="select-reverse-unit" class="text-[11px] font-extrabold text-slate-400 uppercase">Unidad</label>
-                    <select id="select-reverse-unit" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white focus:border-cyan-500 transition-all">
-                        <option value="1">Ω (Ohmios)</option>
-                        <option value="1000" selected>kΩ (Kiloohmios)</option>
-                        <option value="1000000">MΩ (Megaohmios)</option>
-                        <option value="1000000000">GΩ (Gigaohmios)</option>
-                    </select>
-                </div>
-
-                <!-- Tolerancia -->
-                <div class="sm:col-span-2 space-y-1">
-                    <label for="select-reverse-tol" class="text-[11px] font-extrabold text-slate-400 uppercase">Tolerancia</label>
-                    <select id="select-reverse-tol" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white focus:border-cyan-500 transition-all">
-                        <option value="1">±1%</option>
-                        <option value="2">±2%</option>
-                        <option value="5" selected>±5%</option>
-                        <option value="10">±10%</option>
-                    </select>
-                </div>
-
-                <!-- Botón de Cálculo Inverso -->
-                <div class="sm:col-span-2">
-                    <button onclick="processReverseSearch()" class="w-full bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold py-2 rounded-xl text-xs transition-all shadow-md active:scale-95">
-                        Calcular
-                    </button>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Contenedor de Notificaciones Toast -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
-
-    <script>
-        /* BASE DE DATOS COMPLETA DE COLORES Y VALORES */
-        const COLOR_DB = {
-            black:   { name: 'Negro',   hex: '#111827', text: '#ffffff', border: '#374151', digit: 0, mult: 1,           tol: null,  tcr: null },
-            brown:   { name: 'Marrón',  hex: '#78350f', text: '#ffffff', border: '#92400e', digit: 1, mult: 10,          tol: 1,     tcr: 100 },
-            red:     { name: 'Rojo',    hex: '#dc2626', text: '#ffffff', border: '#ef4444', digit: 2, mult: 100,         tol: 2,     tcr: 50 },
-            orange:  { name: 'Naranja', hex: '#ea580c', text: '#ffffff', border: '#f97316', digit: 3, mult: 1000,        tol: null,  tcr: 15 },
-            yellow:  { name: 'Amarillo',hex: '#ca8a04', text: '#090d16', border: '#eab308', digit: 4, mult: 10000,       tol: null,  tcr: 25 },
-            green:   { name: 'Verde',   hex: '#16a34a', text: '#ffffff', border: '#22c55e', digit: 5, mult: 100000,      tol: 0.5,   tcr: 20 },
-            blue:    { name: 'Azul',    hex: '#2563eb', text: '#ffffff', border: '#3b82f6', digit: 6, mult: 1000000,     tol: 0.25,  tcr: 10 },
-            violet:  { name: 'Violeta', hex: '#9333ea', text: '#ffffff', border: '#a855f7', digit: 7, mult: 10000000,    tol: 0.1,   tcr: 5 },
-            gray:    { name: 'Gris',    hex: '#4b5563', text: '#ffffff', border: '#6b7280', digit: 8, mult: 100000000,   tol: 0.05,  tcr: 1 },
-            white:   { name: 'Blanco',  hex: '#f8fafc', text: '#090d16', border: '#cbd5e1', digit: 9, mult: 1000000000,  tol: null,  tcr: null },
-            gold:    { name: 'Dorado',  hex: '#d97706', text: '#ffffff', border: '#f59e0b', digit: null, mult: 0.1,      tol: 5,     tcr: null },
-            silver:  { name: 'Plateado',hex: '#94a3b8', text: '#090d16', border: '#cbd5e1', digit: null, mult: 0.01,     tol: 10,    tcr: null }
-        };
-
-        /* TABLAS E-SERIES ESTÁNDAR (IEC 60063) */
-        const E6_VALUES  = [1.0, 1.5, 2.2, 3.3, 4.7, 6.8];
-        const E12_VALUES = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
-        const E24_VALUES = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
-        const E96_VALUES = [
-            1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 1.21, 1.24, 1.27, 1.30, 1.33, 1.37, 1.40, 1.43, 1.47, 1.50,
-            1.54, 1.58, 1.62, 1.65, 1.69, 1.74, 1.78, 1.82, 1.87, 1.91, 1.96, 2.00, 2.05, 2.10, 2.15, 2.21, 2.26, 2.32,
-            2.37, 2.43, 2.49, 2.55, 2.61, 2.67, 2.74, 2.80, 2.87, 2.94, 3.01, 3.09, 3.16, 3.24, 3.32, 3.40, 3.48, 3.57,
-            3.65, 3.74, 3.83, 3.92, 4.02, 4.12, 4.22, 4.32, 4.42, 4.53, 4.64, 4.75, 4.87, 4.99, 5.11, 5.23, 5.36, 5.49,
-            5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65, 6.81, 6.98, 7.15, 7.32, 7.50, 7.68, 7.87, 8.06, 8.25, 8.45,
-            8.66, 8.87, 9.09, 9.31, 9.53, 9.76
-        ];
-
-        /* ESTADO DE LA APLICACIÓN */
-        let currentMode = 4;
-        let selectedBands = {
-            band1: 'brown',
-            band2: 'red',
-            band3: 'orange',
-            multiplier: 'orange',
-            tolerance: 'gold',
-            tcr: 'blue'
-        };
-        let suggestedNearestOhms = null;
-
-        function renderColumns() {
-            const grid = document.getElementById('color-columns-grid');
-            grid.className = `grid gap-1.5 sm:gap-2.5 ${
-                currentMode === 4 ? 'grid-cols-4' : currentMode === 5 ? 'grid-cols-5' : 'grid-cols-6'
-            }`;
-            grid.innerHTML = '';
-
-            const cols = [];
-            cols.push({ id: 'band1', title: '1ª CIFRA', keys: ['black','brown','red','orange','yellow','green','blue','violet','gray','white'] });
-            cols.push({ id: 'band2', title: '2ª CIFRA', keys: ['black','brown','red','orange','yellow','green','blue','violet','gray','white'] });
-            
-            if (currentMode >= 5) {
-                cols.push({ id: 'band3', title: '3ª CIFRA', keys: ['black','brown','red','orange','yellow','green','blue','violet','gray','white'] });
-            }
-
-            cols.push({ id: 'multiplier', title: 'MULTIPLICADOR', keys: ['black','brown','red','orange','yellow','green','blue','violet','gray','white','gold','silver'] });
-            cols.push({ id: 'tolerance', title: 'TOLERANCIA', keys: ['brown','red','green','blue','violet','gray','gold','silver'] });
-
-            if (currentMode === 6) {
-                cols.push({ id: 'tcr', title: 'TCR', keys: ['brown','red','orange','yellow','green','blue','violet','gray'] });
-            }
-
-            cols.forEach(col => {
-                const colEl = document.createElement('div');
-                colEl.className = "flex flex-col space-y-1 bg-slate-950 p-1 sm:p-1.5 rounded-xl border border-slate-800/80";
-                
-                let html = `<div class="text-[10px] sm:text-[11px] font-extrabold uppercase text-slate-400 text-center mb-0.5 tracking-wider truncate">${col.title}</div>`;
-                
-                // Generar los botones tipo pastilla horizontal sin desbordamiento
-                col.keys.forEach(key => {
-                    const info = COLOR_DB[key];
-                    const isSelected = selectedBands[col.id] === key;
-                    const selectedClass = isSelected ? 'color-pill-selected' : 'opacity-85 hover:opacity-100 border-transparent';
-
-                    let label = info.name;
-                    let detail = '';
-
-                    if (col.id === 'multiplier') {
-                        detail = info.mult >= 1000000000 ? 'x1G' :
-                                 info.mult >= 1000000 ? 'x' + (info.mult/1000000) + 'M' :
-                                 info.mult >= 1000 ? 'x' + (info.mult/1000) + 'k' :
-                                 info.mult === 0.1 ? 'x0.1' :
-                                 info.mult === 0.01 ? 'x0.01' : 'x' + info.mult;
-                    } else if (col.id === 'tolerance') {
-                        detail = `±${info.tol}%`;
-                    } else if (col.id === 'tcr') {
-                        detail = `${info.tcr} ppm`;
-                    } else {
-                        detail = `${info.digit}`;
-                    }
-
-                    html += `
-                        <button onclick="selectColor('${col.id}', '${key}')" 
-                                class="w-full py-0.5 sm:py-1 rounded-md border flex items-center justify-between px-1.5 sm:px-2 text-[10px] sm:text-[11px] font-bold transition-all shadow-sm ${selectedClass}"
-                                style="background-color: ${info.hex}; color: ${info.text}; border-color: ${info.border}; min-height: 22px;">
-                            <span class="truncate pr-1">${label}</span>
-                            <span class="font-mono text-[9px] sm:text-[10px] opacity-90 font-black">${detail}</span>
-                        </button>
-                    `;
-                });
-
-                colEl.innerHTML = html;
-                grid.appendChild(colEl);
-            });
-
-            updateCalculation();
-        }
-
-        function setBandMode(mode) {
-            currentMode = mode;
-            ['4', '5', '6'].forEach(m => {
-                const btn = document.getElementById(`btn-mode-${m}`);
-                if (parseInt(m) === mode) {
-                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-cyan-600 text-white shadow-md";
-                } else {
-                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
-                }
-            });
-
-            // Ajustar posición y visibilidad de las bandas en la forma bulbosa de la resistencia
-            const b1 = document.getElementById('svg-band-1');
-            const b2 = document.getElementById('svg-band-2');
-            const b3 = document.getElementById('svg-band-3');
-            const b4 = document.getElementById('svg-band-4');
-            const b5 = document.getElementById('svg-band-5');
-            const b6 = document.getElementById('svg-band-6');
-
-            if (mode === 4) {
-                // 4 Bandas: Banda 1 en el hombro izquierdo, 2 y mult en el cuerpo, tol en el hombro derecho
-                b1.setAttribute('x', '132'); b1.setAttribute('width', '18');
-                b2.setAttribute('x', '182'); b2.setAttribute('width', '18');
-                b3.style.display = 'none';
-                b4.setAttribute('x', '270'); b4.setAttribute('width', '18');
-                b5.setAttribute('x', '348'); b5.setAttribute('width', '18');
-                b6.style.display = 'none';
-            } else if (mode === 5) {
-                // 5 Bandas: Distribución armónica sobre hombros y cuello
-                b1.setAttribute('x', '130'); b1.setAttribute('width', '16');
-                b2.setAttribute('x', '174'); b2.setAttribute('width', '16');
-                b3.style.display = 'block';
-                b3.setAttribute('x', '218'); b3.setAttribute('width', '16');
-                b4.setAttribute('x', '270'); b4.setAttribute('width', '16');
-                b5.setAttribute('x', '348'); b5.setAttribute('width', '16');
-                b6.style.display = 'none';
-            } else {
-                // 6 Bandas: Distribución completa con TCR en el hombro derecho
-                b1.setAttribute('x', '128'); b1.setAttribute('width', '15');
-                b2.setAttribute('x', '168'); b2.setAttribute('width', '15');
-                b3.style.display = 'block';
-                b3.setAttribute('x', '208'); b3.setAttribute('width', '15');
-                b4.setAttribute('x', '252'); b4.setAttribute('width', '15');
-                b5.setAttribute('x', '318'); b5.setAttribute('width', '15');
-                b6.style.display = 'block';
-                b6.setAttribute('x', '355'); b6.setAttribute('width', '15');
-            }
-
-            renderColumns();
-        }
-
-        function selectColor(bandId, colorKey) {
-            selectedBands[bandId] = colorKey;
-            renderColumns();
-        }
-
-        function updateCalculation() {
-            // Actualizar colores del SVG Resistencia Bulbosa
-            document.getElementById('svg-band-1').setAttribute('fill', COLOR_DB[selectedBands.band1].hex);
-            document.getElementById('svg-band-2').setAttribute('fill', COLOR_DB[selectedBands.band2].hex);
-            document.getElementById('svg-band-3').setAttribute('fill', COLOR_DB[selectedBands.band3].hex);
-            document.getElementById('svg-band-4').setAttribute('fill', COLOR_DB[selectedBands.multiplier].hex);
-            document.getElementById('svg-band-5').setAttribute('fill', COLOR_DB[selectedBands.tolerance].hex);
-            document.getElementById('svg-band-6').setAttribute('fill', COLOR_DB[selectedBands.tcr].hex);
-
-            // Calcular Ohmios
-            let digits = 0;
-            if (currentMode === 4) {
-                digits = COLOR_DB[selectedBands.band1].digit * 10 + COLOR_DB[selectedBands.band2].digit;
-            } else {
-                digits = COLOR_DB[selectedBands.band1].digit * 100 + 
-                         COLOR_DB[selectedBands.band2].digit * 10 + 
-                         COLOR_DB[selectedBands.band3].digit;
-            }
-
-            const multiplier = COLOR_DB[selectedBands.multiplier].mult;
-            const ohms = digits * multiplier;
-            const tolerance = COLOR_DB[selectedBands.tolerance].tol || 20;
-            const tcr = COLOR_DB[selectedBands.tcr].tcr;
-
-            // Formatear Texto
-            const formattedOhms = formatOhms(ohms);
-            let resultText = `${formattedOhms} ±${tolerance}%`;
-            if (currentMode === 6 && tcr) {
-                resultText += ` (${tcr} ppm/K)`;
-            }
-
-            document.getElementById('resistor-value-display').textContent = resultText;
-
-            // Rango Min / Max
-            const minOhms = ohms * (1 - tolerance / 100);
-            const maxOhms = ohms * (1 + tolerance / 100);
-            document.getElementById('resistor-subtext').textContent = `Rango de tolerancia: ${formatOhms(minOhms)} — ${formatOhms(maxOhms)}`;
-
-            // Comprobar Clasificación de Valor Estándar (IEC 60063)
-            checkStandardValue(ohms, tolerance);
-        }
-
-        function checkStandardValue(ohms, tol) {
-            const statusBox = document.getElementById('standard-status-box');
-            const statusIcon = document.getElementById('status-icon');
-            const statusText = document.getElementById('status-text');
-            const btnApply = document.getElementById('btn-apply-nearest');
-
-            if (ohms <= 0) return;
-
-            // Determinar serie aplicable según precisión
-            let series = E24_VALUES;
-            let seriesName = 'E24';
-            if (tol <= 1 && currentMode >= 5) {
-                series = E96_VALUES;
-                seriesName = 'E96';
-            } else if (tol > 5) {
-                series = E12_VALUES;
-                seriesName = 'E12';
-            }
-
-            // Normalizar el valor a un número entre 1.0 y 9.99
-            const exponent = Math.floor(Math.log10(ohms));
-            const normalized = ohms / Math.pow(10, exponent);
-
-            // Encontrar el valor estándar más cercano
-            let closest = series[0];
-            let minDiff = Math.abs(normalized - closest);
-
-            for (let i = 1; i < series.length; i++) {
-                const diff = Math.abs(normalized - series[i]);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    closest = series[i];
-                }
-            }
-
-            const closestExactOhms = Math.round((closest * Math.pow(10, exponent)) * 100) / 100;
-            const isStandard = Math.abs(normalized - closest) < 0.01;
-
-            if (isStandard) {
-                statusBox.className = "p-3.5 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs transition-all bg-emerald-950/40 border-emerald-800/80 text-emerald-300";
-                statusIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
-                statusText.textContent = `Valor comercial estándar reconocido (Serie ${seriesName}).`;
-                btnApply.classList.add('hidden');
-                suggestedNearestOhms = null;
-            } else {
-                statusBox.className = "p-3.5 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs transition-all bg-amber-950/40 border-amber-800/80 text-amber-300";
-                statusIcon.className = "fa-solid fa-triangle-exclamation text-amber-400 text-lg";
-                statusText.textContent = `⚠️ ${formatOhms(ohms)} no es un valor estándar comercial en la serie ${seriesName}. El más cercano es ${formatOhms(closestExactOhms)}.`;
-                
-                btnApply.textContent = `Corregir a ${formatOhms(closestExactOhms)}`;
-                btnApply.classList.remove('hidden');
-                suggestedNearestOhms = closestExactOhms;
-            }
-        }
-
-        function applyNearestStandard() {
-            if (suggestedNearestOhms !== null) {
-                setResistorFromOhms(suggestedNearestOhms);
-                showToast(`Resistencia corregida a ${formatOhms(suggestedNearestOhms)}`);
-            }
-        }
-
-        function processReverseSearch() {
-            const valInput = parseFloat(document.getElementById('input-reverse-value').value);
-            const unitMult = parseFloat(document.getElementById('select-reverse-unit').value);
-            const tolVal = parseFloat(document.getElementById('select-reverse-tol').value);
-
-            if (isNaN(valInput) || valInput <= 0) {
-                showToast("Por favor ingresa un valor numérico válido", "warning");
-                return;
-            }
-
-            const targetOhms = valInput * unitMult;
-            setResistorFromOhms(targetOhms, tolVal);
-            showToast(`Colores calculados para ${formatOhms(targetOhms)}`);
-        }
-
-        function setResistorFromOhms(targetOhms, requestedTol = null) {
-            if (requestedTol) {
-                for (let k in COLOR_DB) {
-                    if (COLOR_DB[k].tol === requestedTol) {
-                        selectedBands.tolerance = k;
-                        break;
-                    }
-                }
-            }
-
-            let exp = Math.floor(Math.log10(targetOhms));
-            
-            if (currentMode === 4) {
-                let base = Math.round(targetOhms / Math.pow(10, exp - 1));
-                if (base >= 100) {
-                    base = Math.round(base / 10);
-                    exp += 1;
-                }
-                
-                const multVal = Math.pow(10, exp - 1);
-                const d1 = Math.floor(base / 10);
-                const d2 = base % 10;
-
-                selectedBands.band1 = getKeyByDigit(d1);
-                selectedBands.band2 = getKeyByDigit(d2);
-                selectedBands.multiplier = getKeyByMultiplier(multVal);
-            } else {
-                let base = Math.round(targetOhms / Math.pow(10, exp - 2));
-                if (base >= 1000) {
-                    base = Math.round(base / 10);
-                    exp += 1;
-                }
-
-                const multVal = Math.pow(10, exp - 2);
-                const d1 = Math.floor(base / 100);
-                const d2 = Math.floor((base % 100) / 10);
-                const d3 = base % 10;
-
-                selectedBands.band1 = getKeyByDigit(d1);
-                selectedBands.band2 = getKeyByDigit(d2);
-                selectedBands.band3 = getKeyByDigit(d3);
-                selectedBands.multiplier = getKeyByMultiplier(multVal);
-            }
-
-            renderColumns();
-        }
-
-        function getKeyByDigit(digit) {
-            for (let k in COLOR_DB) {
-                if (COLOR_DB[k].digit === digit) return k;
-            }
-            return 'black';
-        }
-
-        function getKeyByMultiplier(mult) {
-            let closestKey = 'black';
-            let minDiff = Infinity;
-            for (let k in COLOR_DB) {
-                if (COLOR_DB[k].mult !== null) {
-                    const diff = Math.abs(Math.log10(COLOR_DB[k].mult) - Math.log10(mult));
-                    if (diff < minDiff) {
-                        minDiff = diff;
-                        closestKey = k;
-                    }
-                }
-            }
-            return closestKey;
-        }
-
-        function formatOhms(ohms) {
-            if (ohms >= 1000000000) return (ohms / 1000000000).toFixed(2).replace(/\.00$/, '') + ' GΩ';
-            if (ohms >= 1000000) return (ohms / 1000000).toFixed(2).replace(/\.00$/, '') + ' MΩ';
-            if (ohms >= 1000) return (ohms / 1000).toFixed(2).replace(/\.00$/, '') + ' kΩ';
-            return ohms.toFixed(2).replace(/\.00$/, '') + ' Ω';
-        }
-
-        function copyResults() {
-            const valText = document.getElementById('resistor-value-display').textContent.trim();
-            const ta = document.createElement('textarea');
-            ta.value = `Resistencia: ${valText}`;
-            document.body.appendChild(ta);
-            ta.select();
-            try {
-                document.execCommand('copy');
-                showToast("Valor copiado al portapapeles");
-            } catch (e) {
-                showToast("Error al copiar", "warning");
-            }
-            document.body.removeChild(ta);
-        }
-
-        function showToast(msg, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast-popup toast-hidden px-4 py-2.5 rounded-xl shadow-2xl border text-xs font-semibold flex items-center space-x-2 ${
-                type === 'warning' ? 'bg-amber-950/90 text-amber-200 border-amber-800' : 'bg-slate-900/95 text-slate-100 border-slate-700'
-            }`;
-
-            toast.innerHTML = `
-                <i class="${type === 'warning' ? 'fa-solid fa-triangle-exclamation text-amber-400' : 'fa-solid fa-circle-check text-cyan-400'}"></i>
-                <span>${msg}</span>
-            `;
-
-            container.appendChild(toast);
-            requestAnimationFrame(() => {
-                toast.classList.remove('toast-hidden');
-                toast.classList.add('toast-visible');
-            });
-
-            setTimeout(() => {
-                toast.classList.remove('toast-visible');
-                toast.classList.add('toast-hidden');
-                setTimeout(() => toast.remove(), 300);
-            }, 2400);
-        }
-
-        // Inicializar al cargar la página
-        document.addEventListener('DOMContentLoaded', () => {
-            setBandMode(4);
-        });
-    </script>
+        <div id="resistor-subtext" class="text-xs text-slate-400 font-mono mt-1">
+          Rango: 11.4 kΩ — 12.6 kΩ
+        </div>
+      </div>
+
+      <button type="button" id="btn-copy-results" class="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center space-x-2 border border-slate-700 transition-all shadow-md">
+        <i class="fa-regular fa-copy text-cyan-400" aria-hidden="true"></i>
+        <span>Copiar Valor</span>
+      </button>
+    </div>
+
+    <!-- Alerta IEC 60063 -->
+    <div id="standard-status-box" class="p-3.5 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs transition-all bg-emerald-950/40 border-emerald-800/80 text-emerald-300">
+      <div class="flex items-center space-x-2.5">
+        <i id="status-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg" aria-hidden="true"></i>
+        <span id="status-text" class="font-semibold">Valor comercial estándar reconocido (Serie E24).</span>
+      </div>
+      <button type="button" id="btn-apply-nearest" class="hidden bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 px-3.5 py-1.5 rounded-lg font-bold transition-all shadow-md text-xs">
+        Corregir a 1.2 kΩ
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== SELECCIÓN POR COLUMNAS ==================== -->
+  <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-1">
+      <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+        <span aria-hidden="true">🎨</span>
+        <span>Selección de Colores por Banda</span>
+      </h2>
+      <span class="text-[11px] text-slate-400 font-medium">
+        Haz clic en los colores para modificar la resistencia
+      </span>
+    </div>
+
+    <div id="color-columns-grid" class="grid gap-2 sm:gap-3">
+      <!-- Generado dinámicamente por JS -->
+    </div>
+  </section>
+
+  <!-- ==================== BÚSQUEDA INVERSA ==================== -->
+  <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-4">
+    <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
+      <i class="fa-solid fa-calculator text-cyan-400" aria-hidden="true"></i>
+      <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">
+        Búsqueda Inversa (Ingresar Valor de Resistencia)
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+      <div class="sm:col-span-5 space-y-1">
+        <label for="input-reverse-value" class="text-[11px] font-extrabold text-slate-400 uppercase">Valor Deseado</label>
+        <input type="number" id="input-reverse-value" placeholder="Ej. 1.1 o 12" step="any" min="0.01" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-white focus:border-cyan-500 transition-all">
+      </div>
+
+      <div class="sm:col-span-3 space-y-1">
+        <label for="select-reverse-unit" class="text-[11px] font-extrabold text-slate-400 uppercase">Unidad</label>
+        <select id="select-reverse-unit" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white focus:border-cyan-500 transition-all">
+          <option value="1">Ω (Ohmios)</option>
+          <option value="1000" selected>kΩ (Kiloohmios)</option>
+          <option value="1000000">MΩ (Megaohmios)</option>
+          <option value="1000000000">GΩ (Gigaohmios)</option>
+        </select>
+      </div>
+
+      <div class="sm:col-span-2 space-y-1">
+        <label for="select-reverse-tol" class="text-[11px] font-extrabold text-slate-400 uppercase">Tolerancia</label>
+        <select id="select-reverse-tol" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white focus:border-cyan-500 transition-all">
+          <option value="1">±1%</option>
+          <option value="2">±2%</option>
+          <option value="5" selected>±5%</option>
+          <option value="10">±10%</option>
+        </select>
+      </div>
+
+      <div class="sm:col-span-2">
+        <button type="button" id="btn-reverse-search" class="w-full bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold py-2 rounded-xl text-xs transition-all shadow-md active:scale-95">
+          Calcular
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   BASE DE DATOS DE COLORES
+   ========================================================= */
+const COLOR_DB = {
+  black:  { name: 'Negro',    hex: '#111827', text: '#ffffff', border: '#374151', digit: 0,    mult: 1,          tol: null, tcr: null },
+  brown:  { name: 'Marrón',   hex: '#78350f', text: '#ffffff', border: '#92400e', digit: 1,    mult: 10,         tol: 1,    tcr: 100 },
+  red:    { name: 'Rojo',     hex: '#dc2626', text: '#ffffff', border: '#ef4444', digit: 2,    mult: 100,        tol: 2,    tcr: 50 },
+  orange: { name: 'Naranja',  hex: '#ea580c', text: '#ffffff', border: '#f97316', digit: 3,    mult: 1000,       tol: null, tcr: 15 },
+  yellow: { name: 'Amarillo', hex: '#ca8a04', text: '#090d16', border: '#eab308', digit: 4,    mult: 10000,      tol: null, tcr: 25 },
+  green:  { name: 'Verde',    hex: '#16a34a', text: '#ffffff', border: '#22c55e', digit: 5,    mult: 100000,     tol: 0.5,  tcr: 20 },
+  blue:   { name: 'Azul',     hex: '#2563eb', text: '#ffffff', border: '#3b82f6', digit: 6,    mult: 1000000,    tol: 0.25, tcr: 10 },
+  violet: { name: 'Violeta',  hex: '#9333ea', text: '#ffffff', border: '#a855f7', digit: 7,    mult: 10000000,   tol: 0.1,  tcr: 5 },
+  gray:   { name: 'Gris',     hex: '#4b5563', text: '#ffffff', border: '#6b7280', digit: 8,    mult: 100000000,  tol: 0.05, tcr: 1 },
+  white:  { name: 'Blanco',   hex: '#f8fafc', text: '#090d16', border: '#cbd5e1', digit: 9,    mult: 1000000000, tol: null, tcr: null },
+  gold:   { name: 'Dorado',   hex: '#d97706', text: '#ffffff', border: '#f59e0b', digit: null, mult: 0.1,        tol: 5,    tcr: null },
+  silver: { name: 'Plateado', hex: '#94a3b8', text: '#090d16', border: '#cbd5e1', digit: null, mult: 0.01,       tol: 10,   tcr: null }
+};
+
+/* =========================================================
+   SERIES IEC 60063
+   ========================================================= */
+const E12_VALUES = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
+const E24_VALUES = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
+const E96_VALUES = [
+  1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 1.21, 1.24, 1.27, 1.30, 1.33, 1.37, 1.40, 1.43, 1.47, 1.50,
+  1.54, 1.58, 1.62, 1.65, 1.69, 1.74, 1.78, 1.82, 1.87, 1.91, 1.96, 2.00, 2.05, 2.10, 2.15, 2.21, 2.26, 2.32,
+  2.37, 2.43, 2.49, 2.55, 2.61, 2.67, 2.74, 2.80, 2.87, 2.94, 3.01, 3.09, 3.16, 3.24, 3.32, 3.40, 3.48, 3.57,
+  3.65, 3.74, 3.83, 3.92, 4.02, 4.12, 4.22, 4.32, 4.42, 4.53, 4.64, 4.75, 4.87, 4.99, 5.11, 5.23, 5.36, 5.49,
+  5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65, 6.81, 6.98, 7.15, 7.32, 7.50, 7.68, 7.87, 8.06, 8.25, 8.45,
+  8.66, 8.87, 9.09, 9.31, 9.53, 9.76
+];
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+let currentMode = 4;
+const selectedBands = {
+  band1: 'brown',
+  band2: 'red',
+  band3: 'orange',
+  multiplier: 'orange',
+  tolerance: 'gold',
+  tcr: 'blue'
+};
+let suggestedNearestOhms = null;
+
+/* =========================================================
+   DOM CACHE
+   ========================================================= */
+const $ = (id) => document.getElementById(id);
+const dom = {
+  grid:          $('color-columns-grid'),
+  svgBands:      [1, 2, 3, 4, 5, 6].map(i => $('svg-band-' + i)),
+  valueDisplay:  $('resistor-value-display'),
+  subtext:       $('resistor-subtext'),
+  statusBox:     $('standard-status-box'),
+  statusIcon:    $('status-icon'),
+  statusText:    $('status-text'),
+  btnApply:      $('btn-apply-nearest'),
+  toastBox:      $('toast-container')
+};
+
+/* =========================================================
+   RENDER COLUMNAS
+   ========================================================= */
+function renderColumns() {
+  const grid = dom.grid;
+  const colsCount = currentMode === 4 ? 4 : currentMode === 5 ? 5 : 6;
+  grid.className = `grid gap-1.5 sm:gap-2.5 grid-cols-${colsCount}`;
+
+  const cols = [];
+  const DIGITS = ['black','brown','red','orange','yellow','green','blue','violet','gray','white'];
+
+  cols.push({ id: 'band1', title: '1ª Cifra', keys: DIGITS });
+  cols.push({ id: 'band2', title: '2ª Cifra', keys: DIGITS });
+  if (currentMode >= 5) cols.push({ id: 'band3', title: '3ª Cifra', keys: DIGITS });
+  cols.push({ id: 'multiplier', title: 'Multiplicador', keys: [...DIGITS, 'gold', 'silver'] });
+  cols.push({ id: 'tolerance', title: 'Tolerancia', keys: ['brown','red','green','blue','violet','gray','gold','silver'] });
+  if (currentMode === 6) cols.push({ id: 'tcr', title: 'TCR', keys: ['brown','red','orange','yellow','green','blue','violet','gray'] });
+
+  const frag = document.createDocumentFragment();
+
+  cols.forEach(col => {
+    const colEl = document.createElement('div');
+    colEl.className = 'flex flex-col space-y-1 bg-slate-950 p-1 sm:p-1.5 rounded-xl border border-slate-800/80';
+
+    const title = document.createElement('div');
+    title.className = 'text-[10px] sm:text-[11px] font-extrabold uppercase text-slate-400 text-center mb-0.5 tracking-wider truncate';
+    title.textContent = col.title;
+    colEl.appendChild(title);
+
+    col.keys.forEach(key => {
+      const info = COLOR_DB[key];
+      const isSelected = selectedBands[col.id] === key;
+
+      let detail = '';
+      if (col.id === 'multiplier') {
+        detail = info.mult >= 1e9 ? 'x1G'
+               : info.mult >= 1e6 ? 'x' + (info.mult / 1e6) + 'M'
+               : info.mult >= 1e3 ? 'x' + (info.mult / 1e3) + 'k'
+               : info.mult === 0.1 ? 'x0.1'
+               : info.mult === 0.01 ? 'x0.01'
+               : 'x' + info.mult;
+      } else if (col.id === 'tolerance') {
+        detail = `±${info.tol}%`;
+      } else if (col.id === 'tcr') {
+        detail = `${info.tcr} ppm`;
+      } else {
+        detail = `${info.digit}`;
+      }
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.col = col.id;
+      btn.dataset.key = key;
+      btn.setAttribute('aria-label', `${info.name}: ${detail}`);
+      btn.setAttribute('aria-pressed', String(isSelected));
+      btn.className = `w-full py-0.5 sm:py-1 rounded-md border flex items-center justify-center sm:justify-between px-1.5 sm:px-2 text-[10px] sm:text-[11px] font-bold transition-all shadow-sm ${isSelected ? 'color-pill-selected' : 'opacity-85 hover:opacity-100 border-transparent'}`;
+      btn.style.backgroundColor = info.hex;
+      btn.style.color = info.text;
+      btn.style.borderColor = info.border;
+      btn.style.minHeight = '22px';
+
+      // Nombre del color: OCULTO en móvil, VISIBLE desde sm (640px)
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'hidden sm:inline truncate pr-1';
+      nameSpan.textContent = info.name;
+
+      const detailSpan = document.createElement('span');
+      detailSpan.className = 'font-mono text-[9px] sm:text-[10px] opacity-90 font-black';
+      detailSpan.textContent = detail;
+
+      btn.append(nameSpan, detailSpan);
+      colEl.appendChild(btn);
+    });
+
+    frag.appendChild(colEl);
+  });
+
+  grid.replaceChildren(frag);
+  updateCalculation();
+}
+
+/* =========================================================
+   SELECCIÓN DE COLOR
+   ========================================================= */
+dom.grid.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-col]');
+  if (!btn) return;
+  selectedBands[btn.dataset.col] = btn.dataset.key;
+  renderColumns();
+});
+
+/* =========================================================
+   CAMBIO DE MODO (4/5/6 BANDAS)
+   ========================================================= */
+function setBandMode(mode) {
+  currentMode = mode;
+
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    const isActive = parseInt(btn.dataset.mode) === mode;
+    btn.setAttribute('aria-selected', String(isActive));
+    btn.className = `mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+      isActive ? 'bg-cyan-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+    }`;
+  });
+
+  const [b1, b2, b3, b4, b5, b6] = dom.svgBands;
+
+  if (mode === 4) {
+    b1.setAttribute('x', '132'); b1.setAttribute('width', '18');
+    b2.setAttribute('x', '182'); b2.setAttribute('width', '18');
+    b3.style.display = 'none';
+    b4.setAttribute('x', '270'); b4.setAttribute('width', '18');
+    b5.setAttribute('x', '348'); b5.setAttribute('width', '18');
+    b6.style.display = 'none';
+  } else if (mode === 5) {
+    b1.setAttribute('x', '130'); b1.setAttribute('width', '16');
+    b2.setAttribute('x', '174'); b2.setAttribute('width', '16');
+    b3.style.display = 'block';
+    b3.setAttribute('x', '218'); b3.setAttribute('width', '16');
+    b4.setAttribute('x', '270'); b4.setAttribute('width', '16');
+    b5.setAttribute('x', '348'); b5.setAttribute('width', '16');
+    b6.style.display = 'none';
+  } else {
+    b1.setAttribute('x', '128'); b1.setAttribute('width', '15');
+    b2.setAttribute('x', '168'); b2.setAttribute('width', '15');
+    b3.style.display = 'block';
+    b3.setAttribute('x', '208'); b3.setAttribute('width', '15');
+    b4.setAttribute('x', '252'); b4.setAttribute('width', '15');
+    b5.setAttribute('x', '318'); b5.setAttribute('width', '15');
+    b6.style.display = 'block';
+    b6.setAttribute('x', '355'); b6.setAttribute('width', '15');
+  }
+
+  renderColumns();
+}
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => setBandMode(parseInt(btn.dataset.mode)));
+});
+
+/* =========================================================
+   CÁLCULO
+   ========================================================= */
+function updateCalculation() {
+  const [b1, b2, b3, b4, b5, b6] = dom.svgBands;
+
+  b1.setAttribute('fill', COLOR_DB[selectedBands.band1].hex);
+  b2.setAttribute('fill', COLOR_DB[selectedBands.band2].hex);
+  b3.setAttribute('fill', COLOR_DB[selectedBands.band3].hex);
+  b4.setAttribute('fill', COLOR_DB[selectedBands.multiplier].hex);
+  b5.setAttribute('fill', COLOR_DB[selectedBands.tolerance].hex);
+  b6.setAttribute('fill', COLOR_DB[selectedBands.tcr].hex);
+
+  let digits;
+  if (currentMode === 4) {
+    digits = COLOR_DB[selectedBands.band1].digit * 10 + COLOR_DB[selectedBands.band2].digit;
+  } else {
+    digits = COLOR_DB[selectedBands.band1].digit * 100
+           + COLOR_DB[selectedBands.band2].digit * 10
+           + COLOR_DB[selectedBands.band3].digit;
+  }
+
+  const multiplier = COLOR_DB[selectedBands.multiplier].mult;
+  const ohms = digits * multiplier;
+  const tolerance = COLOR_DB[selectedBands.tolerance].tol ?? 20;
+  const tcr = COLOR_DB[selectedBands.tcr].tcr;
+
+  let resultText = `${formatOhms(ohms)} ±${tolerance}%`;
+  if (currentMode === 6 && tcr) resultText += ` (${tcr} ppm/K)`;
+
+  dom.valueDisplay.textContent = resultText;
+
+  const minOhms = ohms * (1 - tolerance / 100);
+  const maxOhms = ohms * (1 + tolerance / 100);
+  dom.subtext.textContent = `Rango de tolerancia: ${formatOhms(minOhms)} — ${formatOhms(maxOhms)}`;
+
+  checkStandardValue(ohms, tolerance);
+}
+
+/* =========================================================
+   VERIFICACIÓN IEC 60063
+   ========================================================= */
+function checkStandardValue(ohms, tol) {
+  if (ohms <= 0) return;
+
+  let series = E24_VALUES;
+  let seriesName = 'E24';
+  if (tol <= 1 && currentMode >= 5) {
+    series = E96_VALUES;
+    seriesName = 'E96';
+  } else if (tol > 5) {
+    series = E12_VALUES;
+    seriesName = 'E12';
+  }
+
+  const exponent = Math.floor(Math.log10(ohms));
+  const normalized = ohms / Math.pow(10, exponent);
+
+  let closest = series[0];
+  let minDiff = Math.abs(normalized - closest);
+  for (let i = 1; i < series.length; i++) {
+    const diff = Math.abs(normalized - series[i]);
+    if (diff < minDiff) { minDiff = diff; closest = series[i]; }
+  }
+
+  const closestExactOhms = Math.round(closest * Math.pow(10, exponent) * 100) / 100;
+  const isStandard = Math.abs(normalized - closest) < 0.01;
+
+  if (isStandard) {
+    dom.statusBox.className = 'p-3.5 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs transition-all bg-emerald-950/40 border-emerald-800/80 text-emerald-300';
+    dom.statusIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+    dom.statusText.textContent = `Valor comercial estándar reconocido (Serie ${seriesName}).`;
+    dom.btnApply.classList.add('hidden');
+    suggestedNearestOhms = null;
+  } else {
+    dom.statusBox.className = 'p-3.5 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs transition-all bg-amber-950/40 border-amber-800/80 text-amber-300';
+    dom.statusIcon.className = 'fa-solid fa-triangle-exclamation text-amber-400 text-lg';
+    dom.statusText.textContent = `⚠️ ${formatOhms(ohms)} no es un valor estándar comercial en la serie ${seriesName}. El más cercano es ${formatOhms(closestExactOhms)}.`;
+    dom.btnApply.textContent = `Corregir a ${formatOhms(closestExactOhms)}`;
+    dom.btnApply.classList.remove('hidden');
+    suggestedNearestOhms = closestExactOhms;
+  }
+}
+
+dom.btnApply.addEventListener('click', () => {
+  if (suggestedNearestOhms !== null) {
+    setResistorFromOhms(suggestedNearestOhms);
+    showToast(`Resistencia corregida a ${formatOhms(suggestedNearestOhms)}`);
+  }
+});
+
+/* =========================================================
+   BÚSQUEDA INVERSA
+   ========================================================= */
+function processReverseSearch() {
+  const valInput = parseFloat($('input-reverse-value').value);
+  const unitMult = parseFloat($('select-reverse-unit').value);
+  const tolVal = parseFloat($('select-reverse-tol').value);
+
+  if (isNaN(valInput) || valInput <= 0) {
+    showToast('Por favor ingresa un valor numérico válido', 'warning');
+    return;
+  }
+
+  const targetOhms = valInput * unitMult;
+  setResistorFromOhms(targetOhms, tolVal);
+  showToast(`Colores calculados para ${formatOhms(targetOhms)}`);
+}
+
+$('btn-reverse-search').addEventListener('click', processReverseSearch);
+$('input-reverse-value').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); processReverseSearch(); }
+});
+
+function setResistorFromOhms(targetOhms, requestedTol = null) {
+  if (requestedTol) {
+    for (const k in COLOR_DB) {
+      if (COLOR_DB[k].tol === requestedTol) { selectedBands.tolerance = k; break; }
+    }
+  }
+
+  let exp = Math.floor(Math.log10(targetOhms));
+
+  if (currentMode === 4) {
+    let base = Math.round(targetOhms / Math.pow(10, exp - 1));
+    if (base >= 100) { base = Math.round(base / 10); exp += 1; }
+
+    const multVal = Math.pow(10, exp - 1);
+    selectedBands.band1 = getKeyByDigit(Math.floor(base / 10));
+    selectedBands.band2 = getKeyByDigit(base % 10);
+    selectedBands.multiplier = getKeyByMultiplier(multVal);
+  } else {
+    let base = Math.round(targetOhms / Math.pow(10, exp - 2));
+    if (base >= 1000) { base = Math.round(base / 10); exp += 1; }
+
+    const multVal = Math.pow(10, exp - 2);
+    selectedBands.band1 = getKeyByDigit(Math.floor(base / 100));
+    selectedBands.band2 = getKeyByDigit(Math.floor((base % 100) / 10));
+    selectedBands.band3 = getKeyByDigit(base % 10);
+    selectedBands.multiplier = getKeyByMultiplier(multVal);
+  }
+
+  renderColumns();
+}
+
+function getKeyByDigit(digit) {
+  for (const k in COLOR_DB) if (COLOR_DB[k].digit === digit) return k;
+  return 'black';
+}
+
+function getKeyByMultiplier(mult) {
+  let closestKey = 'black';
+  let minDiff = Infinity;
+  for (const k in COLOR_DB) {
+    if (COLOR_DB[k].mult !== null) {
+      const diff = Math.abs(Math.log10(COLOR_DB[k].mult) - Math.log10(mult));
+      if (diff < minDiff) { minDiff = diff; closestKey = k; }
+    }
+  }
+  return closestKey;
+}
+
+/* =========================================================
+   FORMATEO
+   ========================================================= */
+function formatOhms(ohms) {
+  if (ohms >= 1e9) return (ohms / 1e9).toFixed(2).replace(/\.00$/, '') + ' GΩ';
+  if (ohms >= 1e6) return (ohms / 1e6).toFixed(2).replace(/\.00$/, '') + ' MΩ';
+  if (ohms >= 1e3) return (ohms / 1e3).toFixed(2).replace(/\.00$/, '') + ' kΩ';
+  return ohms.toFixed(2).replace(/\.00$/, '') + ' Ω';
+}
+
+/* =========================================================
+   COPIAR
+   ========================================================= */
+async function copyResults() {
+  const valText = dom.valueDisplay.textContent.trim();
+  const text = `Resistencia: ${valText}`;
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
+    showToast('Valor copiado al portapapeles');
+  } catch (_) {
+    showToast('Error al copiar', 'warning');
+  }
+}
+
+$('btn-copy-results').addEventListener('click', copyResults);
+
+/* =========================================================
+   TOASTS
+   ========================================================= */
+function showToast(msg, type = 'success') {
+  const toast = document.createElement('div');
+  const palette = type === 'warning'
+    ? 'bg-amber-950/90 text-amber-200 border-amber-800'
+    : 'bg-slate-900/95 text-slate-100 border-slate-700';
+
+  toast.className = `toast-popup toast-hidden px-4 py-2.5 rounded-xl shadow-2xl border text-xs font-semibold flex items-center space-x-2 ${palette}`;
+
+  const icon = type === 'warning'
+    ? '<i class="fa-solid fa-triangle-exclamation text-amber-400" aria-hidden="true"></i>'
+    : '<i class="fa-solid fa-circle-check text-cyan-400" aria-hidden="true"></i>';
+
+  toast.innerHTML = `${icon}<span></span>`;
+  toast.querySelector('span').textContent = msg;
+
+  dom.toastBox.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.classList.remove('toast-hidden');
+    toast.classList.add('toast-visible');
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('toast-visible');
+    toast.classList.add('toast-hidden');
+    setTimeout(() => toast.remove(), 300);
+  }, 2400);
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+setBandMode(4);
+
+})();
+</script>
 </body>
 </html>
