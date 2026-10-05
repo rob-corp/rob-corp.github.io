@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0e1821">
+<title>Ethernet, PoE y Registered Jack</title>
+<link rel="icon" type="image/svg+xml" href="iconos/ethernet.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#0e1821;--panel:#15232f;--ink:#e6edf3;--mute:#9aaab6;--line:#2a3b49;
+  --acc:#6aa3f5;--accbg:#1a2f4a;--warn:#f0a070;--warnbg:#3a2418;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{scroll-padding-top:64px;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 "IBM Plex Sans",system-ui,sans-serif;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+
+/* ============ TOP BAR + HEADER ============ */
+.topbar{border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+
+.home{
+  display:flex;align-items:center;gap:12px;width:fit-content;
+  padding:14px 0;color:var(--ink);text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.home:focus{outline:none}
+.home:focus-visible{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}
+.home h1{font-size:clamp(19px,4.6vw,26px);line-height:1.2;margin:0;font-weight:600;letter-spacing:-.01em}
+.logo{
+  width:38px;height:38px;flex:none;object-fit:contain;
+  -webkit-user-drag:none;user-select:none;
+}
+
+header{padding:22px 0 8px}
+header p.lead{max-width:62ch;color:var(--mute);margin:0 0 20px}
+
+/* ============ DIAGRAMA + LEYENDA ============ */
+.model{margin:0 0 14px}
+.model .row{display:flex;flex-wrap:wrap;gap:16px 30px;align-items:center}
+.model svg{display:block;width:300px;max-width:100%;height:auto}
+.plug-body{fill:var(--panel);stroke:var(--mute);stroke-width:2}
+.plug-jacket{fill:#3d5a80;stroke:var(--mute);stroke-width:2}
+.plug-txt{fill:var(--mute);font:500 13px "IBM Plex Mono",monospace;text-anchor:middle}
+
+.legend{flex:1 1 230px;display:grid;gap:6px;font-size:14px}
+.legend div{display:flex;align-items:center;gap:9px}
+.legend .sw{width:24px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.3);flex:none}
+.legend b{font:500 13px "IBM Plex Mono",monospace;width:12px}
+.legend small{color:var(--mute);font:400 12px "IBM Plex Mono",monospace;margin-left:auto}
+
+.model figcaption{font-size:13.5px;color:var(--mute);max-width:64ch;margin-top:10px}
+
+.pinbtn{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--mute);margin-bottom:22px}
+.pinbtn button{
+  font:inherit;font-size:14px;padding:5px 12px;
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  border-radius:6px;cursor:pointer;min-height:44px;
+  transition:background-color .15s ease,color .15s ease,border-color .15s ease;
+}
+.pinbtn button[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+
+/* ============ TABS ============ */
+nav{
+  position:sticky;top:0;z-index:5;background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+nav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav .wrap::-webkit-scrollbar{display:none}
+nav button{
+  font:500 15px "IBM Plex Sans",sans-serif;
+  padding:13px 14px;border:0;border-bottom:3px solid transparent;
+  background:none;color:var(--mute);cursor:pointer;white-space:nowrap;
+  min-height:44px;
+  transition:color .15s ease,border-color .15s ease;
+}
+nav button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--acc)}
+nav button:focus-visible{outline:2px solid var(--acc);outline-offset:-3px;border-radius:6px}
+
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
+/* ============ CONTENIDO ============ */
+section{display:none;padding:26px 0 48px}
+section.on{display:block}
+h2{font-size:24px;margin:0 0 6px;font-weight:600}
+h3{font-size:18px;margin:30px 0 8px;font-weight:600}
+p{margin:0 0 14px;max-width:70ch}
+.sub{color:var(--mute);margin-bottom:20px}
+
+.tw{overflow-x:auto;margin:10px 0 18px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;background:var(--accbg)}
+tr:last-child td{border-bottom:0}
+
+code,.m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+
+.note{
+  border-left:4px solid var(--acc);background:var(--accbg);
+  padding:11px 14px;border-radius:0 8px 8px 0;margin:16px 0;max-width:70ch;
+}
+.note.warn{border-left-color:var(--warn);background:var(--warnbg)}
+
+ul{padding-left:20px;max-width:70ch;margin:0 0 14px}
+li{margin-bottom:5px}
+
+/* ============ SKIP LINK ============ */
+.skip{
+  position:absolute;top:-100px;left:12px;z-index:50;
+  padding:10px 16px;background:var(--acc);color:#fff;
+  font-weight:600;border-radius:6px;text-decoration:none;
+  transition:top .2s ease;
+}
+.skip:focus{top:12px;outline:2px solid var(--ink);outline-offset:2px}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:820px){
+  .model .row{justify-content:center}
+  .legend{flex-basis:260px;max-width:340px}
+}
+@media (max-width:600px){
+  body{font-size:15.5px;line-height:1.6}
+  .wrap{padding:0 14px}
+  .home{gap:10px;padding:12px 0}
+  .logo{width:32px;height:32px}
+  header{padding:16px 0 4px}
+  header p.lead{margin-bottom:14px}
+  .model .row{flex-direction:column;align-items:stretch;gap:12px}
+  .model svg{width:100%;max-width:300px;margin:0 auto}
+  .legend{flex-basis:auto;max-width:none;grid-template-columns:1fr 1fr;gap:8px 12px;font-size:13.5px}
+  .legend small{display:none}
+  .model figcaption{font-size:13px}
+  nav button{padding:10px 12px;font-size:14.5px}
+  section{padding:20px 0 36px}
+  h2{font-size:21px}
+  h3{font-size:17px;margin-top:24px}
+  p,ul,.note{max-width:none}
+  .note{padding:10px 12px}
+  table{font-size:13.5px;min-width:520px}
+  th,td{padding:8px 10px}
+}
+@media (max-width:360px){
+  .legend{grid-template-columns:1fr}
+  .home h1{font-size:18px}
+}
+
+/* ============ PRINT ============ */
+@media print{
+  nav,.pinbtn,.skip{display:none}
+  section{display:block!important;page-break-inside:avoid;padding:12px 0}
+  section + section{border-top:1px solid var(--line);margin-top:12px}
+  body{background:#fff;color:#000}
+  .tw{border-color:#999}
+  th{background:#eee!important}
+  .note{background:#f5f5f5!important;border-left-color:#666!important}
+}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip">Saltar al contenido principal</a>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="home" href="index.html" aria-label="Ir al inicio">
+      <img class="logo" src="iconos/ethernet.svg" alt="" width="38" height="38" aria-hidden="true">
+      <h1>Ethernet, PoE y Registered Jack</h1>
+    </a>
+  </div>
+</div>
+
+<header>
+  <div class="wrap">
+    <p class="lead">Referencia técnica sobre el cable de par trenzado, la alimentación a través del mismo cable y la nomenclatura de conectores telefónicos y de datos.</p>
+
+    <figure class="model">
+      <div class="row">
+        <svg id="plug" viewBox="0 0 360 300" role="img" aria-label="Conector RJ45 visto desde arriba con los ocho hilos dentro"></svg>
+        <div class="legend" id="legend"></div>
+      </div>
+    </figure>
+
+    <div class="pinbtn">
+      <span id="pinbtn-label">Norma de pines:</span>
+      <button type="button" id="bB" aria-pressed="true">T568B</button>
+      <button type="button" id="bA" aria-pressed="false">T568A</button>
+    </div>
+  </div>
+</header>
+
+<nav aria-label="Secciones del documento">
+  <div class="wrap" role="tablist">
+    <button role="tab" id="tab-eth" aria-selected="true"  aria-controls="eth" tabindex="0"  data-t="eth">Cable Ethernet</button>
+    <button role="tab" id="tab-poe" aria-selected="false" aria-controls="poe" tabindex="-1" data-t="poe">Power over Ethernet</button>
+    <button role="tab" id="tab-rj"  aria-selected="false" aria-controls="rj"  tabindex="-1" data-t="rj">Registered Jack</button>
+  </div>
+</nav>
+
+<main class="wrap" id="main">
+
+  <!-- ============ CABLE ETHERNET ============ -->
+  <section id="eth" class="on" role="tabpanel" aria-labelledby="tab-eth" tabindex="0">
+    <h2>Cable Ethernet</h2>
+    <p class="sub">Cuatro pares de cobre trenzado, ocho conductores y un límite de 100 m por canal.</p>
+    <p>El cable Ethernet de par trenzado transmite señales diferenciales: cada par lleva dos señales de polaridad opuesta, y el trenzado hace que la interferencia electromagnética afecte a ambos conductores por igual, de modo que el receptor la cancela al restar. Cuanto más apretado es el trenzado y mejor el blindaje, mayor es la frecuencia que el cable soporta sin degradación.</p>
+
+    <h3>Categorías</h3>
+    <div class="tw"><table>
+      <tr><th>Categoría</th><th>Ancho de banda</th><th>Velocidad típica</th><th>Observaciones</th></tr>
+      <tr><td>Cat5e</td><td>100 MHz</td><td>1 Gbps (1000BASE-T)</td><td>Mínimo recomendable hoy en instalaciones nuevas.</td></tr>
+      <tr><td>Cat6</td><td>250 MHz</td><td>1 Gbps; 10 Gbps hasta ~55 m</td><td>Suele incluir separador central en cruz.</td></tr>
+      <tr><td>Cat6A</td><td>500 MHz</td><td>10 Gbps hasta 100 m</td><td>Más grueso; habitual en oficinas y centros de datos.</td></tr>
+      <tr><td>Cat7</td><td>600 MHz</td><td>10 Gbps</td><td>Blindaje por par; norma ISO, no reconocida por TIA.</td></tr>
+      <tr><td>Cat8</td><td>2000 MHz</td><td>25/40 Gbps hasta 30 m</td><td>Pensado para enlaces cortos entre servidores y switches.</td></tr>
+    </table></div>
+
+    <h3>Construcción y blindaje</h3>
+    <ul>
+      <li><b>U/UTP:</b> sin blindaje. Económico y flexible; adecuado para la mayoría de entornos domésticos.</li>
+      <li><b>F/UTP:</b> lámina metálica global alrededor de los cuatro pares.</li>
+      <li><b>S/FTP:</b> malla global más lámina individual por par. Mejor rechazo de ruido, pero exige puesta a tierra correcta en ambos extremos.</li>
+      <li><b>Calibre:</b> normalmente 24 AWG (Cat5e/6) y 23 AWG (Cat6A). Con cobre sólido para tendido fijo y cobre multifilar para latiguillos.</li>
+    </ul>
+    <div class="note warn"><b>Cobre frente a CCA.</b> Los cables de aluminio recubierto de cobre (CCA) tienen mayor resistencia, se calientan más con PoE y no cumplen las normas de cableado estructurado. Conviene verificar que el cable sea de cobre sólido.</div>
+
+    <h3>Longitudes</h3>
+    <p>El canal completo admite 100 m: hasta 90 m de cableado permanente (enlace fijo entre panel y roseta) más 10 m de latiguillos en total. Superar esa distancia degrada la señal; para extenderla se emplea un switch o un repetidor, o bien fibra óptica.</p>
+
+    <h3>Pines y usos</h3>
+    <p>El diagrama del plug de arriba cambia entre T568A y T568B (el selector de norma los alterna). Ambos son eléctricamente equivalentes; lo importante es usar el mismo en los dos extremos. Un cable con T568A en un extremo y T568B en el otro es un cable cruzado, innecesario en equipos modernos gracias a Auto-MDI-X.</p>
+    <div class="tw"><table>
+      <tr><th>Estándar</th><th>Pines usados</th><th>Función</th></tr>
+      <tr><td>10/100BASE-T</td><td>1, 2, 3, 6</td><td>Un par transmite (1-2) y otro recibe (3-6). Quedan libres 4-5 y 7-8.</td></tr>
+      <tr><td>1000BASE-T y superiores</td><td>1-8</td><td>Los cuatro pares transmiten y reciben simultáneamente (full duplex bidireccional).</td></tr>
+    </table></div>
+  </section>
+
+  <!-- ============ POE ============ -->
+  <section id="poe" role="tabpanel" aria-labelledby="tab-poe" tabindex="0">
+    <h2>Power over Ethernet (PoE)</h2>
+    <p class="sub">Datos y energía por el mismo cable, regulados por la familia IEEE 802.3af/at/bt.</p>
+    <p>PoE permite alimentar dispositivos como cámaras IP, puntos de acceso Wi-Fi, teléfonos VoIP o microcontroladores con interfaz Ethernet sin una fuente de alimentación local. Dos actores participan: el <b>PSE</b> (Power Sourcing Equipment: switch o inyector) y el <b>PD</b> (Powered Device: el equipo alimentado).</p>
+
+    <h3>Estándares</h3>
+    <div class="tw"><table>
+      <tr><th>Norma</th><th>Nombre común</th><th>Potencia en PSE</th><th>Potencia útil en PD</th><th>Pares usados</th></tr>
+      <tr><td>802.3af (Tipo 1)</td><td>PoE</td><td>15,4 W</td><td>12,95 W</td><td>2</td></tr>
+      <tr><td>802.3at (Tipo 2)</td><td>PoE+</td><td>30 W</td><td>25,5 W</td><td>2</td></tr>
+      <tr><td>802.3bt (Tipo 3)</td><td>PoE++</td><td>60 W</td><td>51 W</td><td>4</td></tr>
+      <tr><td>802.3bt (Tipo 4)</td><td>PoE++</td><td>90 W</td><td>71,3 W</td><td>4</td></tr>
+    </table></div>
+    <p>La diferencia entre la potencia del PSE y la del PD corresponde a las pérdidas por resistencia del cable. La tensión nominal en el PSE es de 44 a 57 V de corriente continua.</p>
+
+    <h3>Negociación: cómo evita dañar equipos</h3>
+    <p>El PSE no aplica tensión de entrada. Primero envía una tensión baja (2,7 a 10 V) y busca una firma de resistencia de aproximadamente 25 kΩ en el PD. Solo si la detecta clasifica el equipo (clases 0 a 8, según su consumo) y recién después eleva la tensión a ~48 V. Un dispositivo sin PoE, como una laptop o un router común, nunca recibe la tensión de alimentación.</p>
+
+    <h3>Modos de entrega</h3>
+    <ul>
+      <li><b>Modo A:</b> la energía viaja por los pares de datos (pines 1-2 y 3-6), superpuesta a la señal.</li>
+      <li><b>Modo B:</b> la energía usa los pares libres (4-5 y 7-8). Es común en 10/100 Mbps.</li>
+      <li><b>4 pares (802.3bt):</b> se usan los ocho conductores, lo que reparte la corriente y reduce el calentamiento.</li>
+    </ul>
+    <div class="note warn"><b>PoE pasivo.</b> Los inyectores «pasivos» (12, 24 o 48 V fijos, sin detección) no cumplen ninguna norma. Aplican tensión siempre, por lo que conectarlos a un equipo sin PoE puede destruir su puerto Ethernet. Se debe confirmar la tensión del dispositivo antes de usarlos.</div>
+
+    <h3>Consideraciones de instalación</h3>
+    <ul>
+      <li>Con cargas altas (802.3bt), el cable se calienta, sobre todo en mazos densos. Cat6A de cobre sólido mitiga el problema.</li>
+      <li>La longitud máxima sigue siendo 100 m; en tramos largos la caída de tensión limita la potencia disponible en el PD.</li>
+      <li>El presupuesto total de potencia del switch (por ejemplo, 150 W) es independiente de la potencia por puerto.</li>
+    </ul>
+  </section>
+
+  <!-- ============ RJ ============ -->
+  <section id="rj" role="tabpanel" aria-labelledby="tab-rj" tabindex="0">
+    <h2>Registered Jack (RJ)</h2>
+    <p class="sub">Una nomenclatura de servicio telefónico estadounidense que terminó nombrando conectores físicos.</p>
+    <p>«Registered Jack» designa interfaces estandarizadas de la red telefónica de Estados Unidos, registradas bajo el sistema USOC. Cada código RJ define no solo la forma del conector sino también la función de cada pin y el servicio al que se conecta. Con el tiempo, el uso coloquial confundió el código con el conector físico.</p>
+
+    <h3>Conector físico y nomenclatura</h3>
+    <p>Los conectores modulares se describen por posiciones y contactos: <code>6P2C</code> significa seis posiciones y dos contactos cableados; <code>8P8C</code>, ocho posiciones y ocho contactos.</p>
+    <div class="tw"><table>
+      <tr><th>Código</th><th>Conector</th><th>Uso</th></tr>
+      <tr><td>RJ11</td><td>6P2C</td><td>Una línea telefónica analógica (pines centrales 3-4).</td></tr>
+      <tr><td>RJ14</td><td>6P4C</td><td>Dos líneas telefónicas.</td></tr>
+      <tr><td>RJ25</td><td>6P6C</td><td>Tres líneas telefónicas.</td></tr>
+      <tr><td>RJ9 / RJ10 / RJ22</td><td>4P4C</td><td>Auricular de teléfono.</td></tr>
+      <tr><td>RJ45</td><td>8P8C (uso común)</td><td>Ethernet de par trenzado. Ver aclaración abajo.</td></tr>
+      <tr><td>RJ48</td><td>8P8C</td><td>Líneas digitales T1/E1.</td></tr>
+      <tr><td>RJ21</td><td>50 pines Amphenol</td><td>Hasta 25 líneas; troncales y paneles de distribución.</td></tr>
+    </table></div>
+
+    <div class="note"><b>«RJ45» es un nombre impropio para Ethernet.</b> El RJ45 original era una interfaz telefónica para módems que usaba un conector 8P2C con un tope mecánico (clave) distinto. El conector de Ethernet es técnicamente un <b>8P8C</b> con cableado T568A/B. Aun así, el término RJ45 es universal en la industria y se entiende sin ambigüedad en la práctica.</div>
+
+    <h3>Compatibilidad entre RJ11 y 8P8C</h3>
+    <p>Un enchufe RJ11 (6P2C) es más angosto que uno 8P8C, por lo que puede entrar físicamente en un puerto Ethernet. No debe forzarse: puede deformar los contactos exteriores del puerto, que quedarían inservibles para una ficha Ethernet. Además, las señales no son compatibles: el teléfono usa pines distintos y tensiones de timbre (alrededor de 90 V alternos) que no corresponden a lo que espera un PHY Ethernet.</p>
+
+    <h3>Elección práctica</h3>
+    <ul>
+      <li>Para redes de datos, se usa 8P8C con cable Cat5e o superior.</li>
+      <li>Para teléfonos analógicos, RJ11 con cable plano de 2 o 4 conductores.</li>
+      <li>Para identificar una ficha, se cuentan las posiciones: seis es telefonía; ocho suele ser datos.</li>
+    </ul>
+  </section>
+
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  /* =========================================================
+     DATOS DE PINES
+     ========================================================= */
+  const PINOUT_T568B = [
+    ['orange', 'white'], ['orange'], ['green', 'white'], ['blue'],
+    ['blue', 'white'],   ['green'],  ['brown', 'white'], ['brown']
+  ];
+  const PINOUT_T568A = [
+    ['green', 'white'],  ['green'],  ['orange', 'white'], ['blue'],
+    ['blue', 'white'],   ['orange'], ['brown', 'white'],  ['brown']
+  ];
+  const COLORS = { orange: '#f28c28', green: '#2e9e4f', blue: '#2f6fd6', brown: '#7a4b2a' };
+  const NAMES  = { orange: 'naranja', green: 'verde', blue: 'azul', brown: 'marrón' };
+  const SIGNALS = ['TX+', 'TX−', 'RX+', '', '', 'RX−', '', ''];
+
+  /* =========================================================
+     SVG DEL CONECTOR + LEYENDA
+     ========================================================= */
+  const plugSvg = document.getElementById('plug');
+  const legendEl = document.getElementById('legend');
+
+  function buildPatterns() {
+    let defs = '';
+    for (const key of Object.keys(COLORS)) {
+      defs += `<pattern id="s-${key}" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">` +
+              `<rect width="6" height="12" fill="${COLORS[key]}"/>` +
+              `<rect x="6" width="6" height="12" fill="#fff"/>` +
+              `</pattern>`;
+    }
+    return defs;
+  }
+
+  function paint(pinout) {
+    let svg = `<defs>${buildPatterns()}</defs>`;
+    svg += `<path class="plug-body" d="M60 44H300V176L250 200V232H110V200L60 176Z"/>`;
+
+    for (let i = 0; i < 8; i++) {
+      const wire = pinout[i];
+      const baseColor = COLORS[wire[0]];
+      const fill = wire[1] ? `url(#s-${wire[0]})` : baseColor;
+      const x = 75 + i * 30;
+      const tx = 180 + (i - 3.5) * 6;
+
+      svg += `<path d="M${x} 176V186C${x} 206 ${tx} 206 ${tx} 224V236" fill="none" stroke="${fill}" stroke-width="8"/>`;
+      svg += `<rect x="${x - 10}" y="52" width="20" height="124" fill="${fill}" stroke="rgba(0,0,0,.35)"/>`;
+    }
+
+    svg += `<rect class="plug-jacket" x="150" y="232" width="60" height="60" rx="4"/>`;
+
+    for (let i = 0; i < 8; i++) {
+      const x = 75 + i * 30;
+      svg += `<rect x="${x - 6}" y="40" width="12" height="26" rx="2" fill="#d4a83a" stroke="#8a6a14"/>`;
+      svg += `<text class="plug-txt" x="${x}" y="28">${i + 1}</text>`;
+    }
+
+    plugSvg.innerHTML = svg;
+
+    let legend = '';
+    for (let i = 0; i < 8; i++) {
+      const wire = pinout[i];
+      const baseColor = COLORS[wire[0]];
+      let name = NAMES[wire[0]];
+      name = wire[1] ? `Blanco/${name}` : name.charAt(0).toUpperCase() + name.slice(1);
+      const bg = wire[1]
+        ? `repeating-linear-gradient(135deg,${baseColor} 0 4px,#fff 4px 8px)`
+        : baseColor;
+      legend += `<div><b>${i + 1}</b><span class="sw" style="background:${bg}"></span>${name}<small>${SIGNALS[i]}</small></div>`;
+    }
+    legendEl.innerHTML = legend;
+  }
+
+  /* =========================================================
+     SELECTOR T568A / T568B
+     ========================================================= */
+  const btnB = document.getElementById('bB');
+  const btnA = document.getElementById('bA');
+
+  function setStandard(isB) {
+    paint(isB ? PINOUT_T568B : PINOUT_T568A);
+    btnB.setAttribute('aria-pressed', String(isB));
+    btnA.setAttribute('aria-pressed', String(!isB));
+  }
+
+  btnB.addEventListener('click', () => setStandard(true));
+  btnA.addEventListener('click', () => setStandard(false));
+
+  /* =========================================================
+     TABS + NAVEGACIÓN
+     ========================================================= */
+  const tabs = Array.from(document.querySelectorAll('nav [role="tab"]'));
+  const panels = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+
+  function activateTab(index, { focus = false, updateHash = true } = {}) {
+    const clamped = Math.max(0, Math.min(tabs.length - 1, index));
+    tabs.forEach((tab, i) => {
+      const selected = i === clamped;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    });
+    panels.forEach((panel, i) => {
+      panel.classList.toggle('on', i === clamped);
+    });
+    if (focus) tabs[clamped].focus();
+    if (updateHash) {
+      const id = panels[clamped].id;
+      if (location.hash !== '#' + id) {
+        try { history.replaceState(null, '', '#' + id); } catch (_) {}
+      }
+    }
+  }
+
+  document.querySelector('nav [role="tablist"]').addEventListener('click', (e) => {
+    const btn = e.target.closest('[role="tab"]');
+    if (!btn) return;
+    activateTab(tabs.indexOf(btn));
+    const nav = document.querySelector('nav');
+    window.scrollTo({ top: nav.offsetTop, behavior: 'smooth' });
+  });
+
+  document.querySelector('nav [role="tablist"]').addEventListener('keydown', (e) => {
+    const current = tabs.findIndex(t => t.getAttribute('aria-selected') === 'true');
+    let next = null;
+    switch (e.key) {
+      case 'ArrowRight': next = (current + 1) % tabs.length; break;
+      case 'ArrowLeft':  next = (current - 1 + tabs.length) % tabs.length; break;
+      case 'Home':       next = 0; break;
+      case 'End':        next = tabs.length - 1; break;
+      default: return;
+    }
+    e.preventDefault();
+    activateTab(next, { focus: true });
+  });
+
+  function activateFromHash() {
+    const h = location.hash.slice(1);
+    const idx = panels.findIndex(p => p.id === h);
+    activateTab(idx >= 0 ? idx : 0, { updateHash: false });
+  }
+
+  window.addEventListener('hashchange', activateFromHash);
+
+  /* =========================================================
+     INIT
+     ========================================================= */
+  setStandard(true);
+  activateFromHash();
+
+})();
+</script>
+</body>
+</html>
