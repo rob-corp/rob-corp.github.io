@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Puerto USB</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#eef1f4;--panel:#fff;--ink:#14202b;--mute:#53636f;--line:#cfd7de;--acc:#1f5fbf;--accbg:#e3edfb;--warn:#a4410f;--warnbg:#fbece3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1821;--panel:#15232f;--ink:#e6edf3;--mute:#9aaab6;--line:#2a3b49;--acc:#6aa3f5;--accbg:#1a2f4a;--warn:#f0a070;--warnbg:#3a2418}}
+:root[data-theme="dark"]{--bg:#0e1821;--panel:#15232f;--ink:#e6edf3;--mute:#9aaab6;--line:#2a3b49;--acc:#6aa3f5;--accbg:#1a2f4a;--warn:#f0a070;--warnbg:#3a2418}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "IBM Plex Sans",system-ui,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+.topbar{border-bottom:1px solid var(--line)}
+.home{display:flex;align-items:center;gap:12px;width:fit-content;padding:14px 0;color:var(--ink);text-decoration:none;-webkit-tap-highlight-color:transparent;user-select:none}
+.home:focus{outline:none}
+.home:focus-visible{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}
+.home h1{font-size:clamp(19px,4.6vw,26px);line-height:1.2;margin:0;font-weight:600;letter-spacing:-.01em}
+.logo{width:38px;height:38px;flex:none;object-fit:contain;-webkit-user-drag:none}
+header{padding:22px 0 8px}
+header p.lead{max-width:62ch;color:var(--mute);margin:0 0 14px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:4px;overflow-x:auto}
+nav button{font:500 15px "IBM Plex Sans",sans-serif;padding:13px 14px;min-height:44px;border:0;border-bottom:3px solid transparent;background:none;color:var(--mute);cursor:pointer;white-space:nowrap}
+nav button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--acc)}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+section{display:none;padding:26px 0 48px}
+section.on{display:block}
+h2{font-size:24px;margin:0 0 6px;font-weight:600}
+h3{font-size:18px;margin:30px 0 8px;font-weight:600}
+p{margin:0 0 14px;max-width:70ch}
+.sub{color:var(--mute);margin-bottom:20px}
+.tw{overflow-x:auto;margin:10px 0 18px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:480px;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;background:var(--accbg)}
+tr:last-child td{border-bottom:0}
+code,.m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+.note{border-left:4px solid var(--acc);background:var(--accbg);padding:11px 14px;border-radius:0 8px 8px 0;margin:16px 0;max-width:70ch}
+.note.warn{border-left-color:var(--warn);background:var(--warnbg)}
+ul,ol{padding-left:20px;max-width:70ch;margin:0 0 14px}
+li{margin-bottom:5px}
+.models{display:flex;flex-wrap:wrap;gap:16px;margin:12px 0}
+.models figure{margin:0;flex:1 1 300px;max-width:420px;border-radius:10px;background:#2b2b2b;padding:12px 8px 10px}
+.models svg{width:100%;height:auto;display:block}
+.models figcaption{font-weight:500;font-size:14px;text-align:center;margin-top:6px;color:#e8e8e8}
+.nm{fill:#d9d9d9;text-anchor:middle;font-family:"IBM Plex Sans",sans-serif;font-weight:500}
+.nk{fill:#14181c}
+.kl{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;margin:6px 0 16px}
+.kl span{display:flex;align-items:center;gap:6px}
+.kl i,.dt{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.35);flex:none}
+.dt{margin-right:8px;vertical-align:-1px}
+@media (max-width:600px){
+body{font-size:15.5px;line-height:1.6}
+.wrap{padding:0 14px}
+.home{gap:10px;padding:12px 0}
+.logo{width:32px;height:32px}
+header{padding:16px 0 4px}
+nav button{padding:10px 12px;font-size:14.5px}
+section{padding:20px 0 36px}
+h2{font-size:21px}
+h3{font-size:17px;margin-top:24px}
+p,ul,ol,.note{max-width:none}
+.models figure{flex-basis:100%;max-width:none}
+table{font-size:13.5px}
+th,td{padding:8px 10px}
+}
+@media (max-width:360px){.home h1{font-size:18px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+<a class="home" href="index.html" aria-label="Ir al inicio">
+<img class="logo" src="iconos/usb.svg" alt="" width="38" height="38">
+<h1>Puerto USB</h1>
+</a>
+</div></div>
+<header><div class="wrap">
+<p class="lead">Referencia técnica de los conectores USB: modelo gráfico de cada tipo, función de cada pin, velocidad, potencia y Power Delivery.</p>
+</div></header>
+
+<nav><div class="wrap" role="tablist">
+<button role="tab" aria-selected="true" data-t="ver">Versiones</button>
+<button role="tab" aria-selected="false" data-t="a">USB-A</button>
+<button role="tab" aria-selected="false" data-t="b">USB-B</button>
+<button role="tab" aria-selected="false" data-t="mm">Mini / Micro</button>
+<button role="tab" aria-selected="false" data-t="c">USB-C</button>
+<button role="tab" aria-selected="false" data-t="pd">Power Delivery</button>
+</div></nav>
+
+<main class="wrap">
+
+<section id="ver" class="on">
+<h2>Versiones y conectores</h2>
+<p class="sub">La velocidad depende de la versión del protocolo; la forma física, del conector. Son dos cosas independientes.</p>
+<h3>Velocidad y potencia base por versión</h3>
+<div class="tw"><table>
+<tr><th>Versión</th><th>Velocidad</th><th>Conectores</th><th>Potencia base (5 V)</th></tr>
+<tr><td>USB 1.1</td><td>1,5 Mbps (Low) / 12 Mbps (Full)</td><td>A, B</td><td>500 mA, 2,5 W</td></tr>
+<tr><td>USB 2.0</td><td>480 Mbps (High-Speed)</td><td>A, B, Mini, Micro, C</td><td>500 mA, 2,5 W</td></tr>
+<tr><td>USB 3.2 Gen 1 (ex 3.0 / 3.1 Gen 1)</td><td>5 Gbps (SuperSpeed)</td><td>A, B, Micro-B, C</td><td>900 mA, 4,5 W</td></tr>
+<tr><td>USB 3.2 Gen 2 (ex 3.1 Gen 2)</td><td>10 Gbps (SuperSpeed+)</td><td>A, C</td><td>900 mA, 4,5 W</td></tr>
+<tr><td>USB 3.2 Gen 2×2</td><td>20 Gbps</td><td>Solo C</td><td>Hasta 100 W con PD</td></tr>
+<tr><td>USB4 (40 Gbps)</td><td>40 Gbps; túneles PCIe y DisplayPort</td><td>Solo C</td><td>Hasta 240 W con PD</td></tr>
+<tr><td>USB4 Versión 2.0</td><td>80 Gbps (hasta 120 Gbps asimétrico)</td><td>Solo C</td><td>Hasta 240 W con PD</td></tr>
+</table></div>
+<div class="note">Los nombres comerciales cambiaron varias veces: «USB 3.0», «3.1 Gen 1» y «3.2 Gen 1» describen la misma velocidad de 5 Gbps. Conviene fijarse en la velocidad declarada y no solo en el número de versión.</div>
+<h3>Resumen de conectores</h3>
+<div class="tw"><table>
+<tr><th>Conector</th><th>Pines</th><th>Reversible</th><th>Ciclos de inserción</th><th>Estado</th></tr>
+<tr><td>USB-A</td><td>4 (2.0) / 9 (3.x)</td><td>No</td><td>1.500</td><td>Vigente en hosts</td></tr>
+<tr><td>USB-B</td><td>4 (2.0) / 9 (3.x)</td><td>No</td><td>1.500</td><td>Periféricos, en desuso</td></tr>
+<tr><td>Mini-B</td><td>5</td><td>No</td><td>5.000</td><td>Obsoleto</td></tr>
+<tr><td>Micro-B</td><td>5 (2.0) / 10 (3.x)</td><td>No</td><td>10.000</td><td>En retirada</td></tr>
+<tr><td>USB-C</td><td>24</td><td>Sí</td><td>10.000</td><td>Estándar actual</td></tr>
+</table></div>
+<p>Las pestañas siguientes muestran el modelo de cada conector, la función de cada pin y sus capacidades de velocidad y potencia.</p>
+</section>
+
+<section id="a"></section>
+<section id="b"></section>
+<section id="mm"></section>
+<section id="c"></section>
+
+<section id="pd">
+<h2>Power Delivery (PD)</h2>
+<p class="sub">Negociación de tensión y corriente sobre el conector USB-C, de 5 V hasta 48 V y 240 W.</p>
+<p>USB Power Delivery es un protocolo que permite al cargador (<b>source</b>) y al equipo (<b>sink</b>) acordar la tensión y la corriente antes de aplicar potencia. La conversación viaja por el pin <b>CC</b> y no interfiere con los datos. Solo se define sobre USB-C.</p>
+<h3>Niveles de potencia</h3>
+<div class="tw"><table>
+<tr><th>Perfil</th><th>Tensión</th><th>Corriente</th><th>Potencia</th></tr>
+<tr><td>USB 2.0 por defecto</td><td>5 V</td><td>0,5 A</td><td>2,5 W</td></tr>
+<tr><td>USB 3.x por defecto</td><td>5 V</td><td>0,9 A</td><td>4,5 W</td></tr>
+<tr><td>Battery Charging 1.2</td><td>5 V</td><td>hasta 1,5 A</td><td>7,5 W</td></tr>
+<tr><td>USB-C sin negociar</td><td>5 V</td><td>1,5 A o 3 A</td><td>7,5 W o 15 W</td></tr>
+<tr><td>PD SPR (Standard Power Range)</td><td>5, 9, 15, 20 V</td><td>hasta 3 A (5 A con cable e-marker)</td><td>hasta 60 W (100 W con 5 A a 20 V)</td></tr>
+<tr><td>PD EPR (Extended Power Range)</td><td>28, 36, 48 V</td><td>5 A</td><td>140 W, 180 W, 240 W</td></tr>
+</table></div>
+<h3>Cómo se negocia</h3>
+<ol>
+<li><b>Detección:</b> el source presenta una resistencia Rp en CC; el sink, una Rd de 5,1 kΩ. Al medir la tensión resultante, ambos detectan que hay un equipo conectado, la orientación del plug y, por el valor de Rp (80 µA, 180 µA o 330 µA), la corriente de 5 V disponible: por defecto, 1,5 A o 3 A.</li>
+<li><b>Capacidades:</b> el source envía por CC la lista de perfiles que ofrece (Source Capabilities).</li>
+<li><b>Solicitud:</b> el sink elige uno y lo pide (Request).</li>
+<li><b>Aceptación:</b> el source acepta, ajusta su salida en VBUS y avisa que está listo (PS_RDY). Si el sink no responde, queda en 5 V.</li>
+</ol>
+<p>Los mensajes usan codificación BMC a unos 300 kbps. En PD 3.0 se añade <b>PPS</b> (Programmable Power Supply): tensión ajustable en pasos de 20 mV y corriente limitada por el source, útil para carga directa de baterías.</p>
+<h3>Cables y pin VCONN</h3>
+<ul>
+<li>Los cables que soportan más de 3 A o velocidades superiores a USB 2.0 llevan un chip <b>e-marker</b> que informa su capacidad. Ese chip se alimenta con 5 V (VCONN) por el CC que no se usa para comunicar.</li>
+<li>Los cables USB-C solo de carga o USB 2.0 conectan únicamente VBUS, GND, CC y el par D+/D−.</li>
+<li>Para 240 W se requiere un cable certificado EPR de 48 V y 5 A.</li>
+</ul>
+<div class="note warn"><b>Cables sin certificar.</b> Un cable USB-C que no cumple la especificación (por ejemplo, con la resistencia de CC incorrecta) puede pedir más corriente de la que soporta y recalentarse. Con potencias altas conviene usar cables certificados o del propio fabricante.</div>
+<div class="note">USB-A, USB-B, Mini y Micro no negocian PD. Los sistemas de carga rápida sobre USB-A (Quick Charge y similares) son propietarios y usan D+/D− con otro protocolo.</div>
+</section>
+
+</main>
+
+<script>
+(function(){
+var CS="#e3e2dc",ST="#6c6c6a",GO="#f2b705";
+function R(x,y,w,h,r,f,s,sw){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+r+'" fill="'+f+'"'+(s?' stroke="'+s+'" stroke-width="'+(sw||2)+'"':'')+'/>';}
+function Pa(d,f,s,sw){return '<path d="'+d+'" fill="'+f+'"'+(s?' stroke="'+s+'" stroke-width="'+(sw||2)+'"':'')+'/>';}
+function Tx(x,y,t,k,z){return '<text class="nm'+(k?' nk':'')+'" x="'+x+'" y="'+y+'" font-size="'+(z||15)+'">'+t+'</text>';}
+function Gc(x,y,w,h){return R(x,y,w,h,1,GO);}
+function gr(cs,y,w,h){return cs.map(function(c){return Gc(c-w/2,y,w,h)}).join('');}
+function lb(cs,ls,y,k,z){return cs.map(function(c,i){return Tx(c,y,ls[i],k,z)}).join('');}
+var F4=[104,148,192,236],B5=[94,132,170,208,246],C5=[118,144,170,196,222];
+function Ap(blue){var s=blue?R(40,40,260,102,10,"#6b6b6b")+R(62,56,216,70,12,"#1c8fd6","#f5f5f5",3):R(40,40,260,102,14,CS,ST,2.5)+R(62,62,216,58,10,"#fff",ST,2)+R(66,66,208,30,6,"#a8a8a8");
+if(blue)return s+gr(B5,86,10,5)+lb(B5,["5","6","7","8","9"],80,1,13)+gr(F4,104,16,6)+lb(F4,["4","3","2","1"],120,1,14);
+return s+gr(F4,90,16,6)+lb(F4,["4","3","2","1"],84,1,15);}
+function Ar(){return R(40,40,260,102,14,CS,ST,2.5)+R(56,52,228,78,8,"#0a6fa8")+R(68,60,204,62,6,"#1c8fd6")+gr(B5,86,10,5)+lb(B5,["9","8","7","6","5"],80,1,13)+gr(F4,102,16,6)+lb(F4,["1","2","3","4"],118,1,14);}
+function Bp(dy,blue){var s='';
+if(blue)s+=R(116,2,108,44,6,CS,ST,2)+R(124,8,92,32,3,"#1c8fd6")+gr([138,154,170,186,202],30,9,6)+lb([138,154,170,186,202],["9","8","7","6","5"],26,1,12);
+return s+'<g transform="translate(0,'+dy+')">'+Pa("M128 20H212L236 44V152Q236 164 224 164H116Q104 164 104 152V44Z",CS,ST,2.5)+Pa("M138 34H202L222 54V150H118V54Z",blue?"#1c8fd6":"#fff",ST,2)+R(136,70,68,58,2,"#aeb0b3","#777",1.5)+gr([145,195],65,14,6)+gr([145,195],128,14,6)+lb([145,195],["1","2"],56,1)+lb([145,195],["4","3"],148,1)+'</g>';}
+function Mn(){return lb([110,140,170,200,230],["5","4","3","2","1"],50,0,15)+Pa("M86 58H254Q276 58 276 80V108Q276 120 266 130L236 160Q232 164 226 164H114Q108 164 104 160L74 130Q64 120 64 108V80Q64 58 86 58Z",CS,ST,2.5)+Pa("M92 76H248V118Q248 124 242 130L228 146H112L98 130Q92 124 92 118Z","#858585","#f5f5f5",2)+gr([110,140,170,200,230],72,14,6);}
+function mc(x,w,ch,e){var y=70,h=58,d;
+d=ch?'M'+(x+12)+' '+y+'H'+(x+w-12)+'Q'+(x+w)+' '+y+' '+(x+w)+' '+(y+12)+'V'+(y+h-26)+'L'+(x+w-26)+' '+(y+h)+'H'+(x+26)+'L'+x+' '+(y+h-26)+'V'+(y+12)+'Q'+x+' '+y+' '+(x+12)+' '+y+'Z':'M'+(x+12)+' '+y+'H'+(x+w-12)+'Q'+(x+w)+' '+y+' '+(x+w)+' '+(y+12)+'V'+(y+h-12)+'Q'+(x+w)+' '+(y+h)+' '+(x+w-12)+' '+(y+h)+'H'+(x+12)+'Q'+x+' '+(y+h)+' '+x+' '+(y+h-12)+'V'+(y+12)+'Q'+x+' '+y+' '+(x+12)+' '+y+'Z';
+return (e?R(x+10,y-8,16,10,2,CS,ST,2)+R(x+w-26,y-8,16,10,2,CS,ST,2):'')+Pa(d,CS,ST,2.5)+R(x+20,y+8,w-40,40,4,"#8a8a8a")+R(x+38,y+11,w-76,12,2,"#444");}
+function Mi(x,ch,e,cs,ls){return lb(cs,ls,54,0,14)+mc(x,ch===2?154:220,ch===1,e)+gr(cs,90,8,20);}
+function Cc(rec){var cs=[],i,s;for(i=0;i<12;i++)cs.push(76.5+i*17);
+s=R(40,56,260,84,30,CS,ST,2.5)+R(50,64,240,68,24,"#2e2e2e");
+s+=rec?R(60,86,220,20,3,"#8f9094","#555",1)+gr(cs,89,11,5)+gr(cs,99,11,5):gr(cs,66,11,8)+gr(cs,122,11,8);
+cs.forEach(function(c,i){s+=Tx(c,48,"A"+(rec?12-i:i+1),0,8.5)+Tx(c,158,"B"+(rec?i+1:12-i),0,8.5);});
+return s;}
+var L5=["5","4","3","2","1"];
+var M={a2:Ap(0),a3:Ap(1),a3r:Ar(),b2:Bp(8,0),b3:Bp(24,1),mini:Mn(),
+ma:lb(C5,L5,54,0,15)+mc(60,220,0,1)+gr(C5,90,8,20),
+mb:lb(C5,L5,54,0,15)+mc(60,220,1,0)+gr(C5,90,8,20),
+mb3:lb([44,68,92,116,140],["10","9","8","7","6"],54,0,14)+lb([202,226,250,274,298],L5,54,0,14)+mc(14,154,0,0)+gr([44,68,92,116,140],90,8,20)+mc(172,154,1,0)+gr([202,226,250,274,298],90,8,20),
+cpl:Cc(0),crc:Cc(1)};
+function dp(n){return n;}
+function tb(hd,rows){return '<div class="tw"><table><tr>'+hd.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr>'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>'}).join('')+'</tr>'}).join('')+'</table></div>';}
+function pins(r){return tb(['Pin','Señal','Descripción'],r.map(function(p){return [dp(p[0],p[3]),'<code>'+p[1]+'</code>',p[2]]}));}
+var D=[["1","VBUS","+5 V, alimentación del dispositivo","pw"],["2","D−","Datos diferenciales (−), USB 2.0","dm"],["3","D+","Datos diferenciales (+), USB 2.0","dp"],["4","GND","Tierra, retorno de alimentación","gnd"]];
+var CR=[[1,"GND","GND","gnd","Retorno de tierra"],[2,"TX1+","TX2+","ss","Transmisión SuperSpeed (+)"],[3,"TX1−","TX2−","ss","Transmisión SuperSpeed (−)"],[4,"VBUS","VBUS","pw","Alimentación (5 a 48 V según PD)"],[5,"CC1","CC2 / VCONN","cc","Detección de orientación y rol, mensajes PD; el CC libre da VCONN al e-marker"],[6,"D+","D+","dp","Datos USB 2.0 (+)"],[7,"D−","D−","dm","Datos USB 2.0 (−)"],[8,"SBU1","SBU2","sb","Banda lateral: modos alternativos (DisplayPort, audio analógico)"],[9,"VBUS","VBUS","pw","Alimentación"],[10,"RX2−","RX1−","ss","Recepción SuperSpeed (−)"],[11,"RX2+","RX1+","ss","Recepción SuperSpeed (+)"],[12,"GND","GND","gnd","Retorno de tierra"]];
+var T=[
+{id:"a",n:"USB-A",s:"El conector del lado anfitrión: PC, cargadores y consolas.",
+i:"Es asimétrico: entra en una sola posición. Los puertos 3.x son retrocompatibles porque añaden una segunda fila de cinco contactos más hundidos; un plug 2.0 solo toca los cuatro delanteros. En las figuras, el plug se ve de frente con el pin 1 a la derecha; el receptáculo es su imagen especular, con el pin 1 a la izquierda.",
+m:[["USB-A 2.0 · plug (macho)",M.a2],["USB-A 3.x · plug (macho)",M.a3],["USB-A 3.x · receptáculo (hembra)",M.a3r]],g:["pw","dm","dp","gnd","ss"],
+t:pins(D.concat([["5","SSRX−","Recepción SuperSpeed (−), visto desde el host","ss"],["6","SSRX+","Recepción SuperSpeed (+)","ss"],["7","GND_DRAIN","Retorno de masa de los pares SuperSpeed","gnd"],["8","SSTX−","Transmisión SuperSpeed (−)","ss"],["9","SSTX+","Transmisión SuperSpeed (+)","ss"]])),
+k:[["Velocidad","12 Mbps (1.1), 480 Mbps (2.0), 5 y 10 Gbps (3.x)"],["Corriente a 5 V","500 mA (2.0), 900 mA (3.x); hasta 1,5 A con BC 1.2 (7,5 W)"],["Power Delivery","No aplica; la carga rápida sobre USB-A usa protocolos propietarios"],["Identificación","La lengüeta suele ser azul en puertos 3.x"]]},
+{id:"b",n:"USB-B",s:"El conector del lado periférico: impresoras, escáneres, interfaces de audio.",
+i:"Su forma casi cuadrada con dos esquinas biseladas impide conectarlo a un puerto A. La versión 3.x suma una extensión superior con los contactos SuperSpeed. Un cable B 2.0 entra en un puerto B 3.x, pero un plug B 3.x no entra en un puerto B 2.0. Existe además la variante Powered-B 3.x, con dos pines extra (10 y 11) para alimentar adaptadores, de uso poco frecuente.",
+m:[["USB-B 2.0 · plug (macho)",M.b2],["USB-B 3.x · plug (macho)",M.b3]],g:["pw","dm","dp","gnd","ss"],
+t:pins(D.concat([["5","SSTX−","Transmisión SuperSpeed (−), visto desde el dispositivo","ss"],["6","SSTX+","Transmisión SuperSpeed (+)","ss"],["7","GND_DRAIN","Retorno de masa de los pares SuperSpeed","gnd"],["8","SSRX−","Recepción SuperSpeed (−)","ss"],["9","SSRX+","Recepción SuperSpeed (+)","ss"]])),
+k:[["Velocidad","480 Mbps (2.0), 5 Gbps (3.x)"],["Corriente a 5 V","500 mA (2.0), 900 mA (3.x); el periférico suele tener su propia fuente"],["Power Delivery","No aplica"]]},
+{id:"mm",n:"Mini / Micro",s:"Conectores compactos para dispositivos portátiles, hoy reemplazados por USB-C.",
+i:"Mini-A/B y Micro-A/B (5 pines en 2.0) comparten pinout; solo cambia la forma del plug, que en el Micro-A es rectangular con dos orejas superiores y en el Micro-B tiene las esquinas inferiores achaflanadas. Los modelos se ven de frente, con el pin 1 a la derecha. El pin 4, ID, define el rol en USB OTG: a tierra en el plug A (el equipo actúa como host) y sin conectar en el plug B (actúa como periférico). Micro-B 3.x suma un segundo bloque de cinco pines SuperSpeed.",
+m:[["Mini-A / Mini-B · plug (5 pines)",M.mini],["Micro-A 2.0 · plug (5 pines)",M.ma],["Micro-B 2.0 · plug (5 pines)",M.mb],["Micro-B 3.x · plug (10 pines)",M.mb3]],g:["pw","dm","dp","id","gnd","ss"],
+t:pins([["1","VBUS","+5 V, alimentación","pw"],["2","D−","Datos diferenciales (−)","dm"],["3","D+","Datos diferenciales (+)","dp"],["4","ID","Identificación OTG (host o periférico)","id"],["5","GND","Tierra","gnd"],["6","SSTX−","Transmisión SuperSpeed (−), solo Micro-B 3.x","ss"],["7","SSTX+","Transmisión SuperSpeed (+), solo Micro-B 3.x","ss"],["8","GND_DRAIN","Retorno de masa SuperSpeed, solo Micro-B 3.x","gnd"],["9","SSRX−","Recepción SuperSpeed (−), solo Micro-B 3.x","ss"],["10","SSRX+","Recepción SuperSpeed (+), solo Micro-B 3.x","ss"]]),
+k:[["Velocidad","480 Mbps (Mini-B y Micro-B 2.0); 5 Gbps (Micro-B 3.x)"],["Corriente a 5 V","500 mA (2.0), 900 mA (3.x); hasta 1,5 A con BC 1.2"],["Power Delivery","No aplica; PD moderno requiere USB-C"],["Estado","Mini-A y Mini-AB fueron retirados; Mini-B sobrevive en equipos antiguos"]]},
+{id:"c",n:"USB-C",s:"Reversible, de 24 pines, con datos, vídeo y hasta 240 W.",
+i:"El conector es simétrico: entra en cualquier orientación. El dispositivo detecta cuál con los pines CC, y un multiplexor redirige las señales. Cada fila lleva todas las funciones, de modo que girar el plug 180° deja cada señal en su sitio. Los modelos muestran el plug (cable) y el receptáculo (puerto) vistos de frente: el plug es la imagen especular del puerto, así que A1 queda a la izquierda en el plug y a la derecha en el puerto.",
+m:[["USB-C · plug (macho)",M.cpl],["USB-C · receptáculo (hembra)",M.crc]],g:["gnd","pw","ss","cc","dp","dm","sb"],
+t:tb(['Pin A','Señal A','Pin B','Señal B','Descripción'],CR.map(function(r){return [dp("A"+r[0],r[3]),'<code>'+r[1]+'</code>',dp("B"+r[0],r[3]),'<code>'+r[2]+'</code>',r[4]]})),
+k:[["Velocidad","480 Mbps (USB 2.0), 5, 10, 20 Gbps (USB 3.2), 40 y 80 Gbps (USB4)"],["Corriente a 5 V","0,9 A, 1,5 A o 3 A sin negociar"],["Power Delivery","Hasta 100 W (20 V, 5 A) en SPR y 240 W (48 V, 5 A) en EPR"],["Modos alternativos","DisplayPort, Thunderbolt y otros, por los pares SuperSpeed y los pines SBU"],["Ciclos","10.000"]],
+x:'<div class="note">Un cable USB-C no conecta los 24 pines: el plug lleva un solo par D+/D− y un solo CC activo. Un cable USB 2.0 conecta únicamente GND, VBUS, CC y D+/D−. La velocidad real depende del cable y de ambos puertos, no solo del conector.</div>'}
+];
+T.forEach(function(o){
+var h='<h2>'+o.n+'</h2><p class="sub">'+o.s+'</p><p>'+o.i+'</p><h3>Modelos y pines</h3><div class="models">';
+o.m.forEach(function(m){h+='<figure><svg viewBox="0 0 340 190" role="img" aria-label="'+m[0]+'">'+m[1]+'</svg><figcaption>'+m[0]+'</figcaption></figure>';});
+h+='</div>'+o.t+'<h3>Velocidad y potencia</h3>'+tb(['Característica','Valor'],o.k)+(o.x||'');
+document.getElementById(o.id).innerHTML=h;
+});
+var tabs=document.querySelectorAll("nav button"),ids=["ver","a","b","mm","c","pd"];
+function show(id){
+tabs.forEach(function(t){t.setAttribute("aria-selected",t.dataset.t===id)});
+document.querySelectorAll("section").forEach(function(s){s.classList.toggle("on",s.id===id)});
+try{history.replaceState(null,"","#"+id)}catch(e){}
+}
+tabs.forEach(function(t){t.onclick=function(){show(t.dataset.t);window.scrollTo({top:document.querySelector("nav").offsetTop,behavior:"smooth"})}});
+var hh=location.hash.slice(1);if(ids.indexOf(hh)>-1)show(hh);
+})();
+</script>
+</body>
+</html>
