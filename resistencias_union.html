@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f172a">
+<title>Resistencias serie/paralelo</title>
+<link rel="icon" type="image/svg+xml" href="iconos/union.svg">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          navyBg: '#0f172a',
+          navyCard: '#1e293b',
+          navyBorder: '#334155',
+          cyanAccent: '#3b82f6',
+          cyanGlow: '#60a5fa',
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'Consolas', 'Monaco', 'monospace'],
+        }
+      }
+    }
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+  :focus { outline: none; }
+  :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+  html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
+
+  /* Ocultar flechas de inputs numéricos con soporte estándar */
+  input[type="number"]::-webkit-inner-spin-button, 
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+  .anim-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#3b82f6] selection:text-[#0f172a]">
+
+<header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="inline-flex items-center gap-3.5 group">
+      <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
+        <img src="iconos/union.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
+      </div>
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
+        Resistencias serie/paralelo
+      </h1>
+    </a>
+  </div>
+</header>
+
+<main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 flex flex-col gap-6">
+
+  <!-- ==================== BLOQUE SUPERIOR: VALOR DESEADO ==================== -->
+  <section class="bg-[#1e293b] border border-[#3b82f6]/50 rounded-xl p-5 shadow-lg shadow-[#3b82f6]/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+    <div class="flex-grow">
+      <h2 class="text-lg font-bold text-white flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span>
+        Valor Deseado
+      </h2>
+      <p class="text-sm text-slate-400 mt-1">
+        Ingresá la resistencia que buscás obtener. Los paneles calcularán automáticamente el valor que debe tener cada resistencia según la cantidad.
+      </p>
+      <p class="text-xs text-slate-400 mt-3 font-medium">
+        Equivalente comercial más cercano (E12): <strong id="target-e12" class="text-[#f0a070] font-mono text-sm ml-1 bg-[#3a2418] px-2 py-0.5 rounded border border-[#f0a070]/30">--</strong>
+      </p>
+    </div>
+    <div class="flex gap-2 w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
+      <input type="number" id="target-val" value="100" min="0" step="any" class="w-full sm:w-32 bg-[#0f172a] border border-[#334155] rounded-lg px-4 py-3 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors">
+      <select id="target-unit" class="bg-[#334155] border border-[#334155] rounded-lg px-3 py-3 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
+        <option value="1">Ω</option>
+        <option value="1000" selected>kΩ</option>
+        <option value="1000000">MΩ</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- ==================== CONTENEDOR DE DOS COLUMNAS ==================== -->
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    
+    <!-- COLUMNA IZQUIERDA: SERIE -->
+    <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg flex flex-col h-full">
+      
+      <!-- Cuadro Azul Oscuro (Simétrico) -->
+      <div class="bg-[#0f172a] p-4 sm:p-5 border-b border-[#334155] flex flex-col justify-between min-h-[136px]">
+        <div class="flex justify-between items-center gap-4">
+          <h3 class="text-base sm:text-lg font-bold text-[#60a5fa]">Circuito en Serie</h3>
+          <!-- SVG Serie fijado a h-10 -->
+          <svg class="h-10 w-auto text-[#60a5fa] shrink-0" viewBox="0 0 120 40" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M0 20 h20" />
+            <rect x="20" y="12" width="30" height="16" rx="2" fill="#1e293b" />
+            <text x="35" y="23.5" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">R1</text>
+            <path d="M50 20 h20" />
+            <rect x="70" y="12" width="30" height="16" rx="2" fill="#1e293b" />
+            <text x="85" y="23.5" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">R2</text>
+            <path d="M100 20 h20" />
+          </svg>
+        </div>
+        <div>
+          <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Equivalente Actual</span>
+          <div class="flex items-end gap-3">
+            <div class="text-3xl font-mono font-bold text-white leading-none" id="total-serie">0.00 Ω</div>
+            <div class="text-xs text-slate-400 font-mono mb-0.5">E12: <span id="e12-serie" class="text-[#f0a070] font-bold">--</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Sugerencia -->
+      <div class="bg-[#334155]/40 px-5 py-3 border-b border-[#334155] flex flex-wrap items-center justify-between gap-3">
+        <div class="text-xs text-slate-300">
+          Para lograr <strong class="target-label text-white">100 kΩ</strong> (<span id="count-serie">2</span> res.):
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col items-end">
+            <span class="font-mono text-[#60a5fa] font-bold" id="sug-serie">50 kΩ c/u</span>
+            <span class="text-[10px] text-[#f0a070] font-mono font-medium leading-none mt-1">E12: <span id="sug-e12-serie">47 kΩ</span></span>
+          </div>
+          <button id="apply-serie" class="text-[11px] font-bold uppercase tracking-wider bg-[#3b82f6] text-[#0f172a] px-2.5 py-1.5 rounded hover:bg-[#60a5fa] transition-colors ml-1">
+            Aplicar
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de Resistencias -->
+      <div class="p-5 flex-grow flex flex-col gap-3" id="list-serie">
+        <!-- Filas de inputs -->
+      </div>
+      
+      <!-- Botón Agregar -->
+      <div class="px-5 pb-5 mt-auto">
+        <button id="btn-add-serie" class="w-full py-2.5 border border-[#334155] bg-[#0f172a] text-[#60a5fa] rounded-lg hover:border-[#3b82f6] transition-colors flex items-center justify-center gap-2 font-medium text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> 
+          Agregar Resistencia a la Serie
+        </button>
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: PARALELO -->
+    <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg flex flex-col h-full">
+      
+      <!-- Cuadro Azul Oscuro (Simétrico y Compacto) -->
+      <div class="bg-[#0f172a] p-4 sm:p-5 border-b border-[#334155] flex flex-col justify-between min-h-[136px]">
+        <div class="flex justify-between items-center gap-4">
+          <h3 class="text-base sm:text-lg font-bold text-[#60a5fa]">Circuito en Paralelo</h3>
+          <!-- SVG Paralelo compactado (sin exceso de espacio) y fijado a h-10 -->
+          <svg class="h-10 w-auto text-[#60a5fa] shrink-0" viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+            <path d="M0 30 h15" />
+            <circle cx="15" cy="30" r="2.5" fill="currentColor" stroke="none" />
+            <path d="M15 10 v40 M15 10 h15 M15 50 h15" />
+            <rect x="30" y="2" width="30" height="16" rx="2" fill="#1e293b" />
+            <text x="45" y="13.5" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">R1</text>
+            <rect x="30" y="42" width="30" height="16" rx="2" fill="#1e293b" />
+            <text x="45" y="53.5" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">R2</text>
+            <path d="M60 10 h15 M60 50 h15 M75 10 v40" />
+            <circle cx="75" cy="30" r="2.5" fill="currentColor" stroke="none" />
+            <path d="M75 30 h25" />
+          </svg>
+        </div>
+        <div>
+          <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Equivalente Actual</span>
+          <div class="flex items-end gap-3">
+            <div class="text-3xl font-mono font-bold text-white leading-none" id="total-paralelo">0.00 Ω</div>
+            <div class="text-xs text-slate-400 font-mono mb-0.5">E12: <span id="e12-paralelo" class="text-[#f0a070] font-bold">--</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Sugerencia -->
+      <div class="bg-[#334155]/40 px-5 py-3 border-b border-[#334155] flex flex-wrap items-center justify-between gap-3">
+        <div class="text-xs text-slate-300">
+          Para lograr <strong class="target-label text-white">100 kΩ</strong> (<span id="count-paralelo">2</span> res.):
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col items-end">
+            <span class="font-mono text-[#60a5fa] font-bold" id="sug-paralelo">200 kΩ c/u</span>
+            <span class="text-[10px] text-[#f0a070] font-mono font-medium leading-none mt-1">E12: <span id="sug-e12-paralelo">220 kΩ</span></span>
+          </div>
+          <button id="apply-paralelo" class="text-[11px] font-bold uppercase tracking-wider bg-[#3b82f6] text-[#0f172a] px-2.5 py-1.5 rounded hover:bg-[#60a5fa] transition-colors ml-1">
+            Aplicar
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de Resistencias -->
+      <div class="p-5 flex-grow flex flex-col gap-3" id="list-paralelo">
+        <!-- Filas de inputs -->
+      </div>
+      
+      <!-- Botón Agregar -->
+      <div class="px-5 pb-5 mt-auto">
+        <button id="btn-add-paralelo" class="w-full py-2.5 border border-[#334155] bg-[#0f172a] text-[#60a5fa] rounded-lg hover:border-[#3b82f6] transition-colors flex items-center justify-center gap-2 font-medium text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> 
+          Agregar Resistencia al Paralelo
+        </button>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  // --- Lógica Comercial E12 ---
+  const e12Base = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2, 10.0];
+
+  function getClosestE12(ohms) {
+    if (ohms === 0 || !isFinite(ohms)) return 0;
+    
+    const magnitude = Math.pow(10, Math.floor(Math.log10(ohms)));
+    const normalized = ohms / magnitude;
+
+    let closest = e12Base[0];
+    let minDiff = Math.abs(normalized - closest);
+
+    for (let i = 1; i < e12Base.length; i++) {
+      const diff = Math.abs(normalized - e12Base[i]);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = e12Base[i];
+      }
+    }
+    return closest * magnitude;
+  }
+
+  // --- Utilidades DOM ---
+  let serieCount = 0;
+  let paraleloCount = 0;
+
+  const targetValInput = document.getElementById('target-val');
+  const targetUnitSelect = document.getElementById('target-unit');
+  const targetLabels = document.querySelectorAll('.target-label');
+  const targetE12Label = document.getElementById('target-e12');
+
+  const listSerie = document.getElementById('list-serie');
+  const totalSerieLabel = document.getElementById('total-serie');
+  const e12SerieLabel = document.getElementById('e12-serie');
+  const countSerieLabel = document.getElementById('count-serie');
+  const sugSerieLabel = document.getElementById('sug-serie');
+  const sugE12SerieLabel = document.getElementById('sug-e12-serie');
+  const btnApplySerie = document.getElementById('apply-serie');
+
+  const listParalelo = document.getElementById('list-paralelo');
+  const totalParaleloLabel = document.getElementById('total-paralelo');
+  const e12ParaleloLabel = document.getElementById('e12-paralelo');
+  const countParaleloLabel = document.getElementById('count-paralelo');
+  const sugParaleloLabel = document.getElementById('sug-paralelo');
+  const sugE12ParaleloLabel = document.getElementById('sug-e12-paralelo');
+  const btnApplyParalelo = document.getElementById('apply-paralelo');
+
+  function formatRes(val) {
+    if (val === 0 || !isFinite(val)) return '0.00 Ω';
+    if (val < 1000) return val.toFixed(2).replace(/\.00$/, '') + ' Ω';
+    if (val < 1000000) return (val / 1000).toFixed(2).replace(/\.00$/, '') + ' kΩ';
+    return (val / 1000000).toFixed(2).replace(/\.00$/, '') + ' MΩ';
+  }
+
+  function getBestUnit(ohms) {
+    if (ohms >= 1000000) return { val: ohms / 1000000, unit: 1000000 };
+    if (ohms >= 1000) return { val: ohms / 1000, unit: 1000 };
+    return { val: ohms, unit: 1 };
+  }
+
+  // --- Actualizaciones de Cálculo ---
+  function calculateTotals() {
+    // Cálculo Serie y actualización de E12 individual
+    const rowsSerie = listSerie.querySelectorAll('.res-row');
+    let sumSerie = 0;
+    rowsSerie.forEach(row => {
+      const v = parseFloat(row.querySelector('.res-val').value);
+      const m = parseFloat(row.querySelector('.res-unit').value);
+      const e12RowLabel = row.querySelector('.row-e12');
+      if (!isNaN(v) && v > 0) {
+        const ohms = v * m;
+        sumSerie += ohms;
+        e12RowLabel.textContent = formatRes(getClosestE12(ohms));
+      } else {
+        e12RowLabel.textContent = '--';
+      }
+    });
+    
+    totalSerieLabel.textContent = rowsSerie.length > 0 ? formatRes(sumSerie) : '0.00 Ω';
+    e12SerieLabel.textContent = rowsSerie.length > 0 && sumSerie > 0 ? formatRes(getClosestE12(sumSerie)) : '--';
+
+    // Cálculo Paralelo y actualización de E12 individual
+    const rowsParalelo = listParalelo.querySelectorAll('.res-row');
+    let sumParaleloInverse = 0;
+    let hasZeroInParallel = false;
+    
+    rowsParalelo.forEach(row => {
+      const v = parseFloat(row.querySelector('.res-val').value);
+      const m = parseFloat(row.querySelector('.res-unit').value);
+      const e12RowLabel = row.querySelector('.row-e12');
+      if (!isNaN(v) && v >= 0) {
+        const ohms = v * m;
+        if (ohms === 0) hasZeroInParallel = true;
+        else sumParaleloInverse += (1 / ohms);
+        e12RowLabel.textContent = formatRes(getClosestE12(ohms));
+      } else {
+        e12RowLabel.textContent = '--';
+      }
+    });
+
+    let totalParalelo = 0;
+    if (rowsParalelo.length > 0) {
+      if (hasZeroInParallel) totalParalelo = 0;
+      else if (sumParaleloInverse > 0) totalParalelo = 1 / sumParaleloInverse;
+    }
+    
+    totalParaleloLabel.textContent = rowsParalelo.length > 0 ? formatRes(totalParalelo) : '0.00 Ω';
+    e12ParaleloLabel.textContent = rowsParalelo.length > 0 && totalParalelo > 0 ? formatRes(getClosestE12(totalParalelo)) : '--';
+  }
+
+  function updateTargetSuggestions() {
+    const val = parseFloat(targetValInput.value);
+    const mult = parseFloat(targetUnitSelect.value);
+    
+    if (isNaN(val) || val <= 0) return;
+    const targetOhms = val * mult;
+
+    // Actualizar Labels generales
+    targetLabels.forEach(el => el.textContent = formatRes(targetOhms));
+    targetE12Label.textContent = formatRes(getClosestE12(targetOhms));
+
+    // Sugerencia Serie (Repartir: Target / Cantidad)
+    const lenSerie = listSerie.children.length;
+    countSerieLabel.textContent = lenSerie;
+    if (lenSerie > 0) {
+      const reqSerie = targetOhms / lenSerie;
+      sugSerieLabel.textContent = formatRes(reqSerie) + ' c/u';
+      sugE12SerieLabel.textContent = formatRes(getClosestE12(reqSerie));
+      btnApplySerie.dataset.val = reqSerie;
+      btnApplySerie.parentElement.style.display = 'flex';
+    } else {
+      sugSerieLabel.textContent = '---';
+      sugE12SerieLabel.textContent = '--';
+      btnApplySerie.parentElement.style.display = 'none';
+    }
+
+    // Sugerencia Paralelo (Multiplicar: Target * Cantidad)
+    const lenParalelo = listParalelo.children.length;
+    countParaleloLabel.textContent = lenParalelo;
+    if (lenParalelo > 0) {
+      const reqParalelo = targetOhms * lenParalelo;
+      sugParaleloLabel.textContent = formatRes(reqParalelo) + ' c/u';
+      sugE12ParaleloLabel.textContent = formatRes(getClosestE12(reqParalelo));
+      btnApplyParalelo.dataset.val = reqParalelo;
+      btnApplyParalelo.parentElement.style.display = 'flex';
+    } else {
+      sugParaleloLabel.textContent = '---';
+      sugE12ParaleloLabel.textContent = '--';
+      btnApplyParalelo.parentElement.style.display = 'none';
+    }
+  }
+
+  function applySuggestion(type) {
+    const btn = type === 'serie' ? btnApplySerie : btnApplyParalelo;
+    const reqVal = parseFloat(btn.dataset.val);
+    if (isNaN(reqVal)) return;
+
+    const best = getBestUnit(reqVal);
+    const list = type === 'serie' ? listSerie : listParalelo;
+    
+    list.querySelectorAll('.res-row').forEach(row => {
+      row.querySelector('.res-val').value = parseFloat(best.val.toFixed(3));
+      row.querySelector('.res-unit').value = best.unit;
+    });
+    
+    calculateTotals();
+  }
+
+  // --- Generador de Filas ---
+  function createRow(type, defaultVal, defaultUnit) {
+    const isSerie = type === 'serie';
+    const container = isSerie ? listSerie : listParalelo;
+    
+    if (isSerie) serieCount++; else paraleloCount++;
+    const id = isSerie ? serieCount : paraleloCount;
+    const prefix = isSerie ? 'Rs' : 'Rp';
+    const accentColor = isSerie ? 'text-[#3b82f6]' : 'text-[#60a5fa]';
+
+    const div = document.createElement('div');
+    div.className = 'res-row flex flex-col gap-1.5 anim-fade-in bg-[#0f172a] p-2.5 sm:p-3 rounded-lg border border-[#334155]';
+    
+    div.innerHTML = `
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="font-mono text-xs sm:text-sm font-bold ${accentColor} w-8 sm:w-10 shrink-0">${prefix}${id}</div>
+        <input type="number" class="res-val w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono focus:border-[#3b82f6] transition-colors" value="${defaultVal}" min="0" step="any">
+        <select class="res-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white cursor-pointer focus:border-[#3b82f6] transition-colors">
+          <option value="1" ${defaultUnit==='1'?'selected':''}>Ω</option>
+          <option value="1000" ${defaultUnit==='1000'?'selected':''}>kΩ</option>
+          <option value="1000000" ${defaultUnit==='1000000'?'selected':''}>MΩ</option>
+        </select>
+        <button class="btn-remove shrink-0 text-slate-500 hover:text-[#f0a070] bg-[#1e293b] hover:bg-[#3a2418] transition-colors p-2 rounded" aria-label="Eliminar">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="pl-[44px] sm:pl-[52px]">
+        <span class="text-[11px] text-slate-400">E12: <span class="text-[#f0a070] font-mono font-bold row-e12">--</span></span>
+      </div>
+    `;
+    
+    div.querySelector('.res-val').addEventListener('input', calculateTotals);
+    div.querySelector('.res-unit').addEventListener('change', calculateTotals);
+    div.querySelector('.btn-remove').addEventListener('click', () => {
+      div.remove();
+      updateLabels(type);
+      updateTargetSuggestions();
+      calculateTotals();
+    });
+
+    container.appendChild(div);
+    updateLabels(type);
+    updateTargetSuggestions();
+    calculateTotals();
+  }
+
+  function updateLabels(type) {
+    const isSerie = type === 'serie';
+    const container = isSerie ? listSerie : listParalelo;
+    const prefix = isSerie ? 'Rs' : 'Rp';
+    const rows = container.querySelectorAll('.res-row');
+    
+    rows.forEach((row, i) => {
+      row.querySelector('div.font-mono').textContent = `${prefix}${i + 1}`;
+      const btn = row.querySelector('.btn-remove');
+      btn.style.visibility = rows.length > 2 ? 'visible' : 'hidden'; 
+    });
+  }
+
+  // --- Listeners y Arranque ---
+  targetValInput.addEventListener('input', updateTargetSuggestions);
+  targetUnitSelect.addEventListener('change', updateTargetSuggestions);
+
+  document.getElementById('btn-add-serie').addEventListener('click', () => createRow('serie', 10, '1000'));
+  document.getElementById('btn-add-paralelo').addEventListener('click', () => createRow('paralelo', 10, '1000'));
+
+  btnApplySerie.addEventListener('click', () => applySuggestion('serie'));
+  btnApplyParalelo.addEventListener('click', () => applySuggestion('paralelo'));
+
+  // Inicio por defecto con 2 resistencias cada lado
+  createRow('serie', 10, '1000');
+  createRow('serie', 10, '1000');
+  createRow('paralelo', 10, '1000');
+  createRow('paralelo', 10, '1000');
+
+})();
+</script>
+</body>
+</html>

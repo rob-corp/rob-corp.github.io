@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f172a">
+<title>Calculadora de Ley de Ohm y Potencia</title>
+<link rel="icon" type="image/svg+xml" href="iconos/union.svg">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          navyBg: '#0f172a',
+          navyCard: '#1e293b',
+          navyBorder: '#334155',
+          cyanAccent: '#3b82f6',
+          cyanGlow: '#60a5fa',
+          amberGlow: '#f0a070'
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'Consolas', 'Monaco', 'monospace'],
+        }
+      }
+    }
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  :focus { outline: none; }
+  :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+  html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
+
+  /* Ocultar flechas de inputs numéricos */
+  input[type="number"]::-webkit-inner-spin-button, 
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+  .glow-svg { filter: drop-shadow(0 0 12px rgba(96,165,250,0.3)); }
+  .glow-orange { filter: drop-shadow(0 0 12px rgba(240,160,112,0.4)); }
+  
+  /* Estados de input: manual vs calculado */
+  .input-manual { color: #ffffff !important; border-color: #3b82f6 !important; }
+  .input-computed { color: #f0a070 !important; border-color: #f0a07050 !important; background-color: #f0a07005 !important; }
+</style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#3b82f6] selection:text-[#0f172a]">
+
+<header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="inline-flex items-center gap-3.5 group">
+      <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
+        <img src="iconos/union.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
+      </div>
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
+        Ley de Ohm y Potencia
+      </h1>
+    </a>
+  </div>
+</header>
+
+<main class="flex-grow w-full max-w-[1200px] mx-auto px-4 py-8 sm:px-8 flex flex-col items-center">
+
+  <div class="w-full bg-[#1e293b] border border-[#334155] rounded-3xl p-6 sm:p-10 shadow-2xl shadow-black/40">
+    
+    <!-- Header informativo -->
+    <div class="mb-8 pb-6 border-b border-[#334155] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span>
+          Calculadora Universal
+        </h2>
+        <p class="text-sm text-slate-400 mt-1">Ingresá <strong class="text-white">2 valores cualesquiera</strong>. El sistema deducirá automáticamente los otros dos.</p>
+      </div>
+      <button id="btn-clear" class="shrink-0 text-xs font-bold uppercase tracking-wider bg-[#334155] hover:bg-[#475569] text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Limpiar Datos
+      </button>
+    </div>
+
+    <!-- Layout Dividido -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+
+      <!-- COLUMNA IZQUIERDA: ESQUEMA VECTORIAL -->
+      <div class="flex justify-center bg-[#0f172a] rounded-2xl border border-[#334155] p-6 lg:p-10 shadow-inner">
+        <svg viewBox="0 0 400 350" class="w-full max-w-[350px] h-auto text-[#60a5fa] glow-svg">
+          <!-- Batería / Fuente (V) -->
+          <path d="M 80,100 L 80,150" fill="none" stroke="currentColor" stroke-width="4"/>
+          <path d="M 60,150 L 100,150" fill="none" stroke="currentColor" stroke-width="6"/> <!-- Placa + -->
+          <path d="M 70,170 L 90,170" fill="none" stroke="currentColor" stroke-width="8"/> <!-- Placa - -->
+          <path d="M 80,170 L 80,250" fill="none" stroke="currentColor" stroke-width="4"/>
+          <text x="45" y="165" fill="currentColor" font-size="28" font-family="monospace" font-weight="bold" text-anchor="end" class="transition-colors duration-300" id="svg-v-val">0 V</text>
+          
+          <!-- Cables horizontales -->
+          <path d="M 80,100 L 320,100" fill="none" stroke="currentColor" stroke-width="4"/>
+          <path d="M 80,250 L 320,250" fill="none" stroke="currentColor" stroke-width="4"/>
+          
+          <!-- Flecha de Corriente (I) -->
+          <path d="M 160,85 L 240,85" fill="none" stroke="#f0a070" stroke-width="4" stroke-linecap="round" class="glow-orange"/>
+          <path d="M 225,75 L 240,85 L 225,95" fill="none" stroke="#f0a070" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="glow-orange"/>
+          <text x="200" y="70" fill="#f0a070" font-size="20" font-family="monospace" font-weight="bold" text-anchor="middle" class="glow-orange transition-colors duration-300" id="svg-i-val">0 A</text>
+
+          <!-- Resistencia (R) - Rama derecha -->
+          <path d="M 320,100 L 320,135" fill="none" stroke="currentColor" stroke-width="4"/>
+          <rect x="300" y="135" width="40" height="80" fill="#1e293b" stroke="currentColor" stroke-width="4" rx="2"/>
+          <text x="355" y="180" fill="currentColor" font-size="24" font-family="monospace" font-weight="bold" text-anchor="start" dominant-baseline="middle" class="transition-colors duration-300" id="svg-r-val">0 Ω</text>
+          <path d="M 320,215 L 320,250" fill="none" stroke="currentColor" stroke-width="4"/>
+
+          <!-- Símbolo de Potencia (P) disipándose (ondas) -->
+          <path d="M 285,145 Q 275,140 285,135" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" class="glow-orange"/>
+          <path d="M 285,175 Q 270,175 285,175" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" class="glow-orange"/>
+          <path d="M 285,205 Q 275,210 285,215" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" class="glow-orange"/>
+          <text x="265" y="240" fill="#f0a070" font-size="20" font-family="monospace" font-weight="bold" text-anchor="end" class="glow-orange transition-colors duration-300" id="svg-p-val">0 W</text>
+        </svg>
+      </div>
+
+      <!-- COLUMNA DERECHA: PANELES DE INPUT -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        <!-- Tarjeta Voltaje (V) -->
+        <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 shadow-lg flex flex-col gap-2 transition-colors duration-300" id="card-v">
+          <label class="text-sm font-bold text-white uppercase tracking-wider flex justify-between items-center">
+            <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> Voltaje (V)</span>
+            <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
+          </label>
+          <div class="flex items-center gap-2 mt-1">
+            <input type="number" id="val-v" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
+            <select id="unit-v" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
+              <option value="0.001">mV</option>
+              <option value="1" selected>V</option>
+              <option value="1000">kV</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tarjeta Corriente (I) -->
+        <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 shadow-lg flex flex-col gap-2 transition-colors duration-300" id="card-i">
+          <label class="text-sm font-bold text-white uppercase tracking-wider flex justify-between items-center">
+            <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#60a5fa]"></span> Corriente (I)</span>
+            <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
+          </label>
+          <div class="flex items-center gap-2 mt-1">
+            <input type="number" id="val-i" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
+            <select id="unit-i" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
+              <option value="0.000001">µA</option>
+              <option value="0.001">mA</option>
+              <option value="1" selected>A</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tarjeta Resistencia (R) -->
+        <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 shadow-lg flex flex-col gap-2 transition-colors duration-300" id="card-r">
+          <label class="text-sm font-bold text-white uppercase tracking-wider flex justify-between items-center">
+            <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#93c5fd]"></span> Resistencia (R)</span>
+            <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
+          </label>
+          <div class="flex items-center gap-2 mt-1">
+            <input type="number" id="val-r" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
+            <select id="unit-r" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
+              <option value="1" selected>Ω</option>
+              <option value="1000">kΩ</option>
+              <option value="1000000">MΩ</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tarjeta Potencia (P) -->
+        <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 shadow-lg flex flex-col gap-2 transition-colors duration-300" id="card-p">
+          <label class="text-sm font-bold text-[#f0a070] uppercase tracking-wider flex justify-between items-center">
+            <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#f0a070]"></span> Potencia (P)</span>
+            <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
+          </label>
+          <div class="flex items-center gap-2 mt-1">
+            <input type="number" id="val-p" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono text-lg focus:border-[#f0a070] transition-colors" placeholder="---">
+            <select id="unit-p" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white font-bold cursor-pointer focus:border-[#f0a070] transition-colors">
+              <option value="0.001">mW</option>
+              <option value="1" selected>W</option>
+              <option value="1000">kW</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  // --- ESTRUCTURA DE CAMPOS ---
+  const fields = {
+    v: { 
+      card: document.getElementById('card-v'), input: document.getElementById('val-v'), unit: document.getElementById('unit-v'), 
+      svg: document.getElementById('svg-v-val'), type: 'v' 
+    },
+    i: { 
+      card: document.getElementById('card-i'), input: document.getElementById('val-i'), unit: document.getElementById('unit-i'), 
+      svg: document.getElementById('svg-i-val'), type: 'i' 
+    },
+    r: { 
+      card: document.getElementById('card-r'), input: document.getElementById('val-r'), unit: document.getElementById('unit-r'), 
+      svg: document.getElementById('svg-r-val'), type: 'r' 
+    },
+    p: { 
+      card: document.getElementById('card-p'), input: document.getElementById('val-p'), unit: document.getElementById('unit-p'), 
+      svg: document.getElementById('svg-p-val'), type: 'p' 
+    }
+  };
+
+  let activeInputs = []; // Array para trackear los ultimos 2 inputs modificados manualmente
+
+  // --- FORMATEADORES ---
+  function getBestUnit(val, type) {
+    if (val === 0 || isNaN(val) || !isFinite(val)) return { val: 0, mult: 1 };
+    
+    const absVal = Math.abs(val);
+    if (type === 'v') {
+      if (absVal >= 1000) return { val: val / 1000, mult: 1000 };
+      if (absVal > 0 && absVal < 1) return { val: val * 1000, mult: 0.001 };
+      return { val: val, mult: 1 };
+    }
+    if (type === 'i') {
+      if (absVal >= 1) return { val: val, mult: 1 };
+      if (absVal >= 0.001) return { val: val * 1000, mult: 0.001 };
+      if (absVal > 0) return { val: val * 1000000, mult: 0.000001 };
+      return { val: val, mult: 1 };
+    }
+    if (type === 'r') {
+      if (absVal >= 1000000) return { val: val / 1000000, mult: 1000000 };
+      if (absVal >= 1000) return { val: val / 1000, mult: 1000 };
+      return { val: val, mult: 1 };
+    }
+    if (type === 'p') {
+      if (absVal >= 1000) return { val: val / 1000, mult: 1000 };
+      if (absVal > 0 && absVal < 1) return { val: val * 1000, mult: 0.001 };
+      return { val: val, mult: 1 };
+    }
+  }
+
+  function getUnitSymbol(mult, type) {
+    if (type === 'v') return mult === 1000 ? 'kV' : mult === 0.001 ? 'mV' : 'V';
+    if (type === 'i') return mult === 1 ? 'A' : mult === 0.001 ? 'mA' : 'µA';
+    if (type === 'r') return mult === 1000000 ? 'MΩ' : mult === 1000 ? 'kΩ' : 'Ω';
+    if (type === 'p') return mult === 1000 ? 'kW' : mult === 0.001 ? 'mW' : 'W';
+  }
+
+  function getBaseValue(f) {
+    const v = parseFloat(f.input.value);
+    if (isNaN(v)) return null;
+    return v * parseFloat(f.unit.value);
+  }
+
+  function setComputedValue(key, baseVal) {
+    const f = fields[key];
+    const best = getBestUnit(baseVal, key);
+    
+    f.input.value = parseFloat(best.val.toFixed(4));
+    f.unit.value = best.mult;
+    
+    // UI Update (Calculado)
+    f.input.classList.remove('input-manual');
+    f.input.classList.add('input-computed');
+    f.card.querySelector('.tag-state').textContent = 'CALCULADO';
+    
+    // SVG Update
+    f.svg.textContent = `${parseFloat(best.val.toFixed(2))} ${getUnitSymbol(best.mult, key)}`;
+    f.svg.classList.add('text-[#f0a070]');
+  }
+
+  function setManualState(key) {
+    const f = fields[key];
+    f.input.classList.remove('input-computed');
+    f.input.classList.add('input-manual');
+    f.card.querySelector('.tag-state').textContent = 'INGRESADO';
+    
+    const v = getBaseValue(f);
+    if (v !== null) {
+      const best = getBestUnit(v, key);
+      f.svg.textContent = `${parseFloat(best.val.toFixed(2))} ${getUnitSymbol(best.mult, key)}`;
+    } else {
+      f.svg.textContent = `0 ${getUnitSymbol(parseFloat(f.unit.value), key)}`;
+    }
+    f.svg.classList.remove('text-[#f0a070]');
+  }
+
+  // --- LÓGICA MATEMÁTICA ---
+  function calculateOhm() {
+    if (activeInputs.length < 2) return;
+
+    // Obtener los 2 identificadores activos
+    const k1 = activeInputs[0];
+    const k2 = activeInputs[1];
+    const v1 = getBaseValue(fields[k1]);
+    const v2 = getBaseValue(fields[k2]);
+
+    if (v1 === null || v2 === null) return;
+
+    // Mapa de valores conocidos en unidades base
+    const known = { [k1]: v1, [k2]: v2 };
+    let v, i, r, p;
+
+    // Rueda de Ohm - 6 Combinaciones posibles
+    if (known.v !== undefined && known.i !== undefined) {
+      v = known.v; i = known.i;
+      r = (i !== 0) ? v / i : 0;
+      p = v * i;
+    } 
+    else if (known.v !== undefined && known.r !== undefined) {
+      v = known.v; r = known.r;
+      i = (r !== 0) ? v / r : 0;
+      p = (r !== 0) ? (v * v) / r : 0;
+    } 
+    else if (known.v !== undefined && known.p !== undefined) {
+      v = known.v; p = known.p;
+      i = (v !== 0) ? p / v : 0;
+      r = (p !== 0) ? (v * v) / p : 0;
+    } 
+    else if (known.i !== undefined && known.r !== undefined) {
+      i = known.i; r = known.r;
+      v = i * r;
+      p = i * i * r;
+    } 
+    else if (known.i !== undefined && known.p !== undefined) {
+      i = known.i; p = known.p;
+      v = (i !== 0) ? p / i : 0;
+      r = (i !== 0) ? p / (i * i) : 0;
+    } 
+    else if (known.r !== undefined && known.p !== undefined) {
+      r = known.r; p = known.p;
+      v = Math.sqrt(p * r);
+      i = (r !== 0) ? Math.sqrt(p / r) : 0;
+    }
+
+    const computedValues = { v, i, r, p };
+
+    // Asignar los valores calculados a los campos inactivos
+    Object.keys(fields).forEach(key => {
+      if (!activeInputs.includes(key)) {
+        setComputedValue(key, computedValues[key]);
+      }
+    });
+  }
+
+  // --- EVENT LISTENERS ---
+  function handleInput(e, key) {
+    const valStr = e.target.value;
+    
+    // Si borra el input
+    if (valStr === '') {
+      activeInputs = activeInputs.filter(k => k !== key);
+      const f = fields[key];
+      f.input.classList.remove('input-computed', 'input-manual');
+      f.card.querySelector('.tag-state').textContent = '';
+      f.svg.textContent = `0 ${getUnitSymbol(parseFloat(f.unit.value), key)}`;
+      f.svg.classList.remove('text-[#f0a070]');
+      return;
+    }
+
+    // Agregar a inputs activos (máx 2, FIFO)
+    if (!activeInputs.includes(key)) {
+      if (activeInputs.length >= 2) {
+        // Remover el más viejo
+        const oldKey = activeInputs.shift();
+      }
+      activeInputs.push(key);
+    } else {
+      // Mover al final (más reciente)
+      activeInputs = activeInputs.filter(k => k !== key);
+      activeInputs.push(key);
+    }
+
+    setManualState(key);
+    
+    // Asegurarse de que el otro input activo tambien mantenga su estado visual manual
+    if (activeInputs.length === 2) {
+      setManualState(activeInputs[0]);
+    }
+
+    calculateOhm();
+  }
+
+  Object.keys(fields).forEach(key => {
+    fields[key].input.addEventListener('input', (e) => handleInput(e, key));
+    fields[key].unit.addEventListener('change', () => {
+      if (activeInputs.includes(key)) {
+        setManualState(key);
+        calculateOhm();
+      }
+    });
+  });
+
+  // Limpiar
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    activeInputs = [];
+    Object.keys(fields).forEach(key => {
+      const f = fields[key];
+      f.input.value = '';
+      f.input.classList.remove('input-computed', 'input-manual');
+      f.card.querySelector('.tag-state').textContent = '';
+      f.svg.textContent = `0 ${getUnitSymbol(parseFloat(f.unit.value), key)}`;
+      f.svg.classList.remove('text-[#f0a070]');
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f172a">
+<title>Códigos de Capacitores Cerámicos</title>
+<link rel="icon" type="image/svg+xml" href="iconos/union.svg">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          navyBg: '#0f172a',
+          navyCard: '#1e293b',
+          navyBorder: '#334155',
+          cyanAccent: '#3b82f6',
+          cyanGlow: '#60a5fa',
+          amberCeramic: '#eab308',
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'Consolas', 'Monaco', 'monospace'],
+        }
+      }
+    }
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  :focus { outline: none; }
+  :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+  html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
+
+  input[type="number"]::-webkit-inner-spin-button, 
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+  .glow-svg { filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.25)); }
+</style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#3b82f6] selection:text-[#0f172a]">
+
+<header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="inline-flex items-center gap-3.5 group">
+      <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
+        <img src="iconos/union.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
+      </div>
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
+        Códigos de Capacitores Cerámicos
+      </h1>
+    </a>
+  </div>
+</header>
+
+<main class="flex-grow w-full max-w-7xl mx-auto px-4 py-8 sm:px-8 flex flex-col items-center">
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+
+    <!-- ==================== PANEL 1: CÓDIGO A VALOR (DECODIFICADOR) ==================== -->
+    <section class="bg-[#1e293b] border border-[#334155] rounded-2xl overflow-hidden shadow-2xl flex flex-col h-full">
+      <div class="bg-[#0f172a] p-5 lg:p-6 border-b border-[#334155] min-h-[160px] flex flex-col sm:flex-row justify-between items-center gap-6">
+        <div class="w-full sm:w-auto flex-grow flex flex-col gap-2">
+          <h2 class="text-lg font-bold text-[#60a5fa] uppercase tracking-wide flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            Código a Valor
+          </h2>
+          <p class="text-xs text-slate-400">Ingresá el código de 2 o 3 dígitos impreso en el cuerpo del capacitor cerámico.</p>
+          
+          <div class="mt-3">
+            <input type="text" id="input-code" value="104" maxlength="3" autocomplete="off" class="w-full max-w-[200px] bg-[#1e293b] border border-[#3b82f6]/50 rounded-lg px-4 py-3 text-center text-[#eab308] font-mono font-bold text-2xl focus:border-[#eab308] transition-colors tracking-widest uppercase">
+          </div>
+        </div>
+        
+        <!-- Dibujo del Capacitor (Dinámico) -->
+        <div class="shrink-0 relative">
+          <svg viewBox="0 0 100 120" class="w-24 h-auto text-slate-300 glow-svg">
+            <path d="M35 70 L35 120 M65 70 L65 120" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+            <path d="M30 65 L40 65 M60 65 L70 65" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="50" cy="45" r="40" fill="#eab308" stroke="#ca8a04" stroke-width="2"/>
+            <!-- Luz reflejada -->
+            <path d="M25 30 A30 30 0 0 1 50 10" fill="none" stroke="#fef08a" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+            <text id="svg-code-display" x="50" y="52" fill="#0f172a" font-size="22" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="1">104</text>
+            <text x="50" y="70" fill="#0f172a" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle" opacity="0.7">_</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="p-6 bg-[#1e293b] flex-grow flex flex-col gap-5">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-[#334155] pb-2">Equivalencias Calculadas</h3>
+        
+        <div class="flex flex-col gap-3">
+          <div class="flex justify-between items-center bg-[#0f172a] p-4 rounded-lg border border-[#334155]">
+            <span class="text-slate-400 font-semibold text-sm">Picofaradios (pF)</span>
+            <span id="res-pf" class="text-xl font-mono font-bold text-white">100,000 pF</span>
+          </div>
+          <div class="flex justify-between items-center bg-[#0f172a] p-4 rounded-lg border border-[#334155]">
+            <span class="text-slate-400 font-semibold text-sm">Nanofaradios (nF)</span>
+            <span id="res-nf" class="text-xl font-mono font-bold text-[#60a5fa]">100 nF</span>
+          </div>
+          <div class="flex justify-between items-center bg-[#0f172a] p-4 rounded-lg border border-[#3b82f6]/30 shadow-[0_0_15px_rgba(59,130,246,0.1)] relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#3b82f6]"></div>
+            <span class="text-slate-300 font-semibold text-sm pl-2">Microfaradios (µF)</span>
+            <span id="res-uf" class="text-2xl font-mono font-bold text-[#eab308]">0.1 µF</span>
+          </div>
+        </div>
+        
+        <div id="code-error" class="hidden text-xs text-[#f0a070] font-bold text-center mt-2 bg-[#f0a070]/10 py-2 rounded">
+          Código inválido. Usa 2 o 3 dígitos numéricos.
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PANEL 2: VALOR A CÓDIGO (CODIFICADOR) ==================== -->
+    <section class="bg-[#1e293b] border border-[#334155] rounded-2xl overflow-hidden shadow-2xl flex flex-col h-full">
+      <div class="bg-[#0f172a] p-5 lg:p-6 border-b border-[#334155] min-h-[160px] flex flex-col sm:flex-row justify-between items-center gap-6">
+        <div class="w-full sm:w-auto flex-grow flex flex-col gap-2">
+          <h2 class="text-lg font-bold text-[#60a5fa] uppercase tracking-wide flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            Valor a Código
+          </h2>
+          <p class="text-xs text-slate-400">Ingresá un valor para obtener el código comercial E12 más cercano.</p>
+          
+          <div class="mt-3 flex items-center gap-2">
+            <input type="number" id="input-val" value="22" min="0" step="any" class="w-full bg-[#1e293b] border border-[#3b82f6]/50 rounded-lg px-4 py-3 text-white font-mono font-bold text-xl focus:border-[#eab308] transition-colors">
+            <select id="input-unit" class="bg-[#334155] border border-[#334155] rounded-lg px-3 py-3 text-white font-bold cursor-pointer focus:border-[#eab308] transition-colors">
+              <option value="1">pF</option>
+              <option value="1000" selected>nF</option>
+              <option value="1000000">µF</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 bg-[#1e293b] flex-grow flex flex-col gap-5 relative">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-[#334155] pb-2">Código Generado (Serie E12)</h3>
+        
+        <!-- Bloque de Error Límite Capacitores -->
+        <div id="limit-error" class="hidden absolute inset-0 z-10 bg-[#0f172a]/95 flex-col items-center justify-center p-6 text-center">
+          <svg class="w-12 h-12 text-[#f0a070] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <h4 class="text-white font-bold text-lg mb-1">Límite Superado</h4>
+          <p class="text-sm text-slate-400">Los capacitores cerámicos no superan los <strong class="text-white">100 µF</strong>.<br>Para valores mayores, utiliza capacitores electrolíticos.</p>
+        </div>
+
+        <!-- Resultado Código -->
+        <div class="flex-grow flex flex-col items-center justify-center gap-6">
+          <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-[#eab308] to-[#3b82f6] rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+            <div class="relative bg-[#0f172a] px-8 py-6 rounded-xl border border-[#334155] flex flex-col items-center">
+              <span class="text-xs text-slate-400 uppercase tracking-[0.2em] mb-2 font-semibold">Código EIA</span>
+              <span id="gen-code" class="text-6xl font-mono font-bold text-[#eab308] tracking-widest">223</span>
+            </div>
+          </div>
+          
+          <div class="bg-[#334155]/30 px-5 py-3 rounded-lg flex flex-col items-center border border-[#334155]">
+            <span class="text-xs text-slate-400">Valor comercial estandarizado:</span>
+            <span id="gen-val-text" class="text-lg font-mono font-bold text-white mt-0.5">22 nF</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  // --- Lógica Comercial E12 ---
+  const e12Base = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
+
+  // Elementos Decodificador (Left)
+  const inputCode = document.getElementById('input-code');
+  const svgCodeDisplay = document.getElementById('svg-code-display');
+  const resPf = document.getElementById('res-pf');
+  const resNf = document.getElementById('res-nf');
+  const resUf = document.getElementById('res-uf');
+  const codeError = document.getElementById('code-error');
+
+  // Elementos Codificador (Right)
+  const inputVal = document.getElementById('input-val');
+  const inputUnit = document.getElementById('input-unit');
+  const genCode = document.getElementById('gen-code');
+  const genValText = document.getElementById('gen-val-text');
+  const limitError = document.getElementById('limit-error');
+
+  // Formateadores Numéricos
+  function formatNumber(num) {
+    return num.toLocaleString('en-US', { maximumFractionDigits: 4 });
+  }
+
+  function getBestUnitDisplay(pf) {
+    if (pf >= 1000000) return formatNumber(pf / 1000000) + ' µF';
+    if (pf >= 1000) return formatNumber(pf / 1000) + ' nF';
+    return formatNumber(pf) + ' pF';
+  }
+
+  // --- DECODIFICADOR (CÓDIGO -> VALOR) ---
+  function decodeCapacitor() {
+    let code = inputCode.value.trim().toUpperCase();
+    svgCodeDisplay.textContent = code || '---';
+    
+    // Validar formato (1 a 3 digitos numéricos)
+    if (!/^\d{1,3}$/.test(code)) {
+      if (code !== '') {
+        codeError.classList.remove('hidden');
+        resPf.textContent = '---';
+        resNf.textContent = '---';
+        resUf.textContent = '---';
+      }
+      return;
+    }
+    
+    codeError.classList.add('hidden');
+    let pF = 0;
+
+    if (code.length <= 2) {
+      // Si son 1 o 2 dígitos, es directamente pF
+      pF = parseInt(code, 10);
+    } else {
+      // 3 dígitos: XY * 10^Z
+      let base = parseInt(code.substring(0, 2), 10);
+      let multiplier = parseInt(code.substring(2, 3), 10);
+      
+      if (multiplier > 7) {
+        // En capacitores, 8 y 9 a veces se usan para multiplicadores inversos (0.01, 0.1) pero es raro en E12 moderno.
+        // Lo dejaremos como inválido para mantener estándar simple.
+        codeError.classList.remove('hidden');
+        codeError.textContent = "Multiplicador inválido para cerámicos.";
+        return;
+      }
+      
+      pF = base * Math.pow(10, multiplier);
+    }
+
+    resPf.textContent = formatNumber(pF) + ' pF';
+    resNf.textContent = formatNumber(pF / 1000) + ' nF';
+    resUf.textContent = formatNumber(pF / 1000000) + ' µF';
+  }
+
+  // --- CODIFICADOR (VALOR -> CÓDIGO) ---
+  function encodeCapacitor() {
+    const val = parseFloat(inputVal.value);
+    const unitMult = parseFloat(inputUnit.value); // 1, 1000, 1000000
+
+    if (isNaN(val) || val <= 0) {
+      genCode.textContent = '---';
+      genValText.textContent = '--';
+      limitError.classList.add('hidden');
+      return;
+    }
+
+    const pF = val * unitMult;
+
+    // Límite físico de tecnología cerámica (Aprox 100 µF = 100,000,000 pF)
+    if (pF > 100000000) {
+      limitError.classList.remove('hidden');
+      limitError.classList.add('flex');
+      return;
+    } else {
+      limitError.classList.add('hidden');
+      limitError.classList.remove('flex');
+    }
+
+    // Buscar Base E12 más cercana
+    let magnitude = Math.pow(10, Math.floor(Math.log10(pF)));
+    let normalized = pF / magnitude;
+    
+    // Si el valor es < 10pF, el exponente será negativo o 0.
+    // Ej: 4.7pF -> normalized 4.7, mag 1.
+    // Ej: 22pF -> normalized 2.2, mag 10.
+    
+    let closestBase = e12Base[0];
+    let minDiff = Math.abs(normalized - closestBase);
+
+    for (let i = 1; i < e12Base.length; i++) {
+      let diff = Math.abs(normalized - e12Base[i]);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestBase = e12Base[i];
+      }
+    }
+
+    let stdPF = Math.round(closestBase * magnitude);
+    genValText.textContent = getBestUnitDisplay(stdPF);
+
+    // Generar Código 3 dígitos EIA
+    if (stdPF < 10) {
+      // Valores debajo de 10pF generalmente se escriben directo (ej. 5) o con R (ej. 4R7)
+      // Como pediste código EIA clásico numérico, mostraremos el número.
+      genCode.textContent = (stdPF % 1 === 0) ? stdPF.toString() : stdPF.toString().replace('.', 'R');
+    } else if (stdPF < 100) {
+      // Valores entre 10 y 99pF se pueden escribir directo (ej. 22) o como 220 (22 x 10^0)
+      // Lo estándar en codificación SMD moderna o discos es escribirlo directo si son 2 dígitos, pero a veces es 3.
+      // Daremos preferencia al código de 3 dígitos con multiplicador 0 (ej. 220 para 22pF) para ser rigurosos.
+      let baseStr = stdPF.toString();
+      genCode.textContent = baseStr + "0";
+    } else {
+      // >= 100 pF (Formato XYM)
+      let stdStr = stdPF.toString();
+      // Eliminar ceros a la derecha para sacar la base
+      let baseXY = stdStr.substring(0, 2);
+      let zeros = stdStr.length - 2;
+      genCode.textContent = baseXY + zeros.toString();
+    }
+  }
+
+  // --- Listeners ---
+  inputCode.addEventListener('input', decodeCapacitor);
+  
+  inputVal.addEventListener('input', encodeCapacitor);
+  inputUnit.addEventListener('change', encodeCapacitor);
+
+  // Inicialización
+  decodeCapacitor();
+  encodeCapacitor();
+
+})();
+</script>
+</body>
+</html>
