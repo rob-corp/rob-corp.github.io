@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0b132b">
+<meta name="theme-color" content="#0f172a">
 <title>Grados de protección IP</title>
 <link rel="icon" type="image/svg+xml" href="iconos/grados-ip.svg">
 
@@ -15,13 +15,13 @@
     theme: {
       extend: {
         colors: {
-          navyBg: '#0b132b',
+          navyBg: '#0f172a',
           navyDark: '#0f172a',
-          navyCard: '#132042',
-          navyCardHeader: '#1c2d54',
-          navyBorder: '#1e3a8a',
-          cyanAccent: '#00f2fe',
-          cyanGlow: '#38bdf8',
+          navyCard: '#1e293b',
+          navyCardHeader: '#334155',
+          navyBorder: '#334155',
+          cyanAccent: '#3b82f6',
+          cyanGlow: '#60a5fa',
           blueAccent: '#3b82f6',
           blueBright: '#60a5fa',
           slateText: '#94a3b8',
@@ -46,17 +46,21 @@
   /* Foco accesible SOLO con teclado */
   :focus { outline: none; }
   :focus-visible {
-    outline: 2px solid #38bdf8;
+    outline: 2px solid #3b82f6;
     outline-offset: 2px;
     border-radius: 6px;
   }
 
   /* Scrollbar coherente en WebKit + Firefox */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: #0b132b; }
-  ::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
-  html { scrollbar-color: #1e3a8a #0b132b; scrollbar-width: thin; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+  html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
+
+  /* Ocultar scrollbar de navegacion en movil */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
   /* ====== TABS ====== */
   .tab-btn {
@@ -69,22 +73,23 @@
     font-weight: 500;
     color: #cbd5e1;
     background: transparent;
-    border: 1px solid #1e3a8a;
+    border: 1px solid #334155;
     transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
     cursor: pointer;
     user-select: none;
+    white-space: nowrap;
   }
   .tab-btn:hover {
     color: #ffffff;
-    background: #132042;
+    background: #1e293b;
   }
   .tab-btn[aria-selected="true"] {
-    background: #38bdf8;
-    color: #020617;
+    background: #3b82f6;
+    color: #0f172a;
     font-weight: 700;
-    border-color: #38bdf8;
+    border-color: #3b82f6;
   }
-  .tab-btn[aria-selected="true"]:hover { background: #00f2fe; }
+  .tab-btn[aria-selected="true"]:hover { background: #2563eb; }
 
   /* Paneles ocultos */
   [role="tabpanel"][hidden] { display: none; }
@@ -94,7 +99,7 @@
     cursor: pointer;
     transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
   }
-  .ip-badge:hover { background: rgba(56, 189, 248, 0.06); border-color: rgba(56, 189, 248, 0.5); }
+  .ip-badge:hover { background: rgba(59, 130, 246, 0.10); border-color: rgba(59, 130, 246, 0.6); }
   .ip-badge:active { transform: scale(0.99); }
 
   @media (prefers-reduced-motion: reduce) {
@@ -115,15 +120,15 @@
 
   gtag('config', 'G-ESQB0M5W6R');
 </script>
-<body class="bg-[#0b132b] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#38bdf8] selection:text-slate-950">
+<body class="bg-[#0f172a] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#3b82f6] selection:text-[#0f172a]">
 
-<header class="bg-[#0f172a] border-b border-[#1e3a8a] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-blue-950/40">
+<header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     <a href="index.html" class="inline-flex items-center gap-3.5 group">
-      <div class="w-10 h-10 flex items-center justify-center bg-[#0b132b] border border-[#38bdf8]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#00f2fe]">
+      <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
         <img src="iconos/grados-ip.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
       </div>
-      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#38bdf8] transition-colors">
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
         Grados de protección IP
       </h1>
     </a>
@@ -132,7 +137,7 @@
 
 <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 flex flex-col gap-6">
 
-  <nav class="flex flex-wrap gap-3 border-b border-[#1e3a8a] pb-3" id="main-nav" role="tablist" aria-label="Secciones del contenido IP">
+  <nav class="flex flex-nowrap sm:flex-wrap overflow-x-auto no-scrollbar gap-3 border-b border-[#334155] pb-3" id="main-nav" role="tablist" aria-label="Secciones del contenido IP">
     <button
       type="button"
       id="nav-btn-sec1"
@@ -164,26 +169,26 @@
   <section id="section-1" role="tabpanel" aria-labelledby="nav-btn-sec1" class="flex flex-col gap-6">
 
     <!-- Card: Estructura de nomenclatura -->
-    <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
-      <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
-        <h2 class="text-lg font-bold text-white flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-[#00f2fe]" aria-hidden="true"></span>
+    <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg shadow-black/20">
+      <div class="bg-[#334155] px-4 py-3.5 sm:px-6 sm:py-4 border-b border-[#475569]">
+        <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-[#3b82f6]" aria-hidden="true"></span>
           Grado de Protección IP y Estructura de la Nomenclatura
         </h2>
       </div>
 
-      <div class="p-6 flex flex-col gap-6 text-sm text-slate-200 leading-relaxed">
+      <div class="p-4 sm:p-6 flex flex-col gap-6 text-sm text-slate-200 leading-relaxed">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-1.5">
-            <span class="text-2xl font-mono font-bold text-[#00f2fe]">IP</span>
-            <span class="text-xs font-mono font-semibold text-[#38bdf8] uppercase">Prefijo Estándar</span>
+          <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-1.5">
+            <span class="text-2xl font-mono font-bold text-[#3b82f6]">IP</span>
+            <span class="text-xs font-mono font-semibold text-[#60a5fa] uppercase">Prefijo Estándar</span>
             <p class="text-xs text-slate-300">
               Corresponde al acrónimo en inglés <em class="text-slate-100">Ingress Protection</em> (Protección contra la Penetración).
             </p>
           </div>
 
-          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-1.5">
+          <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-1.5">
             <span class="text-2xl font-mono font-bold text-[#60a5fa]">X (Primer Dígito)</span>
             <span class="text-xs font-mono font-semibold text-[#60a5fa] uppercase">Protección Sólidos (0 a 6)</span>
             <p class="text-xs text-slate-300">
@@ -191,9 +196,9 @@
             </p>
           </div>
 
-          <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-1.5">
-            <span class="text-2xl font-mono font-bold text-[#38bdf8]">Y (Segundo Dígito)</span>
-            <span class="text-xs font-mono font-semibold text-[#38bdf8] uppercase">Protección Líquidos (0 a 9K)</span>
+          <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-1.5">
+            <span class="text-2xl font-mono font-bold text-[#60a5fa]">Y (Segundo Dígito)</span>
+            <span class="text-xs font-mono font-semibold text-[#60a5fa] uppercase">Protección Líquidos (0 a 9K)</span>
             <p class="text-xs text-slate-300">
               Especifica la hermeticidad contra la entrada perjudicial de agua en diversas formas (goteo, lluvia, chorros o inmersión).
             </p>
@@ -204,8 +209,8 @@
     </div>
 
     <!-- Card: Primer Dígito (X) -->
-    <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
-      <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
+    <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg shadow-black/20">
+      <div class="bg-[#334155] px-4 py-3.5 sm:px-6 sm:py-4 border-b border-[#475569]">
         <h3 class="text-base font-bold text-[#60a5fa] flex items-center gap-2">
           Primer Dígito (X): Protección contra Objetos Sólidos y Polvo
         </h3>
@@ -213,78 +218,78 @@
 
       <div class="p-4 sm:p-6 flex flex-col gap-3">
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">0</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">0</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Sin protección</span>
-              <span class="text-xs font-mono text-slate-400 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Sin ensayo</span>
+              <span class="text-xs font-mono text-slate-400 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Sin ensayo</span>
             </div>
             <p class="text-xs text-slate-300">Ninguna protección especial contra el contacto directo o la penetración de objetos sólidos.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">1</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">1</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Objetos grandes (&gt; 50 mm)</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Esfera Ø 50 mm (50 N)</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Esfera Ø 50 mm (50 N)</span>
             </div>
             <p class="text-xs text-slate-300">Protección contra el contacto accidental con superficies grandes del cuerpo humano, como el dorso de la mano.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">2</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">2</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Objetos medianos (&gt; 12.5 mm)</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Dedo de prueba Ø 12 mm x 80 mm</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Dedo de prueba Ø 12 mm x 80 mm</span>
             </div>
             <p class="text-xs text-slate-300">Protección contra la inserción de dedos u objetos de dimensiones similares, manteniendo distancia de partes bajo tensión.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">3</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">3</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Objetos pequeños (&gt; 2.5 mm)</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Varilla de acero Ø 2.5 mm (3 N)</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Varilla de acero Ø 2.5 mm (3 N)</span>
             </div>
             <p class="text-xs text-slate-300">Protección contra el acceso de herramientas manuales delgadas, destornilladores, cables gruesos y objetos similares.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">4</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">4</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Granulares / Alambres (&gt; 1.0 mm)</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Alambre rígido Ø 1.0 mm (1 N)</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Alambre rígido Ø 1.0 mm (1 N)</span>
             </div>
             <p class="text-xs text-slate-300">Protección contra la mayoría de alambres finos, tornillos delgados, hilos, grapas e insectos pequeños.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#38bdf8]/50 flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">5</div>
+        <div class="p-4 bg-[#0f172a] border border-[#3b82f6]/50 rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#3b82f6]/50 flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">5</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-bold text-[#38bdf8] text-sm">Protegido contra el polvo</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Cámara de talco en depresión</span>
+              <span class="font-bold text-[#60a5fa] text-sm">Protegido contra el polvo</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Cámara de talco en depresión</span>
             </div>
             <p class="text-xs text-slate-300">La entrada de polvo no se evita por completo, pero la cantidad que penetra no interfiere con el correcto funcionamiento ni la seguridad del equipo.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#00f2fe]/40 rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#00f2fe] flex items-center justify-center font-mono font-bold text-xl text-[#00f2fe]">6</div>
+        <div class="p-4 bg-[#0f172a] border border-[#3b82f6]/40 rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#3b82f6] flex items-center justify-center font-mono font-bold text-xl text-[#3b82f6]">6</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-bold text-[#00f2fe] text-sm">Totalmente estanco al polvo (Dust-tight)</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Cámara de vacío continuo (8 horas)</span>
+              <span class="font-bold text-[#3b82f6] text-sm">Totalmente estanco al polvo (Dust-tight)</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Cámara de vacío continuo (8 horas)</span>
             </div>
             <p class="text-xs text-slate-300">Sellado hermético total. Imposibilidad absoluta de entrada de partículas de polvo bajo condiciones de vacío de ensayo.</p>
           </div>
@@ -294,120 +299,120 @@
     </div>
 
     <!-- Card: Segundo Dígito (Y) -->
-    <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
-      <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
-        <h3 class="text-base font-bold text-[#38bdf8] flex items-center gap-2">
+    <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg shadow-black/20">
+      <div class="bg-[#334155] px-4 py-3.5 sm:px-6 sm:py-4 border-b border-[#475569]">
+        <h3 class="text-base font-bold text-[#60a5fa] flex items-center gap-2">
           Segundo Dígito (Y): Protección contra Agua y Líquidos
         </h3>
       </div>
 
       <div class="p-4 sm:p-6 flex flex-col gap-3">
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">0</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">0</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Sin protección</span>
-              <span class="text-xs font-mono text-slate-400 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Sin ensayo</span>
+              <span class="text-xs font-mono text-slate-400 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Sin ensayo</span>
             </div>
             <p class="text-xs text-slate-300">Sin ninguna protección frente a la humedad o penetración de agua.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">1</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">1</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Goteo vertical</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">1 mm/min (10 min)</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">1 mm/min (10 min)</span>
             </div>
             <p class="text-xs text-slate-300">Goteo de agua cayendo en dirección vertical directamente sobre la cubierta sin provocar efectos perjudiciales.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">2</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">2</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Goteo inclinado (hasta 15°)</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">3 mm/min en 4 posiciones</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">3 mm/min en 4 posiciones</span>
             </div>
             <p class="text-xs text-slate-300">Goteo de agua cayendo cuando la estructura se encuentra inclinada hasta 15° respecto a su posición normal.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">3</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">3</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Agua pulverizada / Lluvia fina (±60°)</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Tubo oscilante (10 L/min)</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Tubo oscilante (10 L/min)</span>
             </div>
             <p class="text-xs text-slate-300">Agua pulverizada cayendo en un ángulo de hasta 60° a ambos lados de la vertical durante 10 minutos.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">4</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">4</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Salpicaduras en 360°</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Tubo oscilante ±180°</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Tubo oscilante ±180°</span>
             </div>
             <p class="text-xs text-slate-300">Agua salpicada contra la envolvente desde cualquier dirección e inclinación sin efectos perjudiciales.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">5</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">5</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Chorros de agua a baja presión</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Boquilla Ø 6.3 mm (12.5 L/min)</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Boquilla Ø 6.3 mm (12.5 L/min)</span>
             </div>
             <p class="text-xs text-slate-300">Chorros de agua proyectados por boquilla desde cualquier ángulo a una distancia de 2.5m a 3m durante 3 min.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#1e3a8a] flex items-center justify-center font-mono font-bold text-xl text-[#38bdf8]">6</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center font-mono font-bold text-xl text-[#60a5fa]">6</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="font-bold text-white text-sm">Chorros potentes / Mar encrespada</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Boquilla Ø 12.5 mm (100 L/min)</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Boquilla Ø 12.5 mm (100 L/min)</span>
             </div>
             <p class="text-xs text-slate-300">Chorros potentes de agua equivalentes a oleaje directo de mar o manguera de alta presión industrial.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#00f2fe]/50 flex items-center justify-center font-mono font-bold text-xl text-[#00f2fe]">7</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#3b82f6]/50 flex items-center justify-center font-mono font-bold text-xl text-[#3b82f6]">7</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-bold text-[#00f2fe] text-sm">Inmersión temporal (hasta 1 m / 30 min)</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Tanque a 1m de profundidad</span>
+              <span class="font-bold text-[#3b82f6] text-sm">Inmersión temporal (hasta 1 m / 30 min)</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Tanque a 1m de profundidad</span>
             </div>
             <p class="text-xs text-slate-300">Sumergimiento estandarizado en agua. No ingresa agua en cantidad dañina tras 30 minutos a 1 metro de profundidad.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#00f2fe]/50 flex items-center justify-center font-mono font-bold text-xl text-[#00f2fe]">8</div>
+        <div class="p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#3b82f6]/50 flex items-center justify-center font-mono font-bold text-xl text-[#3b82f6]">8</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-bold text-[#00f2fe] text-sm">Inmersión continua y prolongada</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">Sumergimiento bajo presión</span>
+              <span class="font-bold text-[#3b82f6] text-sm">Inmersión continua y prolongada</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">Sumergimiento bajo presión</span>
             </div>
             <p class="text-xs text-slate-300">Apto para sumergimiento continuo prolongado bajo las condiciones y profundidad especificadas por el fabricante (ej. 3m, 5m).</p>
           </div>
         </div>
 
-        <div class="p-4 bg-[#0f172a] border border-[#00f2fe]/50 rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
-          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#132042] border border-[#00f2fe] flex items-center justify-center font-mono font-bold text-xl text-[#00f2fe]">9K</div>
+        <div class="p-4 bg-[#0f172a] border border-[#3b82f6]/50 rounded-xl flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6">
+          <div class="w-12 h-12 shrink-0 rounded-lg bg-[#1e293b] border border-[#3b82f6] flex items-center justify-center font-mono font-bold text-xl text-[#3b82f6]">9K</div>
           <div class="flex-grow flex flex-col gap-1">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-bold text-[#00f2fe] text-sm">Lavado a alta presión y alta temperatura</span>
-              <span class="text-xs font-mono text-slate-300 bg-[#1c2d54] px-2.5 py-0.5 rounded border border-[#1e3a8a]">80-100 bar a 80 °C</span>
+              <span class="font-bold text-[#3b82f6] text-sm">Lavado a alta presión y alta temperatura</span>
+              <span class="text-xs font-mono text-slate-300 bg-[#334155] px-2.5 py-0.5 rounded border border-[#475569]">80-100 bar a 80 °C</span>
             </div>
             <p class="text-xs text-slate-300">Protección contra chorros de agua a alta presión (14-16 L/min) y temperatura extrema (80 °C) en ángulos de 0°, 30°, 60° y 90°.</p>
           </div>
@@ -422,19 +427,19 @@
   <section id="section-2" role="tabpanel" aria-labelledby="nav-btn-sec2" class="flex-col gap-6" hidden>
 
     <!-- Matriz de combinaciones -->
-    <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
-      <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
-        <h2 class="text-lg font-bold text-white flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-[#00f2fe]" aria-hidden="true"></span>
+    <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg shadow-black/20">
+      <div class="bg-[#334155] px-4 py-3.5 sm:px-6 sm:py-4 border-b border-[#475569]">
+        <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-[#3b82f6]" aria-hidden="true"></span>
           Matriz de Combinaciones y Letras Adicionales
         </h2>
         <p class="text-xs text-slate-400 mt-1">Hacé clic en cualquier código para copiarlo al portapapeles.</p>
       </div>
 
-      <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="ip-grid">
+      <div class="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="ip-grid">
 
-        <article class="ip-badge p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2" data-copy="IP20" role="button" tabindex="0" aria-label="Copiar código IP20">
-          <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+        <article class="ip-badge p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-2" data-copy="IP20" role="button" tabindex="0" aria-label="Copiar código IP20">
+          <div class="flex items-center justify-between border-b border-[#334155] pb-2">
             <span class="text-xl font-mono font-bold text-white">IP20</span>
             <span class="px-2 py-0.5 bg-slate-800 text-slate-300 font-mono text-[10px] rounded border border-slate-700">Uso Interior</span>
           </div>
@@ -444,10 +449,10 @@
           </p>
         </article>
 
-        <article class="ip-badge p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2" data-copy="IP44" role="button" tabindex="0" aria-label="Copiar código IP44">
-          <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+        <article class="ip-badge p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-2" data-copy="IP44" role="button" tabindex="0" aria-label="Copiar código IP44">
+          <div class="flex items-center justify-between border-b border-[#334155] pb-2">
             <span class="text-xl font-mono font-bold text-[#60a5fa]">IP44</span>
-            <span class="px-2 py-0.5 bg-[#1e3a8a]/40 text-[#60a5fa] font-mono text-[10px] rounded border border-[#1e3a8a]">Intemperie Leve</span>
+            <span class="px-2 py-0.5 bg-[#3b82f6]/10 text-[#60a5fa] font-mono text-[10px] rounded border border-[#3b82f6]/30">Intemperie Leve</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
             <strong>Protección:</strong> Objetos &gt; 1.0 mm y salpicaduras en 360°.<br>
@@ -455,10 +460,10 @@
           </p>
         </article>
 
-        <article class="ip-badge p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2" data-copy="IP54" role="button" tabindex="0" aria-label="Copiar código IP54">
-          <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+        <article class="ip-badge p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-2" data-copy="IP54" role="button" tabindex="0" aria-label="Copiar código IP54">
+          <div class="flex items-center justify-between border-b border-[#334155] pb-2">
             <span class="text-xl font-mono font-bold text-[#60a5fa]">IP54</span>
-            <span class="px-2 py-0.5 bg-[#1e3a8a]/40 text-[#60a5fa] font-mono text-[10px] rounded border border-[#1e3a8a]">Industrial Estándar</span>
+            <span class="px-2 py-0.5 bg-[#3b82f6]/10 text-[#60a5fa] font-mono text-[10px] rounded border border-[#3b82f6]/30">Industrial Estándar</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
             <strong>Protección:</strong> Protegido contra polvo y salpicaduras directas.<br>
@@ -466,10 +471,10 @@
           </p>
         </article>
 
-        <article class="ip-badge p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2" data-copy="IP65" role="button" tabindex="0" aria-label="Copiar código IP65">
-          <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
-            <span class="text-xl font-mono font-bold text-[#38bdf8]">IP65</span>
-            <span class="px-2 py-0.5 bg-[#38bdf8]/10 text-[#38bdf8] font-mono text-[10px] rounded border border-[#38bdf8]/30">Chorro Directo</span>
+        <article class="ip-badge p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-2" data-copy="IP65" role="button" tabindex="0" aria-label="Copiar código IP65">
+          <div class="flex items-center justify-between border-b border-[#334155] pb-2">
+            <span class="text-xl font-mono font-bold text-[#60a5fa]">IP65</span>
+            <span class="px-2 py-0.5 bg-[#3b82f6]/10 text-[#60a5fa] font-mono text-[10px] rounded border border-[#3b82f6]/30">Chorro Directo</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
             <strong>Protección:</strong> Estanco al polvo y chorros de manguera estándar.<br>
@@ -477,10 +482,10 @@
           </p>
         </article>
 
-        <article class="ip-badge p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2" data-copy="IP66" role="button" tabindex="0" aria-label="Copiar código IP66">
-          <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
-            <span class="text-xl font-mono font-bold text-[#38bdf8]">IP66</span>
-            <span class="px-2 py-0.5 bg-[#38bdf8]/10 text-[#38bdf8] font-mono text-[10px] rounded border border-[#38bdf8]/30">Marino / Oleaje</span>
+        <article class="ip-badge p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-2" data-copy="IP66" role="button" tabindex="0" aria-label="Copiar código IP66">
+          <div class="flex items-center justify-between border-b border-[#334155] pb-2">
+            <span class="text-xl font-mono font-bold text-[#60a5fa]">IP66</span>
+            <span class="px-2 py-0.5 bg-[#3b82f6]/10 text-[#60a5fa] font-mono text-[10px] rounded border border-[#3b82f6]/30">Marino / Oleaje</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
             <strong>Protección:</strong> Estanco al polvo y chorros potentes a alta presión.<br>
@@ -488,10 +493,10 @@
           </p>
         </article>
 
-        <article class="ip-badge p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2" data-copy="IP67" role="button" tabindex="0" aria-label="Copiar código IP67">
-          <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
-            <span class="text-xl font-mono font-bold text-[#00f2fe]">IP67</span>
-            <span class="px-2 py-0.5 bg-[#00f2fe]/10 text-[#00f2fe] font-mono text-[10px] rounded border border-[#00f2fe]/30">Inmersión Temp.</span>
+        <article class="ip-badge p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-2" data-copy="IP67" role="button" tabindex="0" aria-label="Copiar código IP67">
+          <div class="flex items-center justify-between border-b border-[#334155] pb-2">
+            <span class="text-xl font-mono font-bold text-[#3b82f6]">IP67</span>
+            <span class="px-2 py-0.5 bg-[#3b82f6]/15 text-[#3b82f6] font-mono text-[10px] rounded border border-[#3b82f6]/40">Inmersión Temp.</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
             <strong>Protección:</strong> Estanco al polvo e inmersión a 1m (30 min).<br>
@@ -499,10 +504,10 @@
           </p>
         </article>
 
-        <article class="ip-badge p-4 bg-[#0f172a] border border-[#1e3a8a] rounded-xl flex flex-col gap-2" data-copy="IP68" role="button" tabindex="0" aria-label="Copiar código IP68">
-          <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
-            <span class="text-xl font-mono font-bold text-[#00f2fe]">IP68</span>
-            <span class="px-2 py-0.5 bg-[#00f2fe]/10 text-[#00f2fe] font-mono text-[10px] rounded border border-[#00f2fe]/30">Subacuático</span>
+        <article class="ip-badge p-4 bg-[#0f172a] border border-[#334155] rounded-xl flex flex-col gap-2" data-copy="IP68" role="button" tabindex="0" aria-label="Copiar código IP68">
+          <div class="flex items-center justify-between border-b border-[#334155] pb-2">
+            <span class="text-xl font-mono font-bold text-[#3b82f6]">IP68</span>
+            <span class="px-2 py-0.5 bg-[#3b82f6]/15 text-[#3b82f6] font-mono text-[10px] rounded border border-[#3b82f6]/40">Subacuático</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
             <strong>Protección:</strong> Estanco al polvo e inmersión continua bajo presión.<br>
@@ -510,10 +515,10 @@
           </p>
         </article>
 
-        <article class="ip-badge p-4 bg-[#0f172a] border border-[#00f2fe]/50 rounded-xl flex flex-col gap-2" data-copy="IP69K" role="button" tabindex="0" aria-label="Copiar código IP69K">
-          <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
-            <span class="text-xl font-mono font-bold text-[#00f2fe]">IP69K</span>
-            <span class="px-2 py-0.5 bg-[#00f2fe]/20 text-[#00f2fe] font-mono text-[10px] rounded border border-[#00f2fe]/40">Sanitario / Lavado</span>
+        <article class="ip-badge p-4 bg-[#0f172a] border border-[#3b82f6]/50 rounded-xl flex flex-col gap-2" data-copy="IP69K" role="button" tabindex="0" aria-label="Copiar código IP69K">
+          <div class="flex items-center justify-between border-b border-[#334155] pb-2">
+            <span class="text-xl font-mono font-bold text-[#3b82f6]">IP69K</span>
+            <span class="px-2 py-0.5 bg-[#3b82f6]/20 text-[#3b82f6] font-mono text-[10px] rounded border border-[#3b82f6]/40">Sanitario / Lavado</span>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">
             <strong>Protección:</strong> Estanco al polvo y desinfección a 80 °C / 100 bar.<br>
@@ -527,9 +532,9 @@
     <!-- Letras adicionales + suplementarias -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
-        <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
-          <h3 class="text-base font-bold text-[#38bdf8] flex items-center gap-2">
+      <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg shadow-black/20">
+        <div class="bg-[#334155] px-4 py-3.5 sm:px-6 sm:py-4 border-b border-[#475569]">
+          <h3 class="text-base font-bold text-[#60a5fa] flex items-center gap-2">
             Letras Adicionales: Protección de Personas (A, B, C, D)
           </h3>
           <p class="text-xs text-slate-300 mt-1">
@@ -537,33 +542,33 @@
           </p>
         </div>
 
-        <div class="p-5 flex flex-col gap-3">
-          <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
-            <span class="px-2.5 py-1 bg-[#38bdf8] text-slate-950 font-mono font-bold text-xs rounded shrink-0">A</span>
+        <div class="p-4 sm:p-5 flex flex-col gap-3">
+          <div class="p-3 bg-[#0f172a] border border-[#334155] rounded-lg flex items-start gap-3">
+            <span class="px-2.5 py-1 bg-[#60a5fa] text-[#0f172a] font-mono font-bold text-xs rounded shrink-0">A</span>
             <div class="text-xs text-slate-200">
               <strong class="text-white block">Protección con el dorso de la mano</strong>
               Impide el acceso a partes peligrosas con el dorso de la mano (Sonda esférica Ø 50 mm).
             </div>
           </div>
 
-          <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
-            <span class="px-2.5 py-1 bg-[#38bdf8] text-slate-950 font-mono font-bold text-xs rounded shrink-0">B</span>
+          <div class="p-3 bg-[#0f172a] border border-[#334155] rounded-lg flex items-start gap-3">
+            <span class="px-2.5 py-1 bg-[#60a5fa] text-[#0f172a] font-mono font-bold text-xs rounded shrink-0">B</span>
             <div class="text-xs text-slate-200">
               <strong class="text-white block">Protección con el dedo de prueba</strong>
               Impide el acceso a partes peligrosas con el dedo articulado estandarizado (Ø 12 mm x 80 mm).
             </div>
           </div>
 
-          <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
-            <span class="px-2.5 py-1 bg-[#38bdf8] text-slate-950 font-mono font-bold text-xs rounded shrink-0">C</span>
+          <div class="p-3 bg-[#0f172a] border border-[#334155] rounded-lg flex items-start gap-3">
+            <span class="px-2.5 py-1 bg-[#60a5fa] text-[#0f172a] font-mono font-bold text-xs rounded shrink-0">C</span>
             <div class="text-xs text-slate-200">
               <strong class="text-white block">Protección con una herramienta</strong>
               Impide el acceso a partes peligrosas con una herramienta rígida (Varilla Ø 2.5 mm).
             </div>
           </div>
 
-          <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
-            <span class="px-2.5 py-1 bg-[#38bdf8] text-slate-950 font-mono font-bold text-xs rounded shrink-0">D</span>
+          <div class="p-3 bg-[#0f172a] border border-[#334155] rounded-lg flex items-start gap-3">
+            <span class="px-2.5 py-1 bg-[#60a5fa] text-[#0f172a] font-mono font-bold text-xs rounded shrink-0">D</span>
             <div class="text-xs text-slate-200">
               <strong class="text-white block">Protección con un alambre</strong>
               Impide el acceso a partes peligrosas introduciendo un alambre fino (Alambre Ø 1.0 mm).
@@ -572,8 +577,8 @@
         </div>
       </div>
 
-      <div class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20">
-        <div class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
+      <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg shadow-black/20">
+        <div class="bg-[#334155] px-4 py-3.5 sm:px-6 sm:py-4 border-b border-[#475569]">
           <h3 class="text-base font-bold text-[#60a5fa] flex items-center gap-2">
             Letras Suplementarias: Condiciones del Ensayo (H, M, S, W, K)
           </h3>
@@ -582,41 +587,41 @@
           </p>
         </div>
 
-        <div class="p-5 flex flex-col gap-3">
-          <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
-            <span class="px-2.5 py-1 bg-[#60a5fa] text-slate-950 font-mono font-bold text-xs rounded shrink-0">H</span>
+        <div class="p-4 sm:p-5 flex flex-col gap-3">
+          <div class="p-3 bg-[#0f172a] border border-[#334155] rounded-lg flex items-start gap-3">
+            <span class="px-2.5 py-1 bg-[#60a5fa] text-[#0f172a] font-mono font-bold text-xs rounded shrink-0">H</span>
             <div class="text-xs text-slate-200">
               <strong class="text-white block">Aparatos de Alta Tensión</strong>
               Indica que el equipo está diseñado para operar en instalaciones de Alta Tensión.
             </div>
           </div>
 
-          <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
-            <span class="px-2.5 py-1 bg-[#60a5fa] text-slate-950 font-mono font-bold text-xs rounded shrink-0">M</span>
+          <div class="p-3 bg-[#0f172a] border border-[#334155] rounded-lg flex items-start gap-3">
+            <span class="px-2.5 py-1 bg-[#60a5fa] text-[#0f172a] font-mono font-bold text-xs rounded shrink-0">M</span>
             <div class="text-xs text-slate-200">
               <strong class="text-white block">Probado en movimiento durante el ensayo de agua</strong>
               Las partes móviles del equipo (ejes, rotores, motores) estuvieron en movimiento activo durante la prueba.
             </div>
           </div>
 
-          <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
-            <span class="px-2.5 py-1 bg-[#60a5fa] text-slate-950 font-mono font-bold text-xs rounded shrink-0">S</span>
+          <div class="p-3 bg-[#0f172a] border border-[#334155] rounded-lg flex items-start gap-3">
+            <span class="px-2.5 py-1 bg-[#60a5fa] text-[#0f172a] font-mono font-bold text-xs rounded shrink-0">S</span>
             <div class="text-xs text-slate-200">
               <strong class="text-white block">Probado en reposo / estacionario</strong>
               Las partes móviles del equipo permanecieron completamente inmóviles durante el ensayo de agua.
             </div>
           </div>
 
-          <div class="p-3 bg-[#0f172a] border border-[#1e3a8a] rounded-lg flex items-start gap-3">
-            <span class="px-2.5 py-1 bg-[#60a5fa] text-slate-950 font-mono font-bold text-xs rounded shrink-0">W</span>
+          <div class="p-3 bg-[#0f172a] border border-[#334155] rounded-lg flex items-start gap-3">
+            <span class="px-2.5 py-1 bg-[#60a5fa] text-[#0f172a] font-mono font-bold text-xs rounded shrink-0">W</span>
             <div class="text-xs text-slate-200">
               <strong class="text-white block">Condiciones meteorológicas especificadas</strong>
               Apto para uso en condiciones atmosféricas específicas acordadas entre usuario y fabricante.
             </div>
           </div>
 
-          <div class="p-3 bg-[#0f172a] border border-[#00f2fe] rounded-lg flex items-start gap-3">
-            <span class="px-2.5 py-1 bg-[#00f2fe] text-slate-950 font-mono font-bold text-xs rounded shrink-0">K</span>
+          <div class="p-3 bg-[#0f172a] border border-[#3b82f6] rounded-lg flex items-start gap-3">
+            <span class="px-2.5 py-1 bg-[#3b82f6] text-[#0f172a] font-mono font-bold text-xs rounded shrink-0">K</span>
             <div class="text-xs text-slate-200">
               <strong class="text-white block">Requisito de protección especial</strong>
               Resistencia a chorros de agua a presión extrema.
@@ -736,7 +741,7 @@
       toast.id = 'mini-toast';
       toast.setAttribute('role', 'status');
       toast.setAttribute('aria-live', 'polite');
-      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-slate-900 border border-[#38bdf8] text-xs font-semibold text-[#38bdf8] shadow-2xl transition-all duration-200';
+      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-[#1e293b] border border-[#3b82f6] text-xs font-semibold text-[#60a5fa] shadow-2xl transition-all duration-200';
       document.body.appendChild(toast);
     }
     toast.textContent = text;

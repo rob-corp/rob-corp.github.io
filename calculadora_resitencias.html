@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#090d16">
+<meta name="theme-color" content="#0f172a">
 <title>Calculadora de Resistencias</title>
 <link rel="icon" type="image/svg+xml" href="iconos/omega.svg">
 
@@ -17,8 +17,21 @@
     theme: {
       extend: {
         colors: {
-          slate: { 850: '#131e2e', 950: '#090d16' },
-          cyan: { 500: '#06b6d4', 600: '#0891b2' }
+          slate: {
+            600: '#475569',
+            700: '#334155',
+            800: '#334155',
+            850: '#1e293b',
+            900: '#1e293b',
+            950: '#0f172a'
+          },
+          cyan: {
+            300: '#93c5fd',
+            400: '#60a5fa',
+            500: '#3b82f6',
+            600: '#2563eb',
+            700: '#1d4ed8'
+          }
         }
       }
     }
@@ -32,17 +45,17 @@
   /* Foco visible SOLO con teclado (sin recuadro al clic/tap) */
   :focus { outline: none; }
   :focus-visible {
-    outline: 2px solid #06b6d4;
+    outline: 2px solid #3b82f6;
     outline-offset: 2px;
     border-radius: 8px;
   }
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #090d16; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #475569; }
-  html { scrollbar-color: #334155 #090d16; scrollbar-width: thin; }
+  html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
 
   /* Toasts */
   .toast-popup { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -51,7 +64,7 @@
 
   /* Selección de color */
   .color-pill-selected {
-    box-shadow: 0 0 0 2px #ffffff, 0 0 12px rgba(6, 182, 212, 0.8) !important;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 12px rgba(59, 130, 246, 0.8) !important;
     border-color: #ffffff !important;
     transform: scale(1.02);
     z-index: 10;
@@ -63,7 +76,6 @@
     -webkit-appearance: none; appearance: none; margin: 0;
   }
   input[type=number] { -moz-appearance: textfield; appearance: textfield; }
-  select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -88,7 +100,7 @@
 <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
     <a href="index.html" class="flex items-center space-x-3 group p-1 rounded-lg min-w-0">
-      <img src="iconos/omega.svg" alt="Logo Ω" class="w-7 h-7 object-contain transition-transform group-hover:scale-110 duration-200 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)] flex-shrink-0">
+      <img src="iconos/omega.svg" alt="Logo Ω" class="w-7 h-7 object-contain transition-transform group-hover:scale-110 duration-200 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)] flex-shrink-0">
       <h1 class="text-lg sm:text-2xl font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors truncate">
         Calculadora de Resistencias
       </h1>
@@ -236,33 +248,58 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+      <!-- VALOR DESEADO -->
       <div class="sm:col-span-5 space-y-1">
         <label for="input-reverse-value" class="text-[11px] font-extrabold text-slate-400 uppercase">Valor Deseado</label>
-        <input type="number" id="input-reverse-value" placeholder="Ej. 1.1 o 12" step="any" min="0.01" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-white focus:border-cyan-500 transition-all">
+        <input type="number" id="input-reverse-value" placeholder="Ej. 1.1 o 12" step="any" min="0.01" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-2 text-xs font-mono text-white focus:border-cyan-500 transition-all">
       </div>
 
-      <div class="sm:col-span-3 space-y-1">
+      <!-- DESPLEGABLE REDONDEADO: UNIDAD -->
+      <div class="sm:col-span-3 space-y-1 relative">
         <label for="select-reverse-unit" class="text-[11px] font-extrabold text-slate-400 uppercase">Unidad</label>
-        <select id="select-reverse-unit" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white focus:border-cyan-500 transition-all">
+        <select id="select-reverse-unit" class="hidden">
           <option value="1">Ω (Ohmios)</option>
           <option value="1000" selected>kΩ (Kiloohmios)</option>
           <option value="1000000">MΩ (Megaohmios)</option>
           <option value="1000000000">GΩ (Gigaohmios)</option>
         </select>
+        <button type="button" id="btn-dropdown-unit" class="w-full bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-cyan-500 rounded-2xl px-3.5 py-2 text-xs font-mono text-white flex items-center justify-between transition-all shadow-sm">
+          <span id="label-dropdown-unit">kΩ (Kiloohmios)</span>
+          <i class="fa-solid fa-chevron-down text-slate-400 text-[10px] transition-transform duration-200" id="icon-dropdown-unit"></i>
+        </button>
+        <!-- Menú flotante estilo tarjeta con bordes muy redondeados -->
+        <div id="menu-dropdown-unit" class="hidden absolute top-full left-0 right-0 mt-1.5 z-50 bg-slate-900 border border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-1">
+          <button type="button" data-value="1" class="unit-opt w-full text-left px-3 py-2 text-xs font-mono text-slate-200 hover:bg-cyan-600 hover:text-white rounded-xl transition-colors">Ω (Ohmios)</button>
+          <button type="button" data-value="1000" class="unit-opt w-full text-left px-3 py-2 text-xs font-mono text-cyan-300 font-bold bg-cyan-950/80 border border-cyan-500/30 rounded-xl transition-colors">kΩ (Kiloohmios)</button>
+          <button type="button" data-value="1000000" class="unit-opt w-full text-left px-3 py-2 text-xs font-mono text-slate-200 hover:bg-cyan-600 hover:text-white rounded-xl transition-colors">MΩ (Megaohmios)</button>
+          <button type="button" data-value="1000000000" class="unit-opt w-full text-left px-3 py-2 text-xs font-mono text-slate-200 hover:bg-cyan-600 hover:text-white rounded-xl transition-colors">GΩ (Gigaohmios)</button>
+        </div>
       </div>
 
-      <div class="sm:col-span-2 space-y-1">
+      <!-- DESPLEGABLE REDONDEADO: TOLERANCIA -->
+      <div class="sm:col-span-2 space-y-1 relative">
         <label for="select-reverse-tol" class="text-[11px] font-extrabold text-slate-400 uppercase">Tolerancia</label>
-        <select id="select-reverse-tol" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white focus:border-cyan-500 transition-all">
+        <select id="select-reverse-tol" class="hidden">
           <option value="1">±1%</option>
           <option value="2">±2%</option>
           <option value="5" selected>±5%</option>
           <option value="10">±10%</option>
         </select>
+        <button type="button" id="btn-dropdown-tol" class="w-full bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-cyan-500 rounded-2xl px-3.5 py-2 text-xs font-mono text-white flex items-center justify-between transition-all shadow-sm">
+          <span id="label-dropdown-tol">±5%</span>
+          <i class="fa-solid fa-chevron-down text-slate-400 text-[10px] transition-transform duration-200" id="icon-dropdown-tol"></i>
+        </button>
+        <!-- Menú flotante estilo tarjeta con bordes muy redondeados -->
+        <div id="menu-dropdown-tol" class="hidden absolute top-full left-0 right-0 mt-1.5 z-50 bg-slate-900 border border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-1">
+          <button type="button" data-value="1" class="tol-opt w-full text-left px-3 py-2 text-xs font-mono text-slate-200 hover:bg-cyan-600 hover:text-white rounded-xl transition-colors">±1%</button>
+          <button type="button" data-value="2" class="tol-opt w-full text-left px-3 py-2 text-xs font-mono text-slate-200 hover:bg-cyan-600 hover:text-white rounded-xl transition-colors">±2%</button>
+          <button type="button" data-value="5" class="tol-opt w-full text-left px-3 py-2 text-xs font-mono text-cyan-300 font-bold bg-cyan-950/80 border border-cyan-500/30 rounded-xl transition-colors">±5%</button>
+          <button type="button" data-value="10" class="tol-opt w-full text-left px-3 py-2 text-xs font-mono text-slate-200 hover:bg-cyan-600 hover:text-white rounded-xl transition-colors">±10%</button>
+        </div>
       </div>
 
       <div class="sm:col-span-2">
-        <button type="button" id="btn-reverse-search" class="w-full bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold py-2 rounded-xl text-xs transition-all shadow-md active:scale-95">
+        <button type="button" id="btn-reverse-search" class="w-full bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold py-2 rounded-2xl text-xs transition-all shadow-md active:scale-95">
           Calcular
         </button>
       </div>
@@ -338,6 +375,82 @@ const dom = {
   btnApply:      $('btn-apply-nearest'),
   toastBox:      $('toast-container')
 };
+
+/* =========================================================
+   LÓGICA DE DESPLEGABLES PERSONALIZADOS REDONDEADOS
+   ========================================================= */
+function initCustomDropdowns() {
+  const setupDropdown = (btnId, menuId, iconId, labelId, selectId, optClass) => {
+    const btn = $(btnId);
+    const menu = $(menuId);
+    const icon = $(iconId);
+    const label = $(labelId);
+    const select = $(selectId);
+    if (!btn || !menu) return;
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Cerrar otros desplegables abiertos
+      document.querySelectorAll('[id^="menu-dropdown-"]').forEach(m => {
+        if (m !== menu) m.classList.add('hidden');
+      });
+      document.querySelectorAll('[id^="icon-dropdown-"]').forEach(i => {
+        if (i !== icon) i.classList.remove('rotate-180');
+      });
+
+      const isHidden = menu.classList.toggle('hidden');
+      icon.classList.toggle('rotate-180', !isHidden);
+    });
+
+    menu.querySelectorAll('.' + optClass).forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const val = opt.dataset.value;
+        select.value = val;
+        label.textContent = opt.textContent.trim();
+        
+        // Marcar opción activa con tono cian
+        menu.querySelectorAll('.' + optClass).forEach(o => {
+          o.className = `${optClass} w-full text-left px-3 py-2 text-xs font-mono text-slate-200 hover:bg-cyan-600 hover:text-white rounded-xl transition-colors`;
+        });
+        opt.className = `${optClass} w-full text-left px-3 py-2 text-xs font-mono text-cyan-300 font-bold bg-cyan-950/80 border border-cyan-500/30 rounded-xl transition-colors`;
+
+        menu.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+      });
+    });
+  };
+
+  setupDropdown('btn-dropdown-unit', 'menu-dropdown-unit', 'icon-dropdown-unit', 'label-dropdown-unit', 'select-reverse-unit', 'unit-opt');
+  setupDropdown('btn-dropdown-tol', 'menu-dropdown-tol', 'icon-dropdown-tol', 'label-dropdown-tol', 'select-reverse-tol', 'tol-opt');
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('[id^="menu-dropdown-"]').forEach(m => m.classList.add('hidden'));
+    document.querySelectorAll('[id^="icon-dropdown-"]').forEach(i => i.classList.remove('rotate-180'));
+  });
+}
+
+function updateCustomDropdownUI() {
+  const sync = (selectId, labelId, menuId, optClass) => {
+    const select = $(selectId);
+    const label = $(labelId);
+    const menu = $(menuId);
+    if (!select || !label || !menu) return;
+
+    const currentVal = select.value;
+    menu.querySelectorAll('.' + optClass).forEach(opt => {
+      if (opt.dataset.value === currentVal) {
+        label.textContent = opt.textContent.trim();
+        opt.className = `${optClass} w-full text-left px-3 py-2 text-xs font-mono text-cyan-300 font-bold bg-cyan-950/80 border border-cyan-500/30 rounded-xl transition-colors`;
+      } else {
+        opt.className = `${optClass} w-full text-left px-3 py-2 text-xs font-mono text-slate-200 hover:bg-cyan-600 hover:text-white rounded-xl transition-colors`;
+      }
+    });
+  };
+
+  sync('select-reverse-unit', 'label-dropdown-unit', 'menu-dropdown-unit', 'unit-opt');
+  sync('select-reverse-tol', 'label-dropdown-tol', 'menu-dropdown-tol', 'tol-opt');
+}
 
 /* =========================================================
    RENDER COLUMNAS
@@ -621,6 +734,7 @@ function setResistorFromOhms(targetOhms, requestedTol = null) {
     selectedBands.multiplier = getKeyByMultiplier(multVal);
   }
 
+  updateCustomDropdownUI();
   renderColumns();
 }
 
@@ -712,6 +826,7 @@ function showToast(msg, type = 'success') {
 /* =========================================================
    INIT
    ========================================================= */
+initCustomDropdowns();
 setBandMode(4);
 
 })();

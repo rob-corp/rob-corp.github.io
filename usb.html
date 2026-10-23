@@ -3,73 +3,114 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f172a">
 <title>Puerto USB</title>
+<link rel="icon" href="iconos/usb.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-:root{--bg:#eef1f4;--panel:#fff;--ink:#14202b;--mute:#53636f;--line:#cfd7de;--acc:#1f5fbf;--accbg:#e3edfb;--warn:#a4410f;--warnbg:#fbece3;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1821;--panel:#15232f;--ink:#e6edf3;--mute:#9aaab6;--line:#2a3b49;--acc:#6aa3f5;--accbg:#1a2f4a;--warn:#f0a070;--warnbg:#3a2418}}
-:root[data-theme="dark"]{--bg:#0e1821;--panel:#15232f;--ink:#e6edf3;--mute:#9aaab6;--line:#2a3b49;--acc:#6aa3f5;--accbg:#1a2f4a;--warn:#f0a070;--warnbg:#3a2418}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*,*::before,*::after{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "IBM Plex Sans",system-ui,sans-serif}
-.wrap{max-width:860px;margin:0 auto;padding:0 18px}
-.topbar{border-bottom:1px solid var(--line)}
-.home{display:flex;align-items:center;gap:12px;width:fit-content;padding:14px 0;color:var(--ink);text-decoration:none;-webkit-tap-highlight-color:transparent;user-select:none}
-.home:focus{outline:none}
-.home:focus-visible{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}
-.home h1{font-size:clamp(19px,4.6vw,26px);line-height:1.2;margin:0;font-weight:600;letter-spacing:-.01em}
-.logo{width:38px;height:38px;flex:none;object-fit:contain;-webkit-user-drag:none}
-header{padding:22px 0 8px}
-header p.lead{max-width:62ch;color:var(--mute);margin:0 0 14px}
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;gap:4px;overflow-x:auto}
-nav button{font:500 15px "IBM Plex Sans",sans-serif;padding:13px 14px;min-height:44px;border:0;border-bottom:3px solid transparent;background:none;color:var(--mute);cursor:pointer;white-space:nowrap}
-nav button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--acc)}
-button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-section{display:none;padding:26px 0 48px}
-section.on{display:block}
-h2{font-size:24px;margin:0 0 6px;font-weight:600}
-h3{font-size:18px;margin:30px 0 8px;font-weight:600}
-p{margin:0 0 14px;max-width:70ch}
-.sub{color:var(--mute);margin-bottom:20px}
-.tw{overflow-x:auto;margin:10px 0 18px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
-table{border-collapse:collapse;width:100%;min-width:480px;font-size:14.5px}
-th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-weight:600;background:var(--accbg)}
-tr:last-child td{border-bottom:0}
-code,.m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
-.note{border-left:4px solid var(--acc);background:var(--accbg);padding:11px 14px;border-radius:0 8px 8px 0;margin:16px 0;max-width:70ch}
-.note.warn{border-left-color:var(--warn);background:var(--warnbg)}
-ul,ol{padding-left:20px;max-width:70ch;margin:0 0 14px}
-li{margin-bottom:5px}
-.models{display:flex;flex-wrap:wrap;gap:16px;margin:12px 0}
-.models figure{margin:0;flex:1 1 300px;max-width:420px;border-radius:10px;background:#2b2b2b;padding:12px 8px 10px}
-.models svg{width:100%;height:auto;display:block}
-.models figcaption{font-weight:500;font-size:14px;text-align:center;margin-top:6px;color:#e8e8e8}
-.nm{fill:#d9d9d9;text-anchor:middle;font-family:"IBM Plex Sans",sans-serif;font-weight:500}
-.nk{fill:#14181c}
-.kl{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;margin:6px 0 16px}
-.kl span{display:flex;align-items:center;gap:6px}
-.kl i,.dt{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.35);flex:none}
-.dt{margin-right:8px;vertical-align:-1px}
-@media (max-width:600px){
-body{font-size:15.5px;line-height:1.6}
-.wrap{padding:0 14px}
-.home{gap:10px;padding:12px 0}
-.logo{width:32px;height:32px}
-header{padding:16px 0 4px}
-nav button{padding:10px 12px;font-size:14.5px}
-section{padding:20px 0 36px}
-h2{font-size:21px}
-h3{font-size:17px;margin-top:24px}
-p,ul,ol,.note{max-width:none}
-.models figure{flex-basis:100%;max-width:none}
-table{font-size:13.5px}
-th,td{padding:8px 10px}
+/* Esquema de colores alineado con index.html (slate + azul) */
+:root {
+    --bg: #0f172a; 
+    --panel: #1e293b; 
+    --ink: #f8fafc; 
+    --mute: #94a3b8; 
+    --line: #334155; 
+    --acc: #3b82f6; 
+    --accbg: #334155; 
+    --warn: #f0a070; 
+    --warnbg: #3a2418;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-@media (max-width:360px){.home h1{font-size:18px}}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 "IBM Plex Sans", system-ui, sans-serif; }
+
+/* Ancho ampliado a 1200px para aprovechar los laterales */
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 18px; }
+
+.topbar { border-bottom: 1px solid var(--line); background: #0f172a; }
+.home { display: flex; align-items: center; gap: 12px; width: fit-content; padding: 14px 0; color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; user-select: none; outline: none !important; }
+.home h1 { font-size: clamp(19px, 4.6vw, 26px); line-height: 1.2; margin: 0; font-weight: 600; letter-spacing: -.01em; }
+.logo { width: 38px; height: 38px; flex: none; object-fit: contain; -webkit-user-drag: none; }
+
+header { padding: 22px 0 8px; }
+header p.lead { max-width: 80ch; color: var(--mute); margin: 0 0 14px; font-size: 1.1em; }
+
+nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+nav .wrap::-webkit-scrollbar { display: none; }
+nav button { font: 500 15px "IBM Plex Sans", sans-serif; padding: 13px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--mute); cursor: pointer; white-space: nowrap; outline: none !important; -webkit-tap-highlight-color: transparent; transition: color 0.2s, border-color 0.2s; }
+nav button[aria-selected=true] { color: var(--acc); border-bottom-color: var(--acc); }
+nav button:hover { color: var(--ink); }
+
+section { display: none; padding: 26px 0 48px; animation: fadeIn 0.3s ease; }
+section.on { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+h2 { font-size: 26px; margin: 0 0 6px; font-weight: 600; color: #f8fafc; }
+h3 { font-size: 19px; margin: 30px 0 12px; font-weight: 600; color: var(--acc); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+p { margin: 0 0 14px; max-width: 85ch; }
+.sub { color: var(--mute); margin-bottom: 20px; font-size: 1.05em; }
+
+.tw { overflow-x: auto; margin: 10px 0 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 15px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; background: var(--accbg); color: var(--acc); }
+tr:hover td { background: rgba(255,255,255,0.03); }
+tr:last-child td { border-bottom: 0; }
+code, .m { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .92em; color: #60a5fa; background: rgba(96, 165, 250, 0.1); padding: 2px 6px; border-radius: 4px; }
+
+.note { border-left: 4px solid var(--acc); background: var(--accbg); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 20px 0; max-width: 85ch; line-height: 1.6; }
+.note.warn { border-left-color: var(--warn); background: var(--warnbg); color: #ffd6c2; }
+ul, ol { padding-left: 24px; max-width: 85ch; margin: 0 0 14px; }
+li { margin-bottom: 8px; }
+
+.models { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin: 20px 0; }
+.models figure { margin: 0; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+.models svg { width: 100%; max-width: 280px; height: auto; display: block; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
+.models figcaption { font-weight: 500; font-size: 15px; text-align: center; margin-top: 16px; color: var(--ink); border-top: 1px dashed var(--line); padding-top: 12px; width: 100%; }
+
+/* REGLAS RESPONSIVE */
+@media (max-width: 1024px) {
+    .wrap { padding: 0 20px; }
+    .models { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+}
+
+@media (max-width: 768px) {
+    .wrap { padding: 0 16px; }
+    header p.lead, p, .note, ul, ol { max-width: 100%; }
+    .models { grid-template-columns: 1fr; }
+    .models figure { padding: 16px; }
+    .models svg { max-width: 240px; }
+    table { font-size: 14px; min-width: 520px; }
+    th, td { padding: 10px 12px; }
+}
+
+@media (max-width: 600px) {
+    body { font-size: 15px; line-height: 1.6; }
+    .wrap { padding: 0 14px; }
+    .home { gap: 10px; padding: 12px 0; }
+    .logo { width: 32px; height: 32px; }
+    header { padding: 16px 0 4px; }
+    nav button { padding: 10px 12px; font-size: 14px; min-height: 40px; }
+    section { padding: 20px 0 36px; }
+    h2 { font-size: 22px; }
+    h3 { font-size: 17.5px; margin-top: 24px; }
+    .note { padding: 12px 14px; }
+}
+
+@media (max-width: 420px) {
+    .home h1 { font-size: 18px; }
+    header p.lead { font-size: 0.98em; }
+    nav button { padding: 8px 10px; font-size: 13.5px; }
+    table { font-size: 13px; min-width: 460px; }
+    th, td { padding: 8px 10px; }
+    .models figure { padding: 12px; }
+    .models svg { max-width: 200px; }
+}
 </style>
 </head>
 <!-- Google tag (gtag.js) -->
@@ -127,7 +168,6 @@ th,td{padding:8px 10px}
 <tr><td>Micro-B</td><td>5 (2.0) / 10 (3.x)</td><td>No</td><td>10.000</td><td>En retirada</td></tr>
 <tr><td>USB-C</td><td>24</td><td>Sí</td><td>10.000</td><td>Estándar actual</td></tr>
 </table></div>
-<p>Las pestañas siguientes muestran el modelo de cada conector, la función de cada pin y sus capacidades de velocidad y potencia.</p>
 </section>
 
 <section id="a"></section>
@@ -151,99 +191,103 @@ th,td{padding:8px 10px}
 </table></div>
 <h3>Cómo se negocia</h3>
 <ol>
-<li><b>Detección:</b> el source presenta una resistencia Rp en CC; el sink, una Rd de 5,1 kΩ. Al medir la tensión resultante, ambos detectan que hay un equipo conectado, la orientación del plug y, por el valor de Rp (80 µA, 180 µA o 330 µA), la corriente de 5 V disponible: por defecto, 1,5 A o 3 A.</li>
+<li><b>Detección:</b> el source presenta una resistencia Rp en CC; el sink, una Rd de 5,1 kΩ. Al medir la tensión resultante, ambos detectan que hay un equipo conectado, la orientación del plug y la corriente de 5 V disponible.</li>
 <li><b>Capacidades:</b> el source envía por CC la lista de perfiles que ofrece (Source Capabilities).</li>
 <li><b>Solicitud:</b> el sink elige uno y lo pide (Request).</li>
-<li><b>Aceptación:</b> el source acepta, ajusta su salida en VBUS y avisa que está listo (PS_RDY). Si el sink no responde, queda en 5 V.</li>
+<li><b>Aceptación:</b> el source acepta, ajusta su salida en VBUS y avisa que está listo (PS_RDY).</li>
 </ol>
-<p>Los mensajes usan codificación BMC a unos 300 kbps. En PD 3.0 se añade <b>PPS</b> (Programmable Power Supply): tensión ajustable en pasos de 20 mV y corriente limitada por el source, útil para carga directa de baterías.</p>
-<h3>Cables y pin VCONN</h3>
-<ul>
-<li>Los cables que soportan más de 3 A o velocidades superiores a USB 2.0 llevan un chip <b>e-marker</b> que informa su capacidad. Ese chip se alimenta con 5 V (VCONN) por el CC que no se usa para comunicar.</li>
-<li>Los cables USB-C solo de carga o USB 2.0 conectan únicamente VBUS, GND, CC y el par D+/D−.</li>
-<li>Para 240 W se requiere un cable certificado EPR de 48 V y 5 A.</li>
-</ul>
-<div class="note warn"><b>Cables sin certificar.</b> Un cable USB-C que no cumple la especificación (por ejemplo, con la resistencia de CC incorrecta) puede pedir más corriente de la que soporta y recalentarse. Con potencias altas conviene usar cables certificados o del propio fabricante.</div>
-<div class="note">USB-A, USB-B, Mini y Micro no negocian PD. Los sistemas de carga rápida sobre USB-A (Quick Charge y similares) son propietarios y usan D+/D− con otro protocolo.</div>
+<div class="note warn"><b>Cables sin certificar.</b> Un cable USB-C que no cumple la especificación puede pedir más corriente de la que soporta y recalentarse. Con potencias altas conviene usar cables certificados.</div>
 </section>
 
 </main>
 
 <script>
 (function(){
-var CS="#e3e2dc",ST="#6c6c6a",GO="#f2b705";
-function R(x,y,w,h,r,f,s,sw){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+r+'" fill="'+f+'"'+(s?' stroke="'+s+'" stroke-width="'+(sw||2)+'"':'')+'/>';}
-function Pa(d,f,s,sw){return '<path d="'+d+'" fill="'+f+'"'+(s?' stroke="'+s+'" stroke-width="'+(sw||2)+'"':'')+'/>';}
-function Tx(x,y,t,k,z){return '<text class="nm'+(k?' nk':'')+'" x="'+x+'" y="'+y+'" font-size="'+(z||15)+'">'+t+'</text>';}
-function Gc(x,y,w,h){return R(x,y,w,h,1,GO);}
-function gr(cs,y,w,h){return cs.map(function(c){return Gc(c-w/2,y,w,h)}).join('');}
-function lb(cs,ls,y,k,z){return cs.map(function(c,i){return Tx(c,y,ls[i],k,z)}).join('');}
-var F4=[104,148,192,236],B5=[94,132,170,208,246],C5=[118,144,170,196,222];
-function Ap(blue){var s=blue?R(40,40,260,102,10,"#6b6b6b")+R(62,56,216,70,12,"#1c8fd6","#f5f5f5",3):R(40,40,260,102,14,CS,ST,2.5)+R(62,62,216,58,10,"#fff",ST,2)+R(66,66,208,30,6,"#a8a8a8");
-if(blue)return s+gr(B5,86,10,5)+lb(B5,["5","6","7","8","9"],80,1,13)+gr(F4,104,16,6)+lb(F4,["4","3","2","1"],120,1,14);
-return s+gr(F4,90,16,6)+lb(F4,["4","3","2","1"],84,1,15);}
-function Ar(){return R(40,40,260,102,14,CS,ST,2.5)+R(56,52,228,78,8,"#0a6fa8")+R(68,60,204,62,6,"#1c8fd6")+gr(B5,86,10,5)+lb(B5,["9","8","7","6","5"],80,1,13)+gr(F4,102,16,6)+lb(F4,["1","2","3","4"],118,1,14);}
-function Bp(dy,blue){var s='';
-if(blue)s+=R(116,2,108,44,6,CS,ST,2)+R(124,8,92,32,3,"#1c8fd6")+gr([138,154,170,186,202],30,9,6)+lb([138,154,170,186,202],["9","8","7","6","5"],26,1,12);
-return s+'<g transform="translate(0,'+dy+')">'+Pa("M128 20H212L236 44V152Q236 164 224 164H116Q104 164 104 152V44Z",CS,ST,2.5)+Pa("M138 34H202L222 54V150H118V54Z",blue?"#1c8fd6":"#fff",ST,2)+R(136,70,68,58,2,"#aeb0b3","#777",1.5)+gr([145,195],65,14,6)+gr([145,195],128,14,6)+lb([145,195],["1","2"],56,1)+lb([145,195],["4","3"],148,1)+'</g>';}
-function Mn(){return lb([110,140,170,200,230],["5","4","3","2","1"],50,0,15)+Pa("M86 58H254Q276 58 276 80V108Q276 120 266 130L236 160Q232 164 226 164H114Q108 164 104 160L74 130Q64 120 64 108V80Q64 58 86 58Z",CS,ST,2.5)+Pa("M92 76H248V118Q248 124 242 130L228 146H112L98 130Q92 124 92 118Z","#858585","#f5f5f5",2)+gr([110,140,170,200,230],72,14,6);}
-function mc(x,w,ch,e){var y=70,h=58,d;
-d=ch?'M'+(x+12)+' '+y+'H'+(x+w-12)+'Q'+(x+w)+' '+y+' '+(x+w)+' '+(y+12)+'V'+(y+h-26)+'L'+(x+w-26)+' '+(y+h)+'H'+(x+26)+'L'+x+' '+(y+h-26)+'V'+(y+12)+'Q'+x+' '+y+' '+(x+12)+' '+y+'Z':'M'+(x+12)+' '+y+'H'+(x+w-12)+'Q'+(x+w)+' '+y+' '+(x+w)+' '+(y+12)+'V'+(y+h-12)+'Q'+(x+w)+' '+(y+h)+' '+(x+w-12)+' '+(y+h)+'H'+(x+12)+'Q'+x+' '+(y+h)+' '+x+' '+(y+h-12)+'V'+(y+12)+'Q'+x+' '+y+' '+(x+12)+' '+y+'Z';
-return (e?R(x+10,y-8,16,10,2,CS,ST,2)+R(x+w-26,y-8,16,10,2,CS,ST,2):'')+Pa(d,CS,ST,2.5)+R(x+20,y+8,w-40,40,4,"#8a8a8a")+R(x+38,y+11,w-76,12,2,"#444");}
-function Mi(x,ch,e,cs,ls){return lb(cs,ls,54,0,14)+mc(x,ch===2?154:220,ch===1,e)+gr(cs,90,8,20);}
-function Cc(rec){var cs=[],i,s;for(i=0;i<12;i++)cs.push(76.5+i*17);
-s=R(40,56,260,84,30,CS,ST,2.5)+R(50,64,240,68,24,"#2e2e2e");
-s+=rec?R(60,86,220,20,3,"#8f9094","#555",1)+gr(cs,89,11,5)+gr(cs,99,11,5):gr(cs,66,11,8)+gr(cs,122,11,8);
-cs.forEach(function(c,i){s+=Tx(c,48,"A"+(rec?12-i:i+1),0,8.5)+Tx(c,158,"B"+(rec?i+1:12-i),0,8.5);});
-return s;}
-var L5=["5","4","3","2","1"];
-var M={a2:Ap(0),a3:Ap(1),a3r:Ar(),b2:Bp(8,0),b3:Bp(24,1),mini:Mn(),
-ma:lb(C5,L5,54,0,15)+mc(60,220,0,1)+gr(C5,90,8,20),
-mb:lb(C5,L5,54,0,15)+mc(60,220,1,0)+gr(C5,90,8,20),
-mb3:lb([44,68,92,116,140],["10","9","8","7","6"],54,0,14)+lb([202,226,250,274,298],L5,54,0,14)+mc(14,154,0,0)+gr([44,68,92,116,140],90,8,20)+mc(172,154,1,0)+gr([202,226,250,274,298],90,8,20),
-cpl:Cc(0),crc:Cc(1)};
-function dp(n){return n;}
-function tb(hd,rows){return '<div class="tw"><table><tr>'+hd.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr>'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>'}).join('')+'</tr>'}).join('')+'</table></div>';}
-function pins(r){return tb(['Pin','Señal','Descripción'],r.map(function(p){return [dp(p[0],p[3]),'<code>'+p[1]+'</code>',p[2]]}));}
-var D=[["1","VBUS","+5 V, alimentación del dispositivo","pw"],["2","D−","Datos diferenciales (−), USB 2.0","dm"],["3","D+","Datos diferenciales (+), USB 2.0","dp"],["4","GND","Tierra, retorno de alimentación","gnd"]];
-var CR=[[1,"GND","GND","gnd","Retorno de tierra"],[2,"TX1+","TX2+","ss","Transmisión SuperSpeed (+)"],[3,"TX1−","TX2−","ss","Transmisión SuperSpeed (−)"],[4,"VBUS","VBUS","pw","Alimentación (5 a 48 V según PD)"],[5,"CC1","CC2 / VCONN","cc","Detección de orientación y rol, mensajes PD; el CC libre da VCONN al e-marker"],[6,"D+","D+","dp","Datos USB 2.0 (+)"],[7,"D−","D−","dm","Datos USB 2.0 (−)"],[8,"SBU1","SBU2","sb","Banda lateral: modos alternativos (DisplayPort, audio analógico)"],[9,"VBUS","VBUS","pw","Alimentación"],[10,"RX2−","RX1−","ss","Recepción SuperSpeed (−)"],[11,"RX2+","RX1+","ss","Recepción SuperSpeed (+)"],[12,"GND","GND","gnd","Retorno de tierra"]];
+/* Modelos SVG realistas: vista frontal de cada conector con sus pines numerados */
+const df = p => `<defs><linearGradient id="${p}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f5f9"/><stop offset=".55" stop-color="#94a3b8"/><stop offset="1" stop-color="#cbd5e1"/></linearGradient><linearGradient id="${p}g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b98a22"/><stop offset=".5" stop-color="#fde68a"/><stop offset="1" stop-color="#b98a22"/></linearGradient></defs>`;
+const bd = (x, y, t) => { const w = t.length > 1 ? 30 : 18; return `<rect x="${x - w / 2}" y="${y - 9}" width="${w}" height="18" rx="9" fill="#1e293b" stroke="#64748b"/><text x="${x}" y="${y}" dy=".35em" fill="#f8fafc" font-size="11" font-weight="500" font-family="'IBM Plex Mono',monospace" text-anchor="middle">${t}</text>`; };
+const ct = (x, y, w, h, p) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="url(#${p}g)" stroke="#8a6a14" stroke-width=".9"/>`;
+const shell = (p, d) => `<path d="${d}" fill="url(#${p}m)" stroke="#475569" stroke-width="2"/>`;
+
+const plugA = (p, three) => {
+    let s = df(p) + `<rect x="16" y="28" width="168" height="64" rx="6" fill="url(#${p}m)" stroke="#475569" stroke-width="2"/><rect x="24" y="36" width="152" height="48" rx="3" fill="#0b1220"/>`;
+    s += `<path d="M34 46H166L176 62H24Z" fill="${three ? '#60a5fa' : '#f8fafc'}"/><rect x="24" y="62" width="152" height="22" fill="${three ? '#2563eb' : '#e2e8f0'}"/><rect x="24" y="62" width="152" height="3" fill="#fff" opacity=".35"/>`;
+    [55, 85, 115, 145].forEach((x, i) => { s += ct(x - 7, three ? 54 : 50, 14, three ? 8 : 12, p) + bd(x, 108, String(4 - i)); });
+    if (three) [40, 70, 100, 130, 160].forEach((x, i) => { s += ct(x - 4, 47, 8, 5, p) + bd(x, 12, String(9 - i)); });
+    return s;
+};
+const svgA2 = plugA('a2', false);
+const svgA3 = plugA('a3', true);
+
+const svgB2 = df('b2') + shell('b2', 'M44 24H116L136 44V120H24V44Z') + `<path d="M48 31H112L129 48V113H31V48Z" fill="#0b1220"/><rect x="38" y="42" width="84" height="64" rx="4" fill="#e2e8f0"/>` +
+    [[62, 58], [98, 58], [62, 86], [98, 86]].map(c => ct(c[0] - 10, c[1] - 7, 20, 14, 'b2')).join('') +
+    bd(62, 10, '2') + bd(98, 10, '1') + bd(62, 136, '3') + bd(98, 136, '4');
+
+const svgMicro = df('mi') + shell('mi', 'M30 36H170L184 50V84H16V50Z') + `<path d="M34 43H166L177 54V77H23V54Z" fill="#0b1220"/><rect x="28" y="62" width="144" height="15" rx="2" fill="#cbd5e1"/>` +
+    [44, 72, 100, 128, 156].map((x, i) => ct(x - 7, 52, 14, 20, 'mi') + bd(x, 100, String(5 - i))).join('');
+
+const svgC = df('c1') + `<rect x="14" y="36" width="172" height="54" rx="27" fill="url(#c1m)" stroke="#475569" stroke-width="2"/><rect x="23" y="44" width="154" height="38" rx="19" fill="#1e293b" stroke="#334155"/><rect x="34" y="55" width="132" height="16" rx="8" fill="#020617"/>` +
+    Array.from({length: 12}, (_, i) => { const x = 100 + (i - 5.5) * 10.2; return ct(x - 3, 55, 6, 6, 'c1') + ct(x - 3, 65, 6, 6, 'c1'); }).join('') +
+    bd(44, 20, 'A12') + bd(156, 20, 'A1') + bd(44, 106, 'B1') + bd(156, 106, 'B12');
+
+function tb(hd,rows){
+    return '<div class="tw"><table><tr>'+hd.map(h=>'<th>'+h+'</th>').join('')+'</tr>'+
+    rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</table></div>';
+}
+function pins(r){
+    return tb(['Pin','Señal','Descripción'],r.map(p=>[p[0],'<code>'+p[1]+'</code>',p[2]]));
+}
+
+var D=[["1","VBUS","+5 V, alimentación"],["2","D−","Datos diferenciales (−)"],["3","D+","Datos diferenciales (+)"],["4","GND","Tierra, retorno"]];
+var CR=[[1,"GND","GND","Retorno de tierra"],[2,"TX1+","TX2+","Transmisión SuperSpeed (+)"],[3,"TX1−","TX2−","Transmisión SuperSpeed (−)"],[4,"VBUS","VBUS","Alimentación (5 a 48 V)"],[5,"CC1","CC2","Detección y mensajes PD"],[6,"D+","D+","Datos USB 2.0 (+)"],[7,"D−","D−","Datos USB 2.0 (−)"],[8,"SBU1","SBU2","Banda lateral (DisplayPort)"],[9,"VBUS","VBUS","Alimentación"],[10,"RX2−","RX1−","Recepción SuperSpeed (−)"],[11,"RX2+","RX1+","Recepción SuperSpeed (+)"],[12,"GND","GND","Retorno de tierra"]];
+
 var T=[
 {id:"a",n:"USB-A",s:"El conector del lado anfitrión: PC, cargadores y consolas.",
-i:"Es asimétrico: entra en una sola posición. Los puertos 3.x son retrocompatibles porque añaden una segunda fila de cinco contactos más hundidos; un plug 2.0 solo toca los cuatro delanteros. En las figuras, el plug se ve de frente con el pin 1 a la derecha; el receptáculo es su imagen especular, con el pin 1 a la izquierda.",
-m:[["USB-A 2.0 · plug (macho)",M.a2],["USB-A 3.x · plug (macho)",M.a3],["USB-A 3.x · receptáculo (hembra)",M.a3r]],g:["pw","dm","dp","gnd","ss"],
-t:pins(D.concat([["5","SSRX−","Recepción SuperSpeed (−), visto desde el host","ss"],["6","SSRX+","Recepción SuperSpeed (+)","ss"],["7","GND_DRAIN","Retorno de masa de los pares SuperSpeed","gnd"],["8","SSTX−","Transmisión SuperSpeed (−)","ss"],["9","SSTX+","Transmisión SuperSpeed (+)","ss"]])),
-k:[["Velocidad","12 Mbps (1.1), 480 Mbps (2.0), 5 y 10 Gbps (3.x)"],["Corriente a 5 V","500 mA (2.0), 900 mA (3.x); hasta 1,5 A con BC 1.2 (7,5 W)"],["Power Delivery","No aplica; la carga rápida sobre USB-A usa protocolos propietarios"],["Identificación","La lengüeta suele ser azul en puertos 3.x"]]},
-{id:"b",n:"USB-B",s:"El conector del lado periférico: impresoras, escáneres, interfaces de audio.",
-i:"Su forma casi cuadrada con dos esquinas biseladas impide conectarlo a un puerto A. La versión 3.x suma una extensión superior con los contactos SuperSpeed. Un cable B 2.0 entra en un puerto B 3.x, pero un plug B 3.x no entra en un puerto B 2.0. Existe además la variante Powered-B 3.x, con dos pines extra (10 y 11) para alimentar adaptadores, de uso poco frecuente.",
-m:[["USB-B 2.0 · plug (macho)",M.b2],["USB-B 3.x · plug (macho)",M.b3]],g:["pw","dm","dp","gnd","ss"],
-t:pins(D.concat([["5","SSTX−","Transmisión SuperSpeed (−), visto desde el dispositivo","ss"],["6","SSTX+","Transmisión SuperSpeed (+)","ss"],["7","GND_DRAIN","Retorno de masa de los pares SuperSpeed","gnd"],["8","SSRX−","Recepción SuperSpeed (−)","ss"],["9","SSRX+","Recepción SuperSpeed (+)","ss"]])),
-k:[["Velocidad","480 Mbps (2.0), 5 Gbps (3.x)"],["Corriente a 5 V","500 mA (2.0), 900 mA (3.x); el periférico suele tener su propia fuente"],["Power Delivery","No aplica"]]},
-{id:"mm",n:"Mini / Micro",s:"Conectores compactos para dispositivos portátiles, hoy reemplazados por USB-C.",
-i:"Mini-A/B y Micro-A/B (5 pines en 2.0) comparten pinout; solo cambia la forma del plug, que en el Micro-A es rectangular con dos orejas superiores y en el Micro-B tiene las esquinas inferiores achaflanadas. Los modelos se ven de frente, con el pin 1 a la derecha. El pin 4, ID, define el rol en USB OTG: a tierra en el plug A (el equipo actúa como host) y sin conectar en el plug B (actúa como periférico). Micro-B 3.x suma un segundo bloque de cinco pines SuperSpeed.",
-m:[["Mini-A / Mini-B · plug (5 pines)",M.mini],["Micro-A 2.0 · plug (5 pines)",M.ma],["Micro-B 2.0 · plug (5 pines)",M.mb],["Micro-B 3.x · plug (10 pines)",M.mb3]],g:["pw","dm","dp","id","gnd","ss"],
-t:pins([["1","VBUS","+5 V, alimentación","pw"],["2","D−","Datos diferenciales (−)","dm"],["3","D+","Datos diferenciales (+)","dp"],["4","ID","Identificación OTG (host o periférico)","id"],["5","GND","Tierra","gnd"],["6","SSTX−","Transmisión SuperSpeed (−), solo Micro-B 3.x","ss"],["7","SSTX+","Transmisión SuperSpeed (+), solo Micro-B 3.x","ss"],["8","GND_DRAIN","Retorno de masa SuperSpeed, solo Micro-B 3.x","gnd"],["9","SSRX−","Recepción SuperSpeed (−), solo Micro-B 3.x","ss"],["10","SSRX+","Recepción SuperSpeed (+), solo Micro-B 3.x","ss"]]),
-k:[["Velocidad","480 Mbps (Mini-B y Micro-B 2.0); 5 Gbps (Micro-B 3.x)"],["Corriente a 5 V","500 mA (2.0), 900 mA (3.x); hasta 1,5 A con BC 1.2"],["Power Delivery","No aplica; PD moderno requiere USB-C"],["Estado","Mini-A y Mini-AB fueron retirados; Mini-B sobrevive en equipos antiguos"]]},
+i:"Es asimétrico: entra en una sola posición. Los puertos 3.x añaden una segunda fila de cinco contactos hundidos.",
+m:[["USB-A 2.0", svgA2, "0 20 200 104"], ["USB-A 3.x", svgA3, "0 0 200 124"]],
+t:pins(D.concat([["5","SSRX−","Recepción SuperSpeed (−)"],["6","SSRX+","Recepción SuperSpeed (+)"],["7","GND_DRAIN","Retorno de masa SS"],["8","SSTX−","Transmisión SuperSpeed (−)"],["9","SSTX+","Transmisión SuperSpeed (+)"]])),
+k:[["Velocidad","12 Mbps (1.1), 480 Mbps (2.0), 5 y 10 Gbps (3.x)"],["Corriente a 5 V","500 mA (2.0), 900 mA (3.x)"]]},
+
+{id:"b",n:"USB-B",s:"El conector del lado periférico: impresoras, escáneres.",
+i:"Su forma casi cuadrada impide conectarlo a un puerto A.",
+m:[["USB-B 2.0", svgB2, "0 0 160 146"]],
+t:pins(D),
+k:[["Velocidad","480 Mbps (2.0)"],["Corriente a 5 V","500 mA (2.0)"]]},
+
+{id:"mm",n:"Mini / Micro",s:"Conectores compactos, hoy reemplazados por USB-C.",
+i:"Tienen 5 pines para soportar USB OTG a través del pin ID.",
+m:[["Micro-B 2.0", svgMicro, "0 24 200 94"]],
+t:pins([["1","VBUS","+5 V"],["2","D−","Datos (−)"],["3","D+","Datos (+)"],["4","ID","Identificación OTG"],["5","GND","Tierra"]]),
+k:[["Velocidad","480 Mbps"],["Corriente","500 mA"]]},
+
 {id:"c",n:"USB-C",s:"Reversible, de 24 pines, con datos, vídeo y hasta 240 W.",
-i:"El conector es simétrico: entra en cualquier orientación. El dispositivo detecta cuál con los pines CC, y un multiplexor redirige las señales. Cada fila lleva todas las funciones, de modo que girar el plug 180° deja cada señal en su sitio. Los modelos muestran el plug (cable) y el receptáculo (puerto) vistos de frente: el plug es la imagen especular del puerto, así que A1 queda a la izquierda en el plug y a la derecha en el puerto.",
-m:[["USB-C · plug (macho)",M.cpl],["USB-C · receptáculo (hembra)",M.crc]],g:["gnd","pw","ss","cc","dp","dm","sb"],
-t:tb(['Pin A','Señal A','Pin B','Señal B','Descripción'],CR.map(function(r){return [dp("A"+r[0],r[3]),'<code>'+r[1]+'</code>',dp("B"+r[0],r[3]),'<code>'+r[2]+'</code>',r[4]]})),
-k:[["Velocidad","480 Mbps (USB 2.0), 5, 10, 20 Gbps (USB 3.2), 40 y 80 Gbps (USB4)"],["Corriente a 5 V","0,9 A, 1,5 A o 3 A sin negociar"],["Power Delivery","Hasta 100 W (20 V, 5 A) en SPR y 240 W (48 V, 5 A) en EPR"],["Modos alternativos","DisplayPort, Thunderbolt y otros, por los pares SuperSpeed y los pines SBU"],["Ciclos","10.000"]],
-x:'<div class="note">Un cable USB-C no conecta los 24 pines: el plug lleva un solo par D+/D− y un solo CC activo. Un cable USB 2.0 conecta únicamente GND, VBUS, CC y D+/D−. La velocidad real depende del cable y de ambos puertos, no solo del conector.</div>'}
+i:"Simétrico. El dispositivo detecta la orientación con los pines CC.",
+m:[["USB-C (Plug)", svgC, "0 4 200 112"]],
+t:tb(['Pin A','Señal A','Pin B','Señal B','Descripción'],CR.map(r=>["A"+r[0],'<code>'+r[1]+'</code>',"B"+r[0],'<code>'+r[2]+'</code>',r[3]])),
+k:[["Velocidad","Hasta 80 Gbps (USB4)"],["Power Delivery","Hasta 240 W (48 V, 5 A)"]]}
 ];
-T.forEach(function(o){
-var h='<h2>'+o.n+'</h2><p class="sub">'+o.s+'</p><p>'+o.i+'</p><h3>Modelos y pines</h3><div class="models">';
-o.m.forEach(function(m){h+='<figure><svg viewBox="0 0 340 190" role="img" aria-label="'+m[0]+'">'+m[1]+'</svg><figcaption>'+m[0]+'</figcaption></figure>';});
-h+='</div>'+o.t+'<h3>Velocidad y potencia</h3>'+tb(['Característica','Valor'],o.k)+(o.x||'');
-document.getElementById(o.id).innerHTML=h;
+
+T.forEach(o => {
+    let h = `<h2>${o.n}</h2><p class="sub">${o.s}</p><p>${o.i}</p><h3>Modelos y pines</h3><div class="models">`;
+    o.m.forEach(m => { h += `<figure><svg viewBox="${m[2]}" role="img">${m[1]}</svg><figcaption>${m[0]}</figcaption></figure>`; });
+    h += `</div>${o.t}<h3>Velocidad y potencia</h3>${tb(['Característica','Valor'],o.k)}`;
+    document.getElementById(o.id).innerHTML = h;
 });
-var tabs=document.querySelectorAll("nav button"),ids=["ver","a","b","mm","c","pd"];
-function show(id){
-tabs.forEach(function(t){t.setAttribute("aria-selected",t.dataset.t===id)});
-document.querySelectorAll("section").forEach(function(s){s.classList.toggle("on",s.id===id)});
-try{history.replaceState(null,"","#"+id)}catch(e){}
+
+var tabs = document.querySelectorAll("nav button"), ids = ["ver","a","b","mm","c","pd"];
+function show(id) {
+    tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.t === id));
+    document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === id));
+    try{ history.replaceState(null,"","#"+id); } catch(e){}
 }
-tabs.forEach(function(t){t.onclick=function(){show(t.dataset.t);window.scrollTo({top:document.querySelector("nav").offsetTop,behavior:"smooth"})}});
-var hh=location.hash.slice(1);if(ids.indexOf(hh)>-1)show(hh);
+tabs.forEach(t => {
+    t.onclick = () => { 
+        show(t.dataset.t); 
+        window.scrollTo({top: document.querySelector("nav").offsetTop - 10, behavior: "smooth"}); 
+    }
+});
+var hh = location.hash.slice(1);
+if (ids.includes(hh)) show(hh);
 })();
 </script>
 </body>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#090d16">
+<meta name="theme-color" content="#0f172a">
 <title>Cuenta Gotas</title>
 <link rel="icon" type="image/svg+xml" href="iconos/cuentagotas.svg" sizes="any">
 
@@ -17,8 +17,24 @@
     theme: {
       extend: {
         colors: {
-          slate: { 850: '#131e2e', 950: '#090d16' },
-          cyan: { 500: '#06b6d4', 600: '#0891b2' },
+          slate: {
+            950: '#0f172a',
+            900: '#1e293b',
+            850: '#1e293b',
+            800: '#334155',
+            700: '#475569',
+          },
+          cyan: {
+            200: '#bfdbfe',
+            300: '#93c5fd',
+            400: '#60a5fa',
+            500: '#3b82f6',
+            600: '#2563eb',
+            700: '#1d4ed8',
+            800: '#1e40af',
+            900: '#1e3a8a',
+            950: '#172554',
+          },
         }
       }
     }
@@ -34,14 +50,14 @@
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #090d16; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
   /* Accesibilidad: foco visible SOLO cuando navegas por teclado */
   :focus { outline: none; }
   :focus-visible {
-    outline: 2px solid #06b6d4 !important;
+    outline: 2px solid #3b82f6 !important;
     outline-offset: 2px !important;
     border-radius: 6px;
   }
@@ -199,7 +215,7 @@
           <div class="w-3 h-3 border-2 border-red-500 rounded-xs shadow-md bg-red-500/20"></div>
         </div>
         <div id="loupe-hex-tag" class="absolute bottom-1 left-1/2 -translate-x-1/2 bg-slate-950/90 border border-slate-700 text-[10px] font-mono font-bold text-white px-2 py-0.5 rounded-full shadow-lg">
-          #06B6D4
+          #3B82F6
         </div>
       </div>
 
@@ -248,37 +264,37 @@
       <div class="flex items-center space-x-4">
         <button id="active-swatch" type="button"
                 class="w-16 h-16 rounded-2xl border-2 border-slate-700 shadow-inner flex-shrink-0 cursor-pointer group relative overflow-hidden transition-all duration-200"
-                style="background-color: #06B6D4;" title="Clic para copiar HEX" aria-label="Muestra activa. Clic para copiar el código HEX">
+                style="background-color: #3B82F6;" title="Clic para copiar HEX" aria-label="Muestra activa. Clic para copiar el código HEX">
           <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <i class="fa-regular fa-copy text-white text-xs" aria-hidden="true"></i>
           </div>
         </button>
         <div class="flex-1 min-w-0">
           <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Código HEX</div>
-          <button id="active-hex" type="button" class="block text-left text-2xl font-mono font-black text-white tracking-tight truncate cursor-pointer hover:text-cyan-400 transition-colors" title="Clic para copiar" aria-label="Copiar código HEX">#06B6D4</button>
-          <div id="active-rgb-preview" class="text-xs text-slate-400 font-mono mt-0.5">rgb(6, 182, 212)</div>
+          <button id="active-hex" type="button" class="block text-left text-2xl font-mono font-black text-white tracking-tight truncate cursor-pointer hover:text-cyan-400 transition-colors" title="Clic para copiar" aria-label="Copiar código HEX">#3B82F6</button>
+          <div id="active-rgb-preview" class="text-xs text-slate-400 font-mono mt-0.5">rgb(59, 130, 246)</div>
         </div>
       </div>
 
       <div class="space-y-2 pt-1" id="format-rows">
         <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HEX</span><span id="fmt-hex" class="text-xs font-mono font-semibold text-slate-200 truncate">#06B6D4</span></div>
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HEX</span><span id="fmt-hex" class="text-xs font-mono font-semibold text-slate-200 truncate">#3B82F6</span></div>
           <button data-copy-target="fmt-hex" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar HEX" aria-label="Copiar HEX"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
         </div>
         <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">RGB</span><span id="fmt-rgb" class="text-xs font-mono font-semibold text-slate-200 truncate">rgb(6, 182, 212)</span></div>
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">RGB</span><span id="fmt-rgb" class="text-xs font-mono font-semibold text-slate-200 truncate">rgb(59, 130, 246)</span></div>
           <button data-copy-target="fmt-rgb" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar RGB" aria-label="Copiar RGB"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
         </div>
         <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HSL</span><span id="fmt-hsl" class="text-xs font-mono font-semibold text-slate-200 truncate">hsl(189, 94%, 43%)</span></div>
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HSL</span><span id="fmt-hsl" class="text-xs font-mono font-semibold text-slate-200 truncate">hsl(217, 91%, 60%)</span></div>
           <button data-copy-target="fmt-hsl" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar HSL" aria-label="Copiar HSL"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
         </div>
         <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HSV</span><span id="fmt-hsv" class="text-xs font-mono font-semibold text-slate-200 truncate">hsv(189, 97%, 83%)</span></div>
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HSV</span><span id="fmt-hsv" class="text-xs font-mono font-semibold text-slate-200 truncate">hsv(217, 76%, 96%)</span></div>
           <button data-copy-target="fmt-hsv" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar HSV" aria-label="Copiar HSV"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
         </div>
         <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-slate-700 transition-colors">
-          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">CMYK</span><span id="fmt-cmyk" class="text-xs font-mono font-semibold text-slate-200 truncate">cmyk(97%, 14%, 0%, 17%)</span></div>
+          <div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">CMYK</span><span id="fmt-cmyk" class="text-xs font-mono font-semibold text-slate-200 truncate">cmyk(76%, 47%, 0%, 4%)</span></div>
           <button data-copy-target="fmt-cmyk" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400 transition-colors" title="Copiar CMYK" aria-label="Copiar CMYK"><i class="fa-regular fa-copy text-xs" aria-hidden="true"></i></button>
         </div>
       </div>
@@ -286,23 +302,23 @@
       <div class="pt-2 border-t border-slate-800 space-y-2">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Accesibilidad WCAG 2.1</span>
-          <span id="wcag-suggestion" class="text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-white text-black shadow-sm">Texto Blanco</span>
+          <span id="wcag-suggestion" class="text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-black text-white shadow-sm border border-slate-700">Texto Negro</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <span class="w-5 h-5 rounded-full bg-black border border-slate-700 flex items-center justify-center text-[10px] font-bold text-white">A</span>
-              <span id="wcag-black-ratio" class="text-xs font-mono font-bold text-slate-200">8.5:1</span>
+              <span id="wcag-black-ratio" class="text-xs font-mono font-bold text-slate-200">5.7:1</span>
             </div>
-            <span id="wcag-black-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">AAA</span>
+            <span id="wcag-black-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">AA</span>
           </div>
           <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[10px] font-bold text-black">A</span>
-              <span id="wcag-white-ratio" class="text-xs font-mono font-bold text-slate-200">2.4:1</span>
+              <span id="wcag-white-ratio" class="text-xs font-mono font-bold text-slate-200">3.7:1</span>
             </div>
-            <span id="wcag-white-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">Falló</span>
+            <span id="wcag-white-badge" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">AA Large</span>
           </div>
         </div>
       </div>
@@ -456,7 +472,7 @@
      ESTADO
      ========================================================= */
   let currentImg = null;
-  let activeColor = { r: 6, g: 182, b: 212, hex: '#06B6D4' };
+  let activeColor = { r: 59, g: 130, b: 246, hex: '#3B82F6' };
   let historyColors = [];
   let extractedPalette = [];
   let exportFmt = 'css';
@@ -796,7 +812,7 @@
     const ctx = cvs.getContext('2d');
 
     const g = ctx.createLinearGradient(0, 0, 800, 600);
-    g.addColorStop(0, '#06b6d4');
+    g.addColorStop(0, '#3b82f6');
     g.addColorStop(0.5, '#ec4899');
     g.addColorStop(1, '#10b981');
     ctx.fillStyle = g;
@@ -903,9 +919,9 @@
     try {
       const saved = localStorage.getItem('cuentagotas_hist');
       historyColors = saved ? JSON.parse(saved)
-                            : ['#06B6D4', '#EC4899', '#10B981', '#F59E0B', '#3B82F6'];
+                            : ['#3B82F6', '#EC4899', '#10B981', '#F59E0B', '#8B5CF6'];
     } catch (e) {
-      historyColors = ['#06B6D4', '#EC4899', '#10B981'];
+      historyColors = ['#3B82F6', '#EC4899', '#10B981'];
     }
     renderHistory();
   }
@@ -1250,7 +1266,7 @@
      INICIALIZACIÓN
      ========================================================= */
   loadHistory();
-  updateActiveColor(6, 182, 212, false);
+  updateActiveColor(59, 130, 246, false);
 
   // Cargar muestra de bienvenida
   setTimeout(() => loadImage(SAMPLE_URLS.neon), 150);

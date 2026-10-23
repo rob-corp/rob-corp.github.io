@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0e1821">
+<meta name="theme-color" content="#0f172a">
 <title>Ethernet, PoE y Registered Jack</title>
 <link rel="icon" type="image/svg+xml" href="iconos/ethernet.svg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{
-  --bg:#0e1821;--panel:#15232f;--ink:#e6edf3;--mute:#9aaab6;--line:#2a3b49;
-  --acc:#6aa3f5;--accbg:#1a2f4a;--warn:#f0a070;--warnbg:#3a2418;
+  --bg:#0f172a;--panel:#1e293b;--ink:#f8fafc;--mute:#94a3b8;--line:#334155;
+  --acc:#3b82f6;--accbg:#334155;--warn:#f0a070;--warnbg:#3a2418;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -54,17 +54,19 @@ header p.lead{max-width:62ch;color:var(--mute);margin:0 0 20px}
 .model{margin:0 0 14px}
 .model .row{display:flex;flex-wrap:wrap;gap:16px 30px;align-items:center}
 .model svg{display:block;width:300px;max-width:100%;height:auto}
-.plug-body{fill:var(--panel);stroke:var(--mute);stroke-width:2}
-.plug-jacket{fill:#3d5a80;stroke:var(--mute);stroke-width:2}
-.plug-txt{fill:var(--mute);font:500 13px "IBM Plex Mono",monospace;text-anchor:middle}
+.plug-shell{fill:rgba(186,210,240,.10);stroke:#8fa6c4;stroke-width:2}
+.plug-lip{fill:none;stroke:#8fa6c4;stroke-width:5;stroke-linecap:round}
+.plug-slot{fill:rgba(0,0,0,.4)}
+.plug-jacket{fill:url(#jk);stroke:#6b7f99;stroke-width:2}
+.plug-badge{fill:var(--panel);stroke:var(--line);stroke-width:1.5}
+.plug-txt{fill:var(--ink);font:500 13px "IBM Plex Mono",monospace;text-anchor:middle;dominant-baseline:central}
+.plug-tag{fill:#dbe7f5;font:500 13px "IBM Plex Sans",sans-serif;text-anchor:middle}
 
-.legend{flex:1 1 230px;display:grid;gap:6px;font-size:14px}
+.legend{flex:1 1 230px;display:grid;gap:8px;font-size:14px}
 .legend div{display:flex;align-items:center;gap:9px}
 .legend .sw{width:24px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.3);flex:none}
 .legend b{font:500 13px "IBM Plex Mono",monospace;width:12px}
 .legend small{color:var(--mute);font:400 12px "IBM Plex Mono",monospace;margin-left:auto}
-
-.model figcaption{font-size:13.5px;color:var(--mute);max-width:64ch;margin-top:10px}
 
 .pinbtn{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--mute);margin-bottom:22px}
 .pinbtn button{
@@ -144,7 +146,6 @@ li{margin-bottom:5px}
   .model svg{width:100%;max-width:300px;margin:0 auto}
   .legend{flex-basis:auto;max-width:none;grid-template-columns:1fr 1fr;gap:8px 12px;font-size:13.5px}
   .legend small{display:none}
-  .model figcaption{font-size:13px}
   nav button{padding:10px 12px;font-size:14.5px}
   section{padding:20px 0 36px}
   h2{font-size:21px}
@@ -171,15 +172,7 @@ li{margin-bottom:5px}
 }
 </style>
 </head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ESQB0M5W6R"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-ESQB0M5W6R');
-</script>
 <body>
 
 <a href="#main" class="skip">Saltar al contenido principal</a>
@@ -199,7 +192,7 @@ li{margin-bottom:5px}
 
     <figure class="model">
       <div class="row">
-        <svg id="plug" viewBox="0 0 360 300" role="img" aria-label="Conector RJ45 visto desde arriba con los ocho hilos dentro"></svg>
+        <svg id="plug" viewBox="0 0 340 450" role="img" aria-label="Ficha RJ45 transparente vista desde arriba: ocho hilos paralelos hasta el frente, contactos dorados y la camisa del cable abajo"></svg>
         <div class="legend" id="legend"></div>
       </div>
     </figure>
@@ -307,7 +300,7 @@ li{margin-bottom:5px}
       <tr><td>RJ11</td><td>6P2C</td><td>Una línea telefónica analógica (pines centrales 3-4).</td></tr>
       <tr><td>RJ14</td><td>6P4C</td><td>Dos líneas telefónicas.</td></tr>
       <tr><td>RJ25</td><td>6P6C</td><td>Tres líneas telefónicas.</td></tr>
-      <tr><td>RJ9 / RJ10 / RJ22</td><td>4P4C</td><td>Auricular de teléfono.</td></tr>
+      <tr><td>RJ9 / RJ10 / RJ22</td><td>4P4C</td><td>Auriculares de teléfono.</td></tr>
       <tr><td>RJ45</td><td>8P8C (uso común)</td><td>Ethernet de par trenzado. Ver aclaración abajo.</td></tr>
       <tr><td>RJ48</td><td>8P8C</td><td>Líneas digitales T1/E1.</td></tr>
       <tr><td>RJ21</td><td>50 pines Amphenol</td><td>Hasta 25 líneas; troncales y paneles de distribución.</td></tr>
@@ -365,27 +358,42 @@ li{margin-bottom:5px}
   }
 
   function paint(pinout) {
-    let svg = `<defs>${buildPatterns()}</defs>`;
-    svg += `<path class="plug-body" d="M60 44H300V176L250 200V232H110V200L60 176Z"/>`;
+    const P = 24.5, cx = 170;
+    const X = i => cx + (i - 3.5) * P;
+    const XJ = i => cx + (i - 3.5) * 20;
+    let svg = `<g transform="translate(0 -30)">` +
+      `<defs>${buildPatterns()}` +
+      `<linearGradient id="jk" x1="0" x2="1"><stop offset="0" stop-color="#3d5473"/><stop offset=".45" stop-color="#6e8bb0"/><stop offset="1" stop-color="#3d5473"/></linearGradient>` +
+      `<linearGradient id="gd" x1="0" x2="1"><stop offset="0" stop-color="#b98a22"/><stop offset=".5" stop-color="#f7de8a"/><stop offset="1" stop-color="#b98a22"/></linearGradient></defs>`;
+
+    svg += `<path class="plug-shell" d="M38 70H302Q310 70 310 78V316H296V371H44V316H30V78Q30 70 38 70Z"/>`;
+    for (let i = 0; i < 8; i++) svg += `<rect class="plug-slot" x="${X(i) - 8}" y="82" width="16" height="116" rx="2"/>`;
 
     for (let i = 0; i < 8; i++) {
       const wire = pinout[i];
-      const baseColor = COLORS[wire[0]];
-      const fill = wire[1] ? `url(#s-${wire[0]})` : baseColor;
-      const x = 75 + i * 30;
-      const tx = 180 + (i - 3.5) * 6;
-
-      svg += `<path d="M${x} 176V186C${x} 206 ${tx} 206 ${tx} 224V236" fill="none" stroke="${fill}" stroke-width="8"/>`;
-      svg += `<rect x="${x - 10}" y="52" width="20" height="124" fill="${fill}" stroke="rgba(0,0,0,.35)"/>`;
+      const fill = wire[1] ? `url(#s-${wire[0]})` : COLORS[wire[0]];
+      const d = `M${X(i)} 74V241C${X(i)} 282 ${XJ(i)} 282 ${XJ(i)} 322`;
+      svg += `<path d="${d}" fill="none" stroke="rgba(0,0,0,.5)" stroke-width="22.5"/>`;
+      svg += `<path d="${d}" fill="none" stroke="${fill}" stroke-width="19.5"/>`;
+      svg += `<path d="${d}" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2.5"/>`;
     }
 
-    svg += `<rect class="plug-jacket" x="150" y="232" width="60" height="60" rx="4"/>`;
+    svg += `<rect class="plug-jacket" x="95" y="311" width="150" height="159" rx="6"/>`;
+    svg += `<text class="plug-tag" x="170" y="400">Cable</text>`;
 
     for (let i = 0; i < 8; i++) {
-      const x = 75 + i * 30;
-      svg += `<rect x="${x - 6}" y="40" width="12" height="26" rx="2" fill="#d4a83a" stroke="#8a6a14"/>`;
-      svg += `<text class="plug-txt" x="${x}" y="28">${i + 1}</text>`;
+      svg += `<rect x="${X(i) - 6}" y="88" width="12" height="104" rx="2" fill="url(#gd)" stroke="#8a6a14"/>`;
+      svg += `<rect x="${X(i) - 6}" y="128" width="12" height="2.5" fill="#8a6a14" opacity=".6"/>`;
+      svg += `<rect x="${X(i) - 6}" y="152" width="12" height="2.5" fill="#8a6a14" opacity=".6"/>`;
     }
+    svg += `<path class="plug-lip" d="M38 72H302"/>`;
+
+    for (let i = 0; i < 8; i++) {
+      svg += `<circle class="plug-badge" cx="${X(i)}" cy="52" r="10.5"/>`;
+      svg += `<text class="plug-txt" x="${X(i)}" y="52">${i + 1}</text>`;
+    }
+
+    svg += `</g>`;
 
     plugSvg.innerHTML = svg;
 
@@ -398,7 +406,8 @@ li{margin-bottom:5px}
       const bg = wire[1]
         ? `repeating-linear-gradient(135deg,${baseColor} 0 4px,#fff 4px 8px)`
         : baseColor;
-      legend += `<div><b>${i + 1}</b><span class="sw" style="background:${bg}"></span>${name}<small>${SIGNALS[i]}</small></div>`;
+      const row = `<div><b>${i + 1}</b><span class="sw" style="background:${bg}"></span>${name}<small>${SIGNALS[i]}</small></div>`;
+      legend += row;
     }
     legendEl.innerHTML = legend;
   }

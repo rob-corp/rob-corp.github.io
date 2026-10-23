@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0b132b">
+<meta name="theme-color" content="#0f172a">
 <title>Puertas Lógicas y Álgebra Booleana</title>
 <link rel="icon" type="image/svg+xml" href="iconos/puertas-logicas.svg">
 
@@ -15,10 +15,10 @@
     theme: {
       extend: {
         colors: {
-          navyBg: '#0b132b', navyDark: '#0f172a',
-          navyCard: '#132042', navyCardHeader: '#1c2d54',
-          navyBorder: '#1e3a8a',
-          cyanAccent: '#00f2fe', cyanGlow: '#38bdf8',
+          navyBg: '#0f172a', navyDark: '#0f172a',
+          navyCard: '#1e293b', navyCardHeader: '#334155',
+          navyBorder: '#334155',
+          cyanAccent: '#3b82f6', cyanGlow: '#60a5fa',
           blueAccent: '#3b82f6', blueBright: '#60a5fa',
           slateText: '#94a3b8',
         },
@@ -42,17 +42,17 @@
   /* Foco visible SOLO con teclado */
   :focus { outline: none; }
   :focus-visible {
-    outline: 2px solid #38bdf8;
+    outline: 2px solid #3b82f6;
     outline-offset: 2px;
     border-radius: 6px;
   }
 
   /* Scrollbar coherente */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: #0b132b; }
-  ::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
-  html { scrollbar-color: #1e3a8a #0b132b; scrollbar-width: thin; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+  html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
 
   /* Notación de negación con overline sobre TODA la subexpresión */
   .ovl {
@@ -68,8 +68,8 @@
     transition: border-color .15s ease, background-color .15s ease;
   }
   .expr:hover {
-    border-color: rgba(56, 189, 248, 0.6);
-    background-color: rgba(56, 189, 248, 0.06);
+    border-color: rgba(59, 130, 246, 0.6);
+    background-color: rgba(59, 130, 246, 0.08);
   }
   .expr:active { transform: translateY(1px); }
 
@@ -87,8 +87,8 @@
     left: 12px;
     z-index: 100;
     padding: 10px 16px;
-    background: #38bdf8;
-    color: #020617;
+    background: #3b82f6;
+    color: #0f172a;
     font-weight: 700;
     border-radius: 8px;
     transition: top .2s ease;
@@ -113,17 +113,17 @@
 
   gtag('config', 'G-ESQB0M5W6R');
 </script>
-<body class="bg-[#0b132b] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#38bdf8] selection:text-slate-950">
+<body class="bg-[#0f172a] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#3b82f6] selection:text-[#0f172a]">
 
 <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
-<header class="bg-[#0f172a] border-b border-[#1e3a8a] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-blue-950/40">
+<header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
     <a href="index.html" class="inline-flex items-center gap-3.5 group">
-      <div class="w-10 h-10 flex items-center justify-center bg-[#0b132b] border border-[#38bdf8]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#00f2fe]">
+      <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
         <img src="iconos/puertas-logicas.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40" loading="eager">
       </div>
-      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#38bdf8] transition-colors">
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
         Puertas Lógicas y Álgebra Booleana
       </h1>
     </a>
@@ -135,118 +135,118 @@
   <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5" aria-label="Compuertas lógicas básicas">
 
     <!-- ========== AND ========== -->
-    <article class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-md flex flex-col">
-      <header class="bg-[#1c2d54] px-4 py-2.5 border-b border-[#1e3a8a] flex items-center justify-between">
+    <article class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-md flex flex-col">
+      <header class="bg-[#334155] px-4 py-2.5 border-b border-[#475569] flex items-center justify-between">
         <span class="font-bold text-white text-base tracking-wide">AND</span>
-        <span class="text-xs font-mono font-semibold text-[#38bdf8] bg-[#0b132b] px-2 py-0.5 rounded border border-[#1e3a8a]">Y / Conjunción</span>
+        <span class="text-xs font-mono font-semibold text-[#60a5fa] bg-[#0f172a] px-2 py-0.5 rounded border border-[#334155]">Y / Conjunción</span>
       </header>
       <div class="p-4 flex flex-col gap-4 flex-grow">
-        <div class="bg-[#0f172a] border border-[#1e3a8a] rounded-lg p-2 flex items-center justify-center">
+        <div class="bg-[#0f172a] border border-[#334155] rounded-lg p-2 flex items-center justify-center">
           <svg viewBox="0 0 120 60" class="w-full h-16" role="img" aria-label="Esquema de compuerta AND con entradas A y B, salida Q">
             <line x1="10" y1="20" x2="35" y2="20" stroke="#60a5fa" stroke-width="2"/>
             <line x1="10" y1="40" x2="35" y2="40" stroke="#60a5fa" stroke-width="2"/>
             <text x="3" y="24" fill="#94a3b8" font-size="10" font-family="monospace">A</text>
             <text x="3" y="44" fill="#94a3b8" font-size="10" font-family="monospace">B</text>
-            <path d="M35,10 H55 A20,20 0 0,1 55,50 H35 Z" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <line x1="75" y1="30" x2="105" y2="30" stroke="#38bdf8" stroke-width="2"/>
-            <text x="110" y="33" fill="#00f2fe" font-size="11" font-weight="bold" font-family="monospace">Q</text>
+            <path d="M35,10 H55 A20,20 0 0,1 55,50 H35 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <line x1="75" y1="30" x2="105" y2="30" stroke="#60a5fa" stroke-width="2"/>
+            <text x="110" y="33" fill="#3b82f6" font-size="11" font-weight="bold" font-family="monospace">Q</text>
           </svg>
         </div>
-        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#1e3a8a] text-[#00f2fe]"
+        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#334155] text-[#3b82f6]"
              data-copy="Q = A · B" role="button" tabindex="0" aria-label="Copiar expresión Q igual A por B">
           Q = A · B
         </div>
         <table class="w-full text-center font-mono text-xs border-collapse">
           <caption class="sr-only">Tabla de verdad de la compuerta AND</caption>
           <thead>
-            <tr class="bg-[#1c2d54] text-[#60a5fa] border-b border-[#1e3a8a]">
+            <tr class="bg-[#334155] text-[#60a5fa] border-b border-[#475569]">
               <th scope="col" class="py-1">A</th>
               <th scope="col" class="py-1">B</th>
-              <th scope="col" class="py-1 text-[#00f2fe]">Q</th>
+              <th scope="col" class="py-1 text-[#3b82f6]">Q</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#1e3a8a]/50 text-slate-200">
+          <tbody class="divide-y divide-[#334155]/50 text-slate-200">
             <tr><td class="py-1">0</td><td class="py-1">0</td><td class="py-1 font-bold text-slate-400">0</td></tr>
             <tr><td class="py-1">0</td><td class="py-1">1</td><td class="py-1 font-bold text-slate-400">0</td></tr>
             <tr><td class="py-1">1</td><td class="py-1">0</td><td class="py-1 font-bold text-slate-400">0</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">1</td><td class="py-1">1</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">1</td><td class="py-1">1</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
           </tbody>
         </table>
       </div>
     </article>
 
     <!-- ========== OR ========== -->
-    <article class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-md flex flex-col">
-      <header class="bg-[#1c2d54] px-4 py-2.5 border-b border-[#1e3a8a] flex items-center justify-between">
+    <article class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-md flex flex-col">
+      <header class="bg-[#334155] px-4 py-2.5 border-b border-[#475569] flex items-center justify-between">
         <span class="font-bold text-white text-base tracking-wide">OR</span>
-        <span class="text-xs font-mono font-semibold text-[#38bdf8] bg-[#0b132b] px-2 py-0.5 rounded border border-[#1e3a8a]">O / Disyunción</span>
+        <span class="text-xs font-mono font-semibold text-[#60a5fa] bg-[#0f172a] px-2 py-0.5 rounded border border-[#334155]">O / Disyunción</span>
       </header>
       <div class="p-4 flex flex-col gap-4 flex-grow">
-        <div class="bg-[#0f172a] border border-[#1e3a8a] rounded-lg p-2 flex items-center justify-center">
+        <div class="bg-[#0f172a] border border-[#334155] rounded-lg p-2 flex items-center justify-center">
           <svg viewBox="0 0 120 60" class="w-full h-16" role="img" aria-label="Esquema de compuerta OR con entradas A y B, salida Q">
             <line x1="10" y1="20" x2="42" y2="20" stroke="#60a5fa" stroke-width="2"/>
             <line x1="10" y1="40" x2="42" y2="40" stroke="#60a5fa" stroke-width="2"/>
             <text x="3" y="24" fill="#94a3b8" font-size="10" font-family="monospace">A</text>
             <text x="3" y="44" fill="#94a3b8" font-size="10" font-family="monospace">B</text>
-            <path d="M35,10 Q55,10 75,30 Q55,50 35,50 Q47,30 35,10 Z" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <line x1="75" y1="30" x2="105" y2="30" stroke="#38bdf8" stroke-width="2"/>
-            <text x="110" y="33" fill="#00f2fe" font-size="11" font-weight="bold" font-family="monospace">Q</text>
+            <path d="M35,10 Q55,10 75,30 Q55,50 35,50 Q47,30 35,10 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <line x1="75" y1="30" x2="105" y2="30" stroke="#60a5fa" stroke-width="2"/>
+            <text x="110" y="33" fill="#3b82f6" font-size="11" font-weight="bold" font-family="monospace">Q</text>
           </svg>
         </div>
-        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#1e3a8a] text-[#00f2fe]"
+        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#334155] text-[#3b82f6]"
              data-copy="Q = A + B" role="button" tabindex="0" aria-label="Copiar expresión Q igual A más B">
           Q = A + B
         </div>
         <table class="w-full text-center font-mono text-xs border-collapse">
           <caption class="sr-only">Tabla de verdad de la compuerta OR</caption>
           <thead>
-            <tr class="bg-[#1c2d54] text-[#60a5fa] border-b border-[#1e3a8a]">
+            <tr class="bg-[#334155] text-[#60a5fa] border-b border-[#475569]">
               <th scope="col" class="py-1">A</th>
               <th scope="col" class="py-1">B</th>
-              <th scope="col" class="py-1 text-[#00f2fe]">Q</th>
+              <th scope="col" class="py-1 text-[#3b82f6]">Q</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#1e3a8a]/50 text-slate-200">
+          <tbody class="divide-y divide-[#334155]/50 text-slate-200">
             <tr><td class="py-1">0</td><td class="py-1">0</td><td class="py-1 font-bold text-slate-400">0</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">0</td><td class="py-1">1</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">1</td><td class="py-1">0</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">1</td><td class="py-1">1</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">0</td><td class="py-1">1</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">1</td><td class="py-1">0</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">1</td><td class="py-1">1</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
           </tbody>
         </table>
       </div>
     </article>
 
     <!-- ========== NOT ========== -->
-    <article class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-md flex flex-col">
-      <header class="bg-[#1c2d54] px-4 py-2.5 border-b border-[#1e3a8a] flex items-center justify-between">
+    <article class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-md flex flex-col">
+      <header class="bg-[#334155] px-4 py-2.5 border-b border-[#475569] flex items-center justify-between">
         <span class="font-bold text-white text-base tracking-wide">NOT</span>
-        <span class="text-xs font-mono font-semibold text-[#38bdf8] bg-[#0b132b] px-2 py-0.5 rounded border border-[#1e3a8a]">Inversor</span>
+        <span class="text-xs font-mono font-semibold text-[#60a5fa] bg-[#0f172a] px-2 py-0.5 rounded border border-[#334155]">Inversor</span>
       </header>
       <div class="p-4 flex flex-col gap-4 flex-grow">
-        <div class="bg-[#0f172a] border border-[#1e3a8a] rounded-lg p-2 flex items-center justify-center">
+        <div class="bg-[#0f172a] border border-[#334155] rounded-lg p-2 flex items-center justify-center">
           <svg viewBox="0 0 120 60" class="w-full h-16" role="img" aria-label="Esquema de compuerta NOT con entrada A, salida Q invertida">
             <line x1="10" y1="30" x2="35" y2="30" stroke="#60a5fa" stroke-width="2"/>
             <text x="3" y="33" fill="#94a3b8" font-size="10" font-family="monospace">A</text>
-            <polygon points="35,10 75,30 35,50" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <circle cx="78" cy="30" r="3" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <line x1="81" y1="30" x2="105" y2="30" stroke="#38bdf8" stroke-width="2"/>
-            <text x="110" y="33" fill="#00f2fe" font-size="11" font-weight="bold" font-family="monospace">Q</text>
+            <polygon points="35,10 75,30 35,50" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <circle cx="78" cy="30" r="3" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <line x1="81" y1="30" x2="105" y2="30" stroke="#60a5fa" stroke-width="2"/>
+            <text x="110" y="33" fill="#3b82f6" font-size="11" font-weight="bold" font-family="monospace">Q</text>
           </svg>
         </div>
-        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#1e3a8a] text-[#00f2fe]"
+        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#334155] text-[#3b82f6]"
              data-copy="Q = NOT A" role="button" tabindex="0" aria-label="Copiar expresión Q igual A negada">
           Q = <span class="ovl">A</span>
         </div>
         <table class="w-full text-center font-mono text-xs border-collapse">
           <caption class="sr-only">Tabla de verdad de la compuerta NOT</caption>
           <thead>
-            <tr class="bg-[#1c2d54] text-[#60a5fa] border-b border-[#1e3a8a]">
+            <tr class="bg-[#334155] text-[#60a5fa] border-b border-[#475569]">
               <th scope="col" class="py-1">A</th>
-              <th scope="col" class="py-1 text-[#00f2fe]">Q</th>
+              <th scope="col" class="py-1 text-[#3b82f6]">Q</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#1e3a8a]/50 text-slate-200">
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">0</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
+          <tbody class="divide-y divide-[#334155]/50 text-slate-200">
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">0</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
             <tr><td class="py-1">1</td><td class="py-1 font-bold text-slate-400">0</td></tr>
           </tbody>
         </table>
@@ -254,41 +254,41 @@
     </article>
 
     <!-- ========== NAND ========== -->
-    <article class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-md flex flex-col">
-      <header class="bg-[#1c2d54] px-4 py-2.5 border-b border-[#1e3a8a] flex items-center justify-between">
+    <article class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-md flex flex-col">
+      <header class="bg-[#334155] px-4 py-2.5 border-b border-[#475569] flex items-center justify-between">
         <span class="font-bold text-white text-base tracking-wide">NAND</span>
-        <span class="text-xs font-mono font-semibold text-[#38bdf8] bg-[#0b132b] px-2 py-0.5 rounded border border-[#1e3a8a]">NO-Y</span>
+        <span class="text-xs font-mono font-semibold text-[#60a5fa] bg-[#0f172a] px-2 py-0.5 rounded border border-[#334155]">NO-Y</span>
       </header>
       <div class="p-4 flex flex-col gap-4 flex-grow">
-        <div class="bg-[#0f172a] border border-[#1e3a8a] rounded-lg p-2 flex items-center justify-center">
+        <div class="bg-[#0f172a] border border-[#334155] rounded-lg p-2 flex items-center justify-center">
           <svg viewBox="0 0 120 60" class="w-full h-16" role="img" aria-label="Esquema de compuerta NAND con entradas A y B, salida Q negada">
             <line x1="10" y1="20" x2="35" y2="20" stroke="#60a5fa" stroke-width="2"/>
             <line x1="10" y1="40" x2="35" y2="40" stroke="#60a5fa" stroke-width="2"/>
             <text x="3" y="24" fill="#94a3b8" font-size="10" font-family="monospace">A</text>
             <text x="3" y="44" fill="#94a3b8" font-size="10" font-family="monospace">B</text>
-            <path d="M35,10 H55 A20,20 0 0,1 55,50 H35 Z" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <circle cx="78" cy="30" r="3" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <line x1="81" y1="30" x2="105" y2="30" stroke="#38bdf8" stroke-width="2"/>
-            <text x="110" y="33" fill="#00f2fe" font-size="11" font-weight="bold" font-family="monospace">Q</text>
+            <path d="M35,10 H55 A20,20 0 0,1 55,50 H35 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <circle cx="78" cy="30" r="3" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <line x1="81" y1="30" x2="105" y2="30" stroke="#60a5fa" stroke-width="2"/>
+            <text x="110" y="33" fill="#3b82f6" font-size="11" font-weight="bold" font-family="monospace">Q</text>
           </svg>
         </div>
-        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#1e3a8a] text-[#00f2fe]"
+        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#334155] text-[#3b82f6]"
              data-copy="Q = NOT (A · B)" role="button" tabindex="0" aria-label="Copiar expresión Q igual A por B negada">
           Q = <span class="ovl">A · B</span>
         </div>
         <table class="w-full text-center font-mono text-xs border-collapse">
           <caption class="sr-only">Tabla de verdad de la compuerta NAND</caption>
           <thead>
-            <tr class="bg-[#1c2d54] text-[#60a5fa] border-b border-[#1e3a8a]">
+            <tr class="bg-[#334155] text-[#60a5fa] border-b border-[#475569]">
               <th scope="col" class="py-1">A</th>
               <th scope="col" class="py-1">B</th>
-              <th scope="col" class="py-1 text-[#00f2fe]">Q</th>
+              <th scope="col" class="py-1 text-[#3b82f6]">Q</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#1e3a8a]/50 text-slate-200">
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">0</td><td class="py-1">0</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">0</td><td class="py-1">1</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">1</td><td class="py-1">0</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
+          <tbody class="divide-y divide-[#334155]/50 text-slate-200">
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">0</td><td class="py-1">0</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">0</td><td class="py-1">1</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">1</td><td class="py-1">0</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
             <tr><td class="py-1">1</td><td class="py-1">1</td><td class="py-1 font-bold text-slate-400">0</td></tr>
           </tbody>
         </table>
@@ -296,39 +296,39 @@
     </article>
 
     <!-- ========== NOR ========== -->
-    <article class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-md flex flex-col">
-      <header class="bg-[#1c2d54] px-4 py-2.5 border-b border-[#1e3a8a] flex items-center justify-between">
+    <article class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-md flex flex-col">
+      <header class="bg-[#334155] px-4 py-2.5 border-b border-[#475569] flex items-center justify-between">
         <span class="font-bold text-white text-base tracking-wide">NOR</span>
-        <span class="text-xs font-mono font-semibold text-[#38bdf8] bg-[#0b132b] px-2 py-0.5 rounded border border-[#1e3a8a]">NO-O</span>
+        <span class="text-xs font-mono font-semibold text-[#60a5fa] bg-[#0f172a] px-2 py-0.5 rounded border border-[#334155]">NO-O</span>
       </header>
       <div class="p-4 flex flex-col gap-4 flex-grow">
-        <div class="bg-[#0f172a] border border-[#1e3a8a] rounded-lg p-2 flex items-center justify-center">
+        <div class="bg-[#0f172a] border border-[#334155] rounded-lg p-2 flex items-center justify-center">
           <svg viewBox="0 0 120 60" class="w-full h-16" role="img" aria-label="Esquema de compuerta NOR con entradas A y B, salida Q negada">
             <line x1="10" y1="20" x2="42" y2="20" stroke="#60a5fa" stroke-width="2"/>
             <line x1="10" y1="40" x2="42" y2="40" stroke="#60a5fa" stroke-width="2"/>
             <text x="3" y="24" fill="#94a3b8" font-size="10" font-family="monospace">A</text>
             <text x="3" y="44" fill="#94a3b8" font-size="10" font-family="monospace">B</text>
-            <path d="M35,10 Q55,10 75,30 Q55,50 35,50 Q47,30 35,10 Z" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <circle cx="78" cy="30" r="3" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <line x1="81" y1="30" x2="105" y2="30" stroke="#38bdf8" stroke-width="2"/>
-            <text x="110" y="33" fill="#00f2fe" font-size="11" font-weight="bold" font-family="monospace">Q</text>
+            <path d="M35,10 Q55,10 75,30 Q55,50 35,50 Q47,30 35,10 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <circle cx="78" cy="30" r="3" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <line x1="81" y1="30" x2="105" y2="30" stroke="#60a5fa" stroke-width="2"/>
+            <text x="110" y="33" fill="#3b82f6" font-size="11" font-weight="bold" font-family="monospace">Q</text>
           </svg>
         </div>
-        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#1e3a8a] text-[#00f2fe]"
+        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#334155] text-[#3b82f6]"
              data-copy="Q = NOT (A + B)" role="button" tabindex="0" aria-label="Copiar expresión Q igual A más B negada">
           Q = <span class="ovl">A + B</span>
         </div>
         <table class="w-full text-center font-mono text-xs border-collapse">
           <caption class="sr-only">Tabla de verdad de la compuerta NOR</caption>
           <thead>
-            <tr class="bg-[#1c2d54] text-[#60a5fa] border-b border-[#1e3a8a]">
+            <tr class="bg-[#334155] text-[#60a5fa] border-b border-[#475569]">
               <th scope="col" class="py-1">A</th>
               <th scope="col" class="py-1">B</th>
-              <th scope="col" class="py-1 text-[#00f2fe]">Q</th>
+              <th scope="col" class="py-1 text-[#3b82f6]">Q</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#1e3a8a]/50 text-slate-200">
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">0</td><td class="py-1">0</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
+          <tbody class="divide-y divide-[#334155]/50 text-slate-200">
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">0</td><td class="py-1">0</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
             <tr><td class="py-1">0</td><td class="py-1">1</td><td class="py-1 font-bold text-slate-400">0</td></tr>
             <tr><td class="py-1">1</td><td class="py-1">0</td><td class="py-1 font-bold text-slate-400">0</td></tr>
             <tr><td class="py-1">1</td><td class="py-1">1</td><td class="py-1 font-bold text-slate-400">0</td></tr>
@@ -338,41 +338,41 @@
     </article>
 
     <!-- ========== XOR ========== -->
-    <article class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-md flex flex-col">
-      <header class="bg-[#1c2d54] px-4 py-2.5 border-b border-[#1e3a8a] flex items-center justify-between">
+    <article class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-md flex flex-col">
+      <header class="bg-[#334155] px-4 py-2.5 border-b border-[#475569] flex items-center justify-between">
         <span class="font-bold text-white text-base tracking-wide">XOR</span>
-        <span class="text-xs font-mono font-semibold text-[#38bdf8] bg-[#0b132b] px-2 py-0.5 rounded border border-[#1e3a8a]">O Exclusiva</span>
+        <span class="text-xs font-mono font-semibold text-[#60a5fa] bg-[#0f172a] px-2 py-0.5 rounded border border-[#334155]">O Exclusiva</span>
       </header>
       <div class="p-4 flex flex-col gap-4 flex-grow">
-        <div class="bg-[#0f172a] border border-[#1e3a8a] rounded-lg p-2 flex items-center justify-center">
+        <div class="bg-[#0f172a] border border-[#334155] rounded-lg p-2 flex items-center justify-center">
           <svg viewBox="0 0 120 60" class="w-full h-16" role="img" aria-label="Esquema de compuerta XOR con entradas A y B, salida Q">
             <line x1="10" y1="20" x2="28" y2="20" stroke="#60a5fa" stroke-width="2"/>
             <line x1="10" y1="40" x2="28" y2="40" stroke="#60a5fa" stroke-width="2"/>
             <text x="3" y="24" fill="#94a3b8" font-size="10" font-family="monospace">A</text>
             <text x="3" y="44" fill="#94a3b8" font-size="10" font-family="monospace">B</text>
-            <path d="M28,10 Q40,30 28,50" fill="none" stroke="#00f2fe" stroke-width="2"/>
-            <path d="M35,10 Q55,10 75,30 Q55,50 35,50 Q47,30 35,10 Z" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <line x1="75" y1="30" x2="105" y2="30" stroke="#38bdf8" stroke-width="2"/>
-            <text x="110" y="33" fill="#00f2fe" font-size="11" font-weight="bold" font-family="monospace">Q</text>
+            <path d="M28,10 Q40,30 28,50" fill="none" stroke="#3b82f6" stroke-width="2"/>
+            <path d="M35,10 Q55,10 75,30 Q55,50 35,50 Q47,30 35,10 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <line x1="75" y1="30" x2="105" y2="30" stroke="#60a5fa" stroke-width="2"/>
+            <text x="110" y="33" fill="#3b82f6" font-size="11" font-weight="bold" font-family="monospace">Q</text>
           </svg>
         </div>
-        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#1e3a8a] text-[#00f2fe]"
+        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#334155] text-[#3b82f6]"
              data-copy="Q = A ⊕ B" role="button" tabindex="0" aria-label="Copiar expresión Q igual A XOR B">
           Q = A ⊕ B
         </div>
         <table class="w-full text-center font-mono text-xs border-collapse">
           <caption class="sr-only">Tabla de verdad de la compuerta XOR</caption>
           <thead>
-            <tr class="bg-[#1c2d54] text-[#60a5fa] border-b border-[#1e3a8a]">
+            <tr class="bg-[#334155] text-[#60a5fa] border-b border-[#475569]">
               <th scope="col" class="py-1">A</th>
               <th scope="col" class="py-1">B</th>
-              <th scope="col" class="py-1 text-[#00f2fe]">Q</th>
+              <th scope="col" class="py-1 text-[#3b82f6]">Q</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#1e3a8a]/50 text-slate-200">
+          <tbody class="divide-y divide-[#334155]/50 text-slate-200">
             <tr><td class="py-1">0</td><td class="py-1">0</td><td class="py-1 font-bold text-slate-400">0</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">0</td><td class="py-1">1</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">1</td><td class="py-1">0</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">0</td><td class="py-1">1</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">1</td><td class="py-1">0</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
             <tr><td class="py-1">1</td><td class="py-1">1</td><td class="py-1 font-bold text-slate-400">0</td></tr>
           </tbody>
         </table>
@@ -380,79 +380,79 @@
     </article>
 
     <!-- ========== XNOR ========== -->
-    <article class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-md flex flex-col">
-      <header class="bg-[#1c2d54] px-4 py-2.5 border-b border-[#1e3a8a] flex items-center justify-between">
+    <article class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-md flex flex-col">
+      <header class="bg-[#334155] px-4 py-2.5 border-b border-[#475569] flex items-center justify-between">
         <span class="font-bold text-white text-base tracking-wide">XNOR</span>
-        <span class="text-xs font-mono font-semibold text-[#38bdf8] bg-[#0b132b] px-2 py-0.5 rounded border border-[#1e3a8a]">NO-O Exclusiva</span>
+        <span class="text-xs font-mono font-semibold text-[#60a5fa] bg-[#0f172a] px-2 py-0.5 rounded border border-[#334155]">NO-O Exclusiva</span>
       </header>
       <div class="p-4 flex flex-col gap-4 flex-grow">
-        <div class="bg-[#0f172a] border border-[#1e3a8a] rounded-lg p-2 flex items-center justify-center">
+        <div class="bg-[#0f172a] border border-[#334155] rounded-lg p-2 flex items-center justify-center">
           <svg viewBox="0 0 120 60" class="w-full h-16" role="img" aria-label="Esquema de compuerta XNOR con entradas A y B, salida Q negada">
             <line x1="10" y1="20" x2="28" y2="20" stroke="#60a5fa" stroke-width="2"/>
             <line x1="10" y1="40" x2="28" y2="40" stroke="#60a5fa" stroke-width="2"/>
             <text x="3" y="24" fill="#94a3b8" font-size="10" font-family="monospace">A</text>
             <text x="3" y="44" fill="#94a3b8" font-size="10" font-family="monospace">B</text>
-            <path d="M28,10 Q40,30 28,50" fill="none" stroke="#00f2fe" stroke-width="2"/>
-            <path d="M35,10 Q55,10 75,30 Q55,50 35,50 Q47,30 35,10 Z" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <circle cx="78" cy="30" r="3" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <line x1="81" y1="30" x2="105" y2="30" stroke="#38bdf8" stroke-width="2"/>
-            <text x="110" y="33" fill="#00f2fe" font-size="11" font-weight="bold" font-family="monospace">Q</text>
+            <path d="M28,10 Q40,30 28,50" fill="none" stroke="#3b82f6" stroke-width="2"/>
+            <path d="M35,10 Q55,10 75,30 Q55,50 35,50 Q47,30 35,10 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <circle cx="78" cy="30" r="3" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <line x1="81" y1="30" x2="105" y2="30" stroke="#60a5fa" stroke-width="2"/>
+            <text x="110" y="33" fill="#3b82f6" font-size="11" font-weight="bold" font-family="monospace">Q</text>
           </svg>
         </div>
-        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#1e3a8a] text-[#00f2fe]"
+        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#334155] text-[#3b82f6]"
              data-copy="Q = NOT (A ⊕ B)" role="button" tabindex="0" aria-label="Copiar expresión Q igual A XOR B negada">
           Q = <span class="ovl">A ⊕ B</span>
         </div>
         <table class="w-full text-center font-mono text-xs border-collapse">
           <caption class="sr-only">Tabla de verdad de la compuerta XNOR</caption>
           <thead>
-            <tr class="bg-[#1c2d54] text-[#60a5fa] border-b border-[#1e3a8a]">
+            <tr class="bg-[#334155] text-[#60a5fa] border-b border-[#475569]">
               <th scope="col" class="py-1">A</th>
               <th scope="col" class="py-1">B</th>
-              <th scope="col" class="py-1 text-[#00f2fe]">Q</th>
+              <th scope="col" class="py-1 text-[#3b82f6]">Q</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#1e3a8a]/50 text-slate-200">
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">0</td><td class="py-1">0</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
+          <tbody class="divide-y divide-[#334155]/50 text-slate-200">
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">0</td><td class="py-1">0</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
             <tr><td class="py-1">0</td><td class="py-1">1</td><td class="py-1 font-bold text-slate-400">0</td></tr>
             <tr><td class="py-1">1</td><td class="py-1">0</td><td class="py-1 font-bold text-slate-400">0</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">1</td><td class="py-1">1</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">1</td><td class="py-1">1</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
           </tbody>
         </table>
       </div>
     </article>
 
     <!-- ========== BUFFER ========== -->
-    <article class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-md flex flex-col">
-      <header class="bg-[#1c2d54] px-4 py-2.5 border-b border-[#1e3a8a] flex items-center justify-between">
+    <article class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-md flex flex-col">
+      <header class="bg-[#334155] px-4 py-2.5 border-b border-[#475569] flex items-center justify-between">
         <span class="font-bold text-white text-base tracking-wide">BUFFER</span>
-        <span class="text-xs font-mono font-semibold text-[#38bdf8] bg-[#0b132b] px-2 py-0.5 rounded border border-[#1e3a8a]">Seguidor / Buffer</span>
+        <span class="text-xs font-mono font-semibold text-[#60a5fa] bg-[#0f172a] px-2 py-0.5 rounded border border-[#334155]">Seguidor / Buffer</span>
       </header>
       <div class="p-4 flex flex-col gap-4 flex-grow">
-        <div class="bg-[#0f172a] border border-[#1e3a8a] rounded-lg p-2 flex items-center justify-center">
+        <div class="bg-[#0f172a] border border-[#334155] rounded-lg p-2 flex items-center justify-center">
           <svg viewBox="0 0 120 60" class="w-full h-16" role="img" aria-label="Esquema de seguidor BUFFER con entrada A, salida Q igual a A">
             <line x1="10" y1="30" x2="35" y2="30" stroke="#60a5fa" stroke-width="2"/>
             <text x="3" y="33" fill="#94a3b8" font-size="10" font-family="monospace">A</text>
-            <polygon points="35,10 75,30 35,50" fill="#132042" stroke="#00f2fe" stroke-width="2"/>
-            <line x1="75" y1="30" x2="105" y2="30" stroke="#38bdf8" stroke-width="2"/>
-            <text x="110" y="33" fill="#00f2fe" font-size="11" font-weight="bold" font-family="monospace">Q</text>
+            <polygon points="35,10 75,30 35,50" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+            <line x1="75" y1="30" x2="105" y2="30" stroke="#60a5fa" stroke-width="2"/>
+            <text x="110" y="33" fill="#3b82f6" font-size="11" font-weight="bold" font-family="monospace">Q</text>
           </svg>
         </div>
-        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#1e3a8a] text-[#00f2fe]"
+        <div class="expr text-center font-mono text-sm bg-[#0f172a] py-1.5 px-3 rounded border border-[#334155] text-[#3b82f6]"
              data-copy="Q = A" role="button" tabindex="0" aria-label="Copiar expresión Q igual A">
           Q = A
         </div>
         <table class="w-full text-center font-mono text-xs border-collapse">
           <caption class="sr-only">Tabla de verdad del seguidor BUFFER</caption>
           <thead>
-            <tr class="bg-[#1c2d54] text-[#60a5fa] border-b border-[#1e3a8a]">
+            <tr class="bg-[#334155] text-[#60a5fa] border-b border-[#475569]">
               <th scope="col" class="py-1">A</th>
-              <th scope="col" class="py-1 text-[#00f2fe]">Q</th>
+              <th scope="col" class="py-1 text-[#3b82f6]">Q</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[#1e3a8a]/50 text-slate-200">
+          <tbody class="divide-y divide-[#334155]/50 text-slate-200">
             <tr><td class="py-1">0</td><td class="py-1 font-bold text-slate-400">0</td></tr>
-            <tr class="bg-[#00f2fe]/10"><td class="py-1">1</td><td class="py-1 font-bold text-[#00f2fe]">1</td></tr>
+            <tr class="bg-[#3b82f6]/10"><td class="py-1">1</td><td class="py-1 font-bold text-[#3b82f6]">1</td></tr>
           </tbody>
         </table>
       </div>
@@ -461,11 +461,11 @@
   </section>
 
   <!-- ==================== TEOREMAS DEL ÁLGEBRA BOOLEANA ==================== -->
-  <section class="bg-[#132042] border border-[#1e3a8a] rounded-xl overflow-hidden shadow-lg shadow-blue-950/20" aria-labelledby="theorems-title">
+  <section class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg shadow-black/20" aria-labelledby="theorems-title">
 
-    <header class="bg-[#1c2d54] px-6 py-4 border-b border-[#1e3a8a]">
+    <header class="bg-[#334155] px-6 py-4 border-b border-[#475569]">
       <h2 id="theorems-title" class="text-xl font-bold text-white flex items-center gap-2.5">
-        <span class="w-3.5 h-3.5 rounded-full bg-[#00f2fe]" aria-hidden="true"></span>
+        <span class="w-3.5 h-3.5 rounded-full bg-[#3b82f6]" aria-hidden="true"></span>
         Teoremas del álgebra booleana
       </h2>
       <p class="text-xs text-slate-300 mt-1">
@@ -475,12 +475,12 @@
 
     <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">1. Leyes de Identidad</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Básica</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Básica</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="A · 1 = A&#10;A + 0 = A" role="button" tabindex="0" aria-label="Copiar las leyes de identidad">
           <span>A · 1 = A</span>
           <span>A + 0 = A</span>
@@ -488,12 +488,12 @@
         <p class="text-xs text-slate-300">Un valor combinado con la identidad neutra no altera su estado lógico original.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">2. Elemento Nulo / Dominancia</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Absorción Nula</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Absorción Nula</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="A · 0 = 0&#10;A + 1 = 1" role="button" tabindex="0" aria-label="Copiar las leyes de dominancia">
           <span>A · 0 = 0</span>
           <span>A + 1 = 1</span>
@@ -501,12 +501,12 @@
         <p class="text-xs text-slate-300">El elemento dominante fuerza el resultado independientemente del valor de A.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">3. Idempotencia</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Redundancia</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Redundancia</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="A · A = A&#10;A + A = A" role="button" tabindex="0" aria-label="Copiar las leyes de idempotencia">
           <span>A · A = A</span>
           <span>A + A = A</span>
@@ -514,24 +514,24 @@
         <p class="text-xs text-slate-300">Operar una variable consigo misma múltiples veces resulta en la misma variable.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">4. Doble Negación / Involución</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Inversión</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Inversión</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="NOT (NOT A) = A" role="button" tabindex="0" aria-label="Copiar ley de doble negación">
           <span><span class="ovl"><span class="ovl">A</span></span> = A</span>
         </div>
         <p class="text-xs text-slate-300">Invertir dos veces una variable retorna exactamente su estado lógico original.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">5. Complemento</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Anulación</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Anulación</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="A · NOT A = 0&#10;A + NOT A = 1" role="button" tabindex="0" aria-label="Copiar leyes de complemento">
           <span>A · <span class="ovl">A</span> = 0</span>
           <span>A + <span class="ovl">A</span> = 1</span>
@@ -539,12 +539,12 @@
         <p class="text-xs text-slate-300">Una variable y su inverso garantizan un estado nulo en AND o dominante en OR.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">6. Ley Conmutativa</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Orden</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Orden</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="A · B = B · A&#10;A + B = B + A" role="button" tabindex="0" aria-label="Copiar leyes conmutativas">
           <span>A · B = B · A</span>
           <span>A + B = B + A</span>
@@ -552,12 +552,12 @@
         <p class="text-xs text-slate-300">El orden de los operandos no altera el resultado de la función lógica.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">7. Ley Asociativa</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Agrupación</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Agrupación</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="(A · B) · C = A · (B · C)&#10;(A + B) + C = A + (B + C)" role="button" tabindex="0" aria-label="Copiar leyes asociativas">
           <span>(A · B) · C = A · (B · C)</span>
           <span>(A + B) + C = A + (B + C)</span>
@@ -565,12 +565,12 @@
         <p class="text-xs text-slate-300">Agrupar variables de la misma operación no afecta la salida final.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">8. Ley Distributiva</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Factorización</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Factorización</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="A · (B + C) = A·B + A·C&#10;A + (B · C) = (A + B)·(A + C)" role="button" tabindex="0" aria-label="Copiar leyes distributivas">
           <span>A · (B + C) = A·B + A·C</span>
           <span>A + (B · C) = (A + B)·(A + C)</span>
@@ -578,12 +578,12 @@
         <p class="text-xs text-slate-300">Permite la expansión o factorización entre sumas y productos booleanos.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#00f2fe]/40 rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
-          <span class="font-bold text-[#00f2fe] text-sm">9. Leyes de De Morgan</span>
-          <span class="text-[10px] font-mono text-[#00f2fe] bg-[#00f2fe]/10 px-2 py-0.5 rounded border border-[#00f2fe]/30">Crucial</span>
+      <article class="bg-[#0f172a] border border-[#3b82f6]/40 rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
+          <span class="font-bold text-[#3b82f6] text-sm">9. Leyes de De Morgan</span>
+          <span class="text-[10px] font-mono text-[#3b82f6] bg-[#3b82f6]/10 px-2 py-0.5 rounded border border-[#3b82f6]/30">Crucial</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="NOT (A · B) = NOT A + NOT B&#10;NOT (A + B) = NOT A · NOT B" role="button" tabindex="0" aria-label="Copiar las leyes de De Morgan">
           <span><span class="ovl">A · B</span> = <span class="ovl">A</span> + <span class="ovl">B</span></span>
           <span><span class="ovl">A + B</span> = <span class="ovl">A</span> · <span class="ovl">B</span></span>
@@ -591,12 +591,12 @@
         <p class="text-xs text-slate-300">La negación de un producto equivale a la suma de sus negaciones y viceversa.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">10. Ley de Absorción</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Simplificación</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Simplificación</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="A · (A + B) = A&#10;A + (A · B) = A" role="button" tabindex="0" aria-label="Copiar leyes de absorción">
           <span>A · (A + B) = A</span>
           <span>A + (A · B) = A</span>
@@ -604,12 +604,12 @@
         <p class="text-xs text-slate-300">Elimina términos redundantes cuando una variable está presente dentro y fuera.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">11. Absorción Secundaria</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Reducción</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Reducción</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="A · (NOT A + B) = A · B&#10;A + (NOT A · B) = A + B" role="button" tabindex="0" aria-label="Copiar leyes de absorción secundaria">
           <span>A · (<span class="ovl">A</span> + B) = A · B</span>
           <span>A + (<span class="ovl">A</span> · B) = A + B</span>
@@ -617,12 +617,12 @@
         <p class="text-xs text-slate-300">Elimina la variable negada del término secundario simplificando la expresión.</p>
       </article>
 
-      <article class="bg-[#0f172a] border border-[#1e3a8a] rounded-xl p-4 flex flex-col justify-between gap-2">
-        <div class="flex items-center justify-between border-b border-[#1e3a8a] pb-2">
+      <article class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 flex flex-col justify-between gap-2">
+        <div class="flex items-center justify-between border-b border-[#334155] pb-2">
           <span class="font-bold text-white text-sm">12. Teorema del Consenso</span>
-          <span class="text-[10px] font-mono text-[#38bdf8] bg-[#132042] px-2 py-0.5 rounded border border-[#1e3a8a]">Eliminación</span>
+          <span class="text-[10px] font-mono text-[#60a5fa] bg-[#1e293b] px-2 py-0.5 rounded border border-[#334155]">Eliminación</span>
         </div>
-        <div class="expr font-mono text-sm text-[#00f2fe] flex flex-col gap-1 py-1 rounded px-1"
+        <div class="expr font-mono text-sm text-[#3b82f6] flex flex-col gap-1 py-1 rounded px-1"
              data-copy="A·B + NOT A·C + B·C = A·B + NOT A·C" role="button" tabindex="0" aria-label="Copiar teorema del consenso">
           <span>A·B + <span class="ovl">A</span>·C + B·C = A·B + <span class="ovl">A</span>·C</span>
         </div>
@@ -666,7 +666,7 @@
       toast.id = 'mini-toast';
       toast.setAttribute('role', 'status');
       toast.setAttribute('aria-live', 'polite');
-      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-slate-900 border border-[#38bdf8] text-xs font-semibold text-[#38bdf8] shadow-2xl transition-all duration-200';
+      toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-[#1e293b] border border-[#3b82f6] text-xs font-semibold text-[#60a5fa] shadow-2xl transition-all duration-200';
       document.body.appendChild(toast);
     }
     toast.textContent = text;

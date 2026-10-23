@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es" class="dark h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#0f172a">
+    <title>Tornillos Métricos</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="iconos/tornillo.svg">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Consolas', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#111827',
+                            950: '#0f172a',
+                            900: '#1e293b',
+                            800: '#334155',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Desactivar el resaltado de tap en móviles */
+        a, button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Foco accesible sólo con teclado */
+        :focus {
+            outline: none;
+        }
+        :focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+            border-radius: 6px;
+        }
+
+        /* Personalización de scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+        .table-container {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 #0f172a;
+        }
+
+        /* Grid de fondo tipo plano/blueprint */
+        .blueprint-grid {
+            background-color: #0f172a;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.12) 1px, transparent 1px),
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+            background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+        }
+    </style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ESQB0M5W6R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ESQB0M5W6R');
+</script>
+<body class="bg-slate-950 text-slate-200 font-sans min-h-full flex flex-col antialiased selection:bg-blue-500/30 selection:text-blue-200">
+
+    <!-- ENCABEZADO -->
+    <header class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-[#334155] px-4 sm:px-6 lg:px-8 py-3.5 shadow-lg shadow-black/20">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3.5 group select-none">
+                <div class="relative flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-blue-500/40 group-hover:border-blue-400 group-hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all">
+                    <img src="iconos/tornillo.svg" 
+                         alt="Logo" 
+                         class="w-6 h-6 object-contain filter drop-shadow-[0_0_3px_rgba(59,130,246,0.5)]" 
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%233b82f6\' stroke-width=\'2.2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><circle cx=\'12\' cy=\'12\' r=\'10\'/><line x1=\'12\' y1=\'8\' x2=\'12\' y2=\'16\'/><line x1=\'8\' y1=\'12\' x2=\'16\' y2=\'12\'/></svg>';">
+                </div>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-100 group-hover:text-blue-400 transition-colors">
+                    Tornillos Métricos
+                </h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-8">
+
+        <!-- SECCIÓN 1: DIAGRAMA INTERACTIVO Y SELECTOR DIN -->
+        <section class="flex flex-col gap-4">
+            
+            <!-- Controles DIN -->
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2" id="head-type-controls">
+                <button onclick="setHeadType('DIN912')" id="btn-DIN912" class="px-3 sm:px-4 py-2 rounded-lg font-mono text-xs sm:text-sm font-medium border transition-all bg-blue-500/20 border-blue-400 text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+                    DIN 912 (Cilíndrica Allen)
+                </button>
+                <button onclick="setHeadType('DIN933')" id="btn-DIN933" class="px-3 sm:px-4 py-2 rounded-lg font-mono text-xs sm:text-sm font-medium border transition-all bg-slate-900 border-slate-700 text-slate-400 hover:border-blue-500/50 hover:text-blue-300">
+                    DIN 933 (Hexagonal)
+                </button>
+                <button onclick="setHeadType('DIN7991')" id="btn-DIN7991" class="px-3 sm:px-4 py-2 rounded-lg font-mono text-xs sm:text-sm font-medium border transition-all bg-slate-900 border-slate-700 text-slate-400 hover:border-blue-500/50 hover:text-blue-300">
+                    DIN 7991 (Avellanada)
+                </button>
+                <button onclick="setHeadType('DIN7985')" id="btn-DIN7985" class="px-3 sm:px-4 py-2 rounded-lg font-mono text-xs sm:text-sm font-medium border transition-all bg-slate-900 border-slate-700 text-slate-400 hover:border-blue-500/50 hover:text-blue-300">
+                    DIN 7985 (Cilíndrica Cruz)
+                </button>
+            </div>
+
+            <!-- Contenedor del Blueprint SVG -->
+            <div class="relative rounded-2xl border border-blue-500/30 blueprint-grid p-3 sm:p-6 overflow-hidden shadow-2xl">
+                <!-- Regla de Medición L Badge -->
+                <div class="mb-4 inline-flex items-center gap-2 bg-slate-950/90 border border-amber-500/40 text-amber-300 px-3.5 py-1.5 rounded-lg text-xs font-mono shadow-md">
+                    <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span id="length-rule-text">
+                        Regla de Medición L: Para DIN 912, la longitud L se mide desde debajo de la cabeza hasta la punta del vástago.
+                    </span>
+                </div>
+
+                <!-- SVG Visualizer adaptativo (fits 100% on mobile without scroll) -->
+                <div class="w-full flex justify-center items-center">
+                    <svg id="screw-svg" viewBox="40 10 680 360" class="w-full h-auto max-w-[800px] mx-auto block select-none">
+                        <!-- El SVG será inyectado por JS -->
+                    </svg>
+                </div>
+
+                <!-- Leyenda de Cotas (7 cotas completas) -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 mt-4 pt-4 border-t border-blue-500/20 text-xs font-mono">
+                    <div class="bg-slate-950/80 border border-slate-800 p-2 rounded-lg">
+                        <span class="text-blue-400 font-bold">d (M):</span>
+                        <span class="text-slate-300 block text-[11px] font-sans">Diámetro Nominal</span>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 p-2 rounded-lg">
+                        <span class="text-amber-400 font-bold">P:</span>
+                        <span class="text-slate-300 block text-[11px] font-sans">Paso de Rosca</span>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 p-2 rounded-lg">
+                        <span class="text-emerald-400 font-bold">L:</span>
+                        <span class="text-slate-300 block text-[11px] font-sans">Longitud Vástago</span>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 p-2 rounded-lg">
+                        <span class="text-blue-400 font-bold">k:</span>
+                        <span class="text-slate-300 block text-[11px] font-sans">Altura Cabeza</span>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 p-2 rounded-lg">
+                        <span class="text-blue-400 font-bold">dk:</span>
+                        <span class="text-slate-300 block text-[11px] font-sans">Diámetro Cabeza</span>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 p-2 rounded-lg">
+                        <span class="text-blue-400 font-bold" id="legend-s-text">s:</span>
+                        <span class="text-slate-300 block text-[11px] font-sans">Herramienta/Llave</span>
+                    </div>
+                    <div class="bg-slate-950/80 border border-slate-800 p-2 rounded-lg">
+                        <span class="text-rose-400 font-bold">db:</span>
+                        <span class="text-slate-300 block text-[11px] font-sans">Broca (d - P)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: TABLA 2 DINÁMICA (DIMENSIONES POR DIN) -->
+        <section class="flex flex-col gap-2.5">
+            <h2 class="text-xs font-mono font-semibold tracking-wider text-blue-400 uppercase px-1 flex items-center gap-2">
+                <span>Dimensiones de Cabezas DIN</span>
+                <span id="active-din-badge" class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30">DIN 912</span>
+            </h2>
+            <div class="table-container overflow-x-auto rounded-xl border border-[#334155] bg-[#1e293b] shadow-2xl">
+                <table class="w-full text-left text-sm border-collapse min-w-[500px]">
+                    <thead class="bg-slate-950/90 text-blue-400 font-mono text-xs uppercase border-b border-[#334155]">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 font-semibold w-24">Métrica (M)</th>
+                            <th scope="col" class="py-3 px-4 font-semibold" id="table-col-s">Herramienta (s)</th>
+                            <th scope="col" class="py-3 px-4 font-semibold">Diámetro Cabeza (dk)</th>
+                            <th scope="col" class="py-3 px-4 font-semibold">Altura Cabeza (k)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="din-table-body" class="divide-y divide-[#334155]/60 font-sans">
+                        <!-- Las filas se renderizan dinámicamente vía JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: TABLA 1 (BROCAS Y PASOS NORMALES) -->
+        <section class="flex flex-col gap-2.5 mb-8">
+            <h2 class="text-xs font-mono font-semibold tracking-wider text-blue-400 uppercase px-1">
+                Roscas Métricas y Brocas de Taladrado (Paso Normal)
+            </h2>
+            <div class="table-container overflow-x-auto rounded-xl border border-[#334155] bg-[#1e293b] shadow-2xl">
+                <table class="w-full text-left text-sm border-collapse min-w-[500px]">
+                    <thead class="bg-slate-950/90 text-blue-400 font-mono text-xs uppercase border-b border-[#334155]">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 font-semibold w-32">Métrica (d)</th>
+                            <th scope="col" class="py-3 px-4 font-semibold w-48">Paso Normal (P) mm</th>
+                            <th scope="col" class="py-3 px-4 font-semibold">Diámetro Broca (mm)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#334155]/60 font-sans text-slate-300">
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M2</td>
+                            <td class="py-2.5 px-4 font-mono">0.40</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">1.60</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M2.5</td>
+                            <td class="py-2.5 px-4 font-mono">0.45</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">2.05</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M3</td>
+                            <td class="py-2.5 px-4 font-mono">0.50</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">2.50</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M4</td>
+                            <td class="py-2.5 px-4 font-mono">0.70</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">3.30</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M5</td>
+                            <td class="py-2.5 px-4 font-mono">0.80</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">4.20</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M6</td>
+                            <td class="py-2.5 px-4 font-mono">1.00</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">5.00</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M8</td>
+                            <td class="py-2.5 px-4 font-mono">1.25</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">6.80</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M10</td>
+                            <td class="py-2.5 px-4 font-mono">1.50</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">8.50</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M12</td>
+                            <td class="py-2.5 px-4 font-mono">1.75</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">10.20</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M14</td>
+                            <td class="py-2.5 px-4 font-mono">2.00</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">12.00</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M16</td>
+                            <td class="py-2.5 px-4 font-mono">2.00</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">14.00</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M20</td>
+                            <td class="py-2.5 px-4 font-mono">2.50</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">17.50</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M24</td>
+                            <td class="py-2.5 px-4 font-mono">3.00</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">21.00</td>
+                        </tr>
+                        <tr class="hover:bg-blue-500/10 transition-colors">
+                            <td class="py-2.5 px-4 font-mono font-bold text-slate-100">M30</td>
+                            <td class="py-2.5 px-4 font-mono">3.50</td>
+                            <td class="py-2.5 px-4 font-mono text-rose-300 font-bold">26.50</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Datos de Ingeniería por DIN
+        const dinData = {
+            'DIN912': {
+                col_s: 'Llave Allen (s)',
+                data: [
+                    { m: 'M2', s: '1.5 mm', dk: '3.8 mm', k: '2.0 mm' },
+                    { m: 'M2.5', s: '2.0 mm', dk: '4.5 mm', k: '2.5 mm' },
+                    { m: 'M3', s: '2.5 mm', dk: '5.5 mm', k: '3.0 mm' },
+                    { m: 'M4', s: '3.0 mm', dk: '7.0 mm', k: '4.0 mm' },
+                    { m: 'M5', s: '4.0 mm', dk: '8.5 mm', k: '5.0 mm' },
+                    { m: 'M6', s: '5.0 mm', dk: '10.0 mm', k: '6.0 mm' },
+                    { m: 'M8', s: '6.0 mm', dk: '13.0 mm', k: '8.0 mm' },
+                    { m: 'M10', s: '8.0 mm', dk: '16.0 mm', k: '10.0 mm' },
+                    { m: 'M12', s: '10.0 mm', dk: '18.0 mm', k: '12.0 mm' },
+                    { m: 'M14', s: '12.0 mm', dk: '21.0 mm', k: '14.0 mm' },
+                    { m: 'M16', s: '14.0 mm', dk: '24.0 mm', k: '16.0 mm' },
+                    { m: 'M20', s: '17.0 mm', dk: '30.0 mm', k: '20.0 mm' },
+                    { m: 'M24', s: '19.0 mm', dk: '36.0 mm', k: '24.0 mm' },
+                    { m: 'M30', s: '22.0 mm', dk: '45.0 mm', k: '30.0 mm' }
+                ]
+            },
+            'DIN933': {
+                col_s: 'Llave Hexagonal (s)',
+                data: [
+                    { m: 'M2', s: '4.0 mm', dk: '4.0 mm', k: '1.4 mm' },
+                    { m: 'M2.5', s: '5.0 mm', dk: '5.0 mm', k: '1.7 mm' },
+                    { m: 'M3', s: '5.5 mm', dk: '5.5 mm', k: '2.0 mm' },
+                    { m: 'M4', s: '7.0 mm', dk: '7.0 mm', k: '2.8 mm' },
+                    { m: 'M5', s: '8.0 mm', dk: '8.0 mm', k: '3.5 mm' },
+                    { m: 'M6', s: '10.0 mm', dk: '10.0 mm', k: '4.0 mm' },
+                    { m: 'M8', s: '13.0 mm', dk: '13.0 mm', k: '5.3 mm' },
+                    { m: 'M10', s: '17.0 mm', dk: '17.0 mm', k: '6.4 mm' },
+                    { m: 'M12', s: '19.0 mm', dk: '19.0 mm', k: '7.5 mm' },
+                    { m: 'M14', s: '22.0 mm', dk: '22.0 mm', k: '8.8 mm' },
+                    { m: 'M16', s: '24.0 mm', dk: '24.0 mm', k: '10.0 mm' },
+                    { m: 'M20', s: '30.0 mm', dk: '30.0 mm', k: '12.5 mm' },
+                    { m: 'M24', s: '36.0 mm', dk: '36.0 mm', k: '15.0 mm' },
+                    { m: 'M30', s: '46.0 mm', dk: '46.0 mm', k: '18.7 mm' }
+                ]
+            },
+            'DIN7991': {
+                col_s: 'Llave Allen (s)',
+                data: [
+                    { m: 'M2', s: '1.3 mm', dk: '4.0 mm', k: '1.2 mm' },
+                    { m: 'M2.5', s: '1.5 mm', dk: '5.0 mm', k: '1.5 mm' },
+                    { m: 'M3', s: '2.0 mm', dk: '6.0 mm', k: '1.7 mm' },
+                    { m: 'M4', s: '2.5 mm', dk: '8.0 mm', k: '2.3 mm' },
+                    { m: 'M5', s: '3.0 mm', dk: '10.0 mm', k: '2.8 mm' },
+                    { m: 'M6', s: '4.0 mm', dk: '12.0 mm', k: '3.3 mm' },
+                    { m: 'M8', s: '5.0 mm', dk: '16.0 mm', k: '4.4 mm' },
+                    { m: 'M10', s: '6.0 mm', dk: '20.0 mm', k: '5.5 mm' },
+                    { m: 'M12', s: '8.0 mm', dk: '24.0 mm', k: '6.5 mm' },
+                    { m: 'M14', s: '10.0 mm', dk: '27.0 mm', k: '7.0 mm' },
+                    { m: 'M16', s: '10.0 mm', dk: '30.0 mm', k: '7.5 mm' },
+                    { m: 'M20', s: '12.0 mm', dk: '36.0 mm', k: '8.5 mm' },
+                    { m: 'M24', s: '14.0 mm', dk: '39.0 mm', k: '14.0 mm' }
+                ]
+            },
+            'DIN7985': {
+                col_s: 'Destornillador Cruz (PH/PZ)',
+                data: [
+                    { m: 'M2', s: 'PH 1', dk: '4.0 mm', k: '1.6 mm' },
+                    { m: 'M2.5', s: 'PH 1', dk: '5.0 mm', k: '2.0 mm' },
+                    { m: 'M3', s: 'PH 1', dk: '6.0 mm', k: '2.4 mm' },
+                    { m: 'M4', s: 'PH 2', dk: '8.0 mm', k: '3.1 mm' },
+                    { m: 'M5', s: 'PH 2', dk: '10.0 mm', k: '3.8 mm' },
+                    { m: 'M6', s: 'PH 3', dk: '12.0 mm', k: '4.6 mm' },
+                    { m: 'M8', s: 'PH 4', dk: '16.0 mm', k: '6.0 mm' },
+                    { m: 'M10', s: 'PH 4', dk: '20.0 mm', k: '7.5 mm' }
+                ]
+            }
+        };
+
+        let currentHeadType = 'DIN912';
+
+        function setHeadType(type) {
+            currentHeadType = type;
+            
+            // Actualizar botones de la UI
+            const buttons = ['DIN912', 'DIN933', 'DIN7991', 'DIN7985'];
+            buttons.forEach(b => {
+                const btn = document.getElementById(`btn-${b}`);
+                if (b === type) {
+                    btn.className = 'px-3 sm:px-4 py-2 rounded-lg font-mono text-xs sm:text-sm font-medium border transition-all bg-blue-500/20 border-blue-400 text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.2)]';
+                } else {
+                    btn.className = 'px-3 sm:px-4 py-2 rounded-lg font-mono text-xs sm:text-sm font-medium border transition-all bg-slate-900 border-slate-700 text-slate-400 hover:border-blue-500/50 hover:text-blue-300';
+                }
+            });
+
+            // Actualizar textos informativos
+            const ruleText = document.getElementById('length-rule-text');
+            const legendSText = document.getElementById('legend-s-text');
+            const activeBadge = document.getElementById('active-din-badge');
+
+            if (type === 'DIN7991') {
+                ruleText.innerText = 'Regla de Medición L: Para DIN 7991 (Cabeza Avellanada), la longitud L INCLUYE la altura de la cabeza (medida de extremo a extremo).';
+                legendSText.innerText = 's (Allen):';
+                activeBadge.innerText = 'DIN 7991';
+            } else if (type === 'DIN933') {
+                ruleText.innerText = 'Regla de Medición L: Para DIN 933 (Hexagonal), la longitud L se mide desde debajo de la cabeza hexagonal hasta la punta.';
+                legendSText.innerText = 's (Hex):';
+                activeBadge.innerText = 'DIN 933';
+            } else if (type === 'DIN7985') {
+                ruleText.innerText = 'Regla de Medición L: Para DIN 7985 (Cabeza Cilíndrica Cruz), la longitud L se mide desde la base plana bajo la cabeza hasta la punta.';
+                legendSText.innerText = 'PH/PZ:';
+                activeBadge.innerText = 'DIN 7985';
+            } else {
+                ruleText.innerText = 'Regla de Medición L: Para DIN 912 (Cilíndrica Allen), la longitud L se mide desde debajo de la cabeza hasta la punta del vástago.';
+                legendSText.innerText = 's (Allen):';
+                activeBadge.innerText = 'DIN 912';
+            }
+
+            renderScrewSVG();
+            renderDynamicTable(type);
+        }
+
+        // Renderizado del modelo visual SVG con las 7 cotas (d, P, L, k, dk, s, db)
+        function renderScrewSVG() {
+            const svg = document.getElementById('screw-svg');
+            const type = currentHeadType;
+
+            const headStartX = 140;
+            const headWidth = 90; 
+            const shankStartX = headStartX + headWidth; // 230
+            const threadLength = 320; 
+            const shankLength = threadLength; // 320
+            const threadPitchWidth = 20;
+
+            let headSVG = '';
+            let lengthDimensionStart = shankStartX; // Defecto: base de la cabeza
+
+            if (type === 'DIN912') {
+                headSVG = `
+                    <rect x="140" y="80" width="90" height="220" rx="4" fill="#1e293b" stroke="#3b82f6" stroke-width="2.5"/>
+                    <rect x="140" y="140" width="45" height="100" rx="2" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="162" y="195" font-family="JetBrains Mono" font-size="12" fill="#60a5fa" text-anchor="middle" font-weight="bold">s</text>
+                `;
+            } else if (type === 'DIN933') {
+                headSVG = `
+                    <path d="M 140 100 L 170 80 L 230 80 L 230 300 L 170 300 L 140 280 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2.5"/>
+                    <line x1="170" y1="80" x2="170" y2="300" stroke="#3b82f6" stroke-width="1.5"/>
+                    <line x1="200" y1="80" x2="200" y2="300" stroke="#3b82f6" stroke-width="1"/>
+                    <text x="185" y="195" font-family="JetBrains Mono" font-size="12" fill="#60a5fa" text-anchor="middle" font-weight="bold">s</text>
+                `;
+            } else if (type === 'DIN7991') {
+                lengthDimensionStart = 140; // Se mide de extremo a extremo
+                headSVG = `
+                    <path d="M 140 60 L 230 135 L 230 245 L 140 320 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2.5"/>
+                    <polygon points="140,150 175,190 140,230" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,3"/>
+                    <text x="155" y="194" font-family="JetBrains Mono" font-size="11" fill="#60a5fa" text-anchor="middle">s</text>
+                `;
+            } else if (type === 'DIN7985') {
+                headSVG = `
+                    <path d="M 230 60 L 170 60 C 130 60, 130 320, 170 320 L 230 320 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2.5"/>
+                    <path d="M 170 170 L 200 210 M 170 210 L 200 170 M 230 190 L 185 190" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+                    <text x="155" y="195" font-family="JetBrains Mono" font-size="10" fill="#60a5fa" text-anchor="middle">PH</text>
+                `;
+            }
+
+            // Cuerpo Roscado
+            let threadPath = `M ${shankStartX} 135 `;
+            for (let x = shankStartX; x < shankStartX + shankLength - 20; x += threadPitchWidth) {
+                threadPath += `L ${x + 10} 125 L ${x + 20} 135 `;
+            }
+            threadPath += `L ${shankStartX + shankLength} 145 L ${shankStartX + shankLength} 235 `;
+            for (let x = shankStartX + shankLength - 20; x >= shankStartX; x -= threadPitchWidth) {
+                threadPath += `L ${x + 10} 255 L ${x} 245 `;
+            }
+            threadPath += `L ${shankStartX} 245 Z`;
+
+            svg.innerHTML = `
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+                    </marker>
+                    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399" />
+                    </marker>
+                    <marker id="arrow-amber" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b" />
+                    </marker>
+                    <marker id="arrow-rose" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#f43f5e" />
+                    </marker>
+                </defs>
+
+                <!-- Eje Central -->
+                <line x1="80" y1="190" x2="580" y2="190" stroke="#60a5fa" stroke-width="1" stroke-dasharray="8,4,2,4" opacity="0.5"/>
+
+                <!-- Rosca -->
+                <path d="${threadPath}" fill="#0f172a" stroke="#3b82f6" stroke-width="2"/>
+
+                <!-- Línea de Fondo de Rosca para Cota db -->
+                <line x1="${shankStartX}" y1="145" x2="${shankStartX + shankLength - 10}" y2="145" stroke="#f43f5e" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+                <line x1="${shankStartX}" y1="235" x2="${shankStartX + shankLength - 10}" y2="235" stroke="#f43f5e" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+
+                <!-- Cabeza -->
+                ${headSVG}
+
+                <!-- COTAS COMPLETAS (7) -->
+                
+                <!-- 1. k (Altura de cabeza) -->
+                <line x1="140" y1="330" x2="140" y2="360" stroke="#60a5fa" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="230" y1="330" x2="230" y2="360" stroke="#60a5fa" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="140" y1="345" x2="230" y2="345" stroke="#3b82f6" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                <text x="185" y="340" font-family="JetBrains Mono" font-size="12" fill="#60a5fa" font-weight="bold" text-anchor="middle">k</text>
+
+                <!-- 2. L (Longitud) -->
+                <line x1="${lengthDimensionStart}" y1="20" x2="${lengthDimensionStart}" y2="50" stroke="#34d399" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="${shankStartX + shankLength}" y1="20" x2="${shankStartX + shankLength}" y2="50" stroke="#34d399" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="${lengthDimensionStart}" y1="35" x2="${shankStartX + shankLength}" y2="35" stroke="#34d399" stroke-width="2" marker-start="url(#arrow-emerald)" marker-end="url(#arrow-emerald)"/>
+                <text x="${(lengthDimensionStart + shankStartX + shankLength)/2}" y="28" font-family="JetBrains Mono" font-size="13" fill="#34d399" font-weight="bold" text-anchor="middle">Longitud L</text>
+
+                <!-- 3. d (M) (Diámetro Nominal Exterior) -->
+                <line x1="${shankStartX + 40}" y1="125" x2="${shankStartX + 40}" y2="255" stroke="#3b82f6" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                <text x="${shankStartX + 48}" y="194" font-family="JetBrains Mono" font-size="12" fill="#60a5fa" font-weight="bold">d (M)</text>
+
+                <!-- 4. dk (Diámetro Cabeza) -->
+                <line x1="115" y1="70" x2="115" y2="310" stroke="#3b82f6" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                <line x1="115" y1="70" x2="140" y2="70" stroke="#60a5fa" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="115" y1="310" x2="140" y2="310" stroke="#60a5fa" stroke-width="1" stroke-dasharray="2,2"/>
+                <text x="105" y="194" font-family="JetBrains Mono" font-size="12" fill="#60a5fa" font-weight="bold" text-anchor="end">dk</text>
+
+                <!-- 5. P (Paso de Rosca - Cresta a Cresta) -->
+                <line x1="${shankStartX + 110}" y1="85" x2="${shankStartX + 110}" y2="120" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="${shankStartX + 130}" y1="85" x2="${shankStartX + 130}" y2="120" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="${shankStartX + 110}" y1="95" x2="${shankStartX + 130}" y2="95" stroke="#f59e0b" stroke-width="1.5" marker-start="url(#arrow-amber)" marker-end="url(#arrow-amber)"/>
+                <text x="${shankStartX + 120}" y="88" font-family="JetBrains Mono" font-size="11" fill="#f59e0b" font-weight="bold" text-anchor="middle">P</text>
+
+                <!-- 6. db (Diámetro Broca - Fondo de Rosca Interior) -->
+                <line x1="${shankStartX + 260}" y1="145" x2="${shankStartX + 260}" y2="235" stroke="#f43f5e" stroke-width="1.5" marker-start="url(#arrow-rose)" marker-end="url(#arrow-rose)"/>
+                <text x="${shankStartX + 268}" y="194" font-family="JetBrains Mono" font-size="12" fill="#f43f5e" font-weight="bold">db</text>
+            `;
+        }
+
+        // Renderizado de la tabla dinámica
+        function renderDynamicTable(type) {
+            const config = dinData[type];
+            const tbody = document.getElementById('din-table-body');
+            const colSHeader = document.getElementById('table-col-s');
+            
+            // Actualizar etiqueta de la columna s (Herramienta)
+            colSHeader.innerText = config.col_s;
+
+            // Renderizar las filas
+            tbody.innerHTML = '';
+            config.data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-blue-500/10 transition-colors text-slate-300';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-4 font-mono font-bold text-slate-100">${row.m}</td>
+                    <td class="py-2.5 px-4 font-mono">${row.s}</td>
+                    <td class="py-2.5 px-4 font-mono text-blue-300">${row.dk}</td>
+                    <td class="py-2.5 px-4 font-mono">${row.k}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Inicialización al cargar la página
+        window.onload = function() {
+            setHeadType('DIN912');
+        };
+    </script>
+</body>
+</html>

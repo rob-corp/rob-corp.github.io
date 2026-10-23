@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora NE555</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Esquema de colores técnico (Navy / Cyan) */
+:root {
+    --bg: #0b132b; 
+    --panel: #132042; 
+    --ink: #e6edf3; 
+    --mute: #9aaab6; 
+    --line: #1e3a8a; 
+    --acc: #00f2fe; 
+    --accbg: #1c2d54; 
+    --warn: #f0a070; 
+    --warnbg: #3a2418;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 "IBM Plex Sans", system-ui, sans-serif; }
+
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 18px; }
+
+.topbar { border-bottom: 1px solid var(--line); background: #080e21; }
+.home { display: flex; align-items: center; gap: 12px; width: fit-content; padding: 14px 0; color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; user-select: none; outline: none !important; }
+.home h1 { font-size: clamp(19px, 4.6vw, 26px); line-height: 1.2; margin: 0; font-weight: 600; letter-spacing: -.01em; }
+.logo { width: 38px; height: 38px; flex: none; object-fit: contain; -webkit-user-drag: none; }
+
+header { padding: 22px 0 8px; }
+header p.lead { max-width: 80ch; color: var(--mute); margin: 0 0 14px; font-size: 1.1em; }
+
+nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; gap: 4px; overflow-x: auto; }
+nav button { font: 500 15px "IBM Plex Sans", sans-serif; padding: 13px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--mute); cursor: pointer; white-space: nowrap; outline: none !important; -webkit-tap-highlight-color: transparent; transition: color 0.2s, border-color 0.2s; }
+nav button[aria-selected=true] { color: var(--acc); border-bottom-color: var(--acc); }
+nav button:hover { color: var(--ink); }
+
+section { display: none; padding: 26px 0 48px; animation: fadeIn 0.3s ease; }
+section.on { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+h2 { font-size: 26px; margin: 0 0 6px; font-weight: 600; color: #fff; }
+h3 { font-size: 19px; margin: 0 0 20px; font-weight: 600; color: var(--acc); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+p { margin: 0 0 14px; max-width: 85ch; }
+.sub { color: var(--mute); margin-bottom: 24px; font-size: 1.05em; }
+
+/* Grid de la Calculadora */
+.calculator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; }
+.calc-panel { background: var(--panel); border: 1px solid var(--line); padding: 24px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+
+/* Inputs y Selectores */
+.input-group { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+.input-group label { width: 140px; font-weight: 500; color: var(--ink); }
+.input-group input[type="number"] { flex: 1; min-width: 120px; padding: 10px 12px; font-family: "IBM Plex Mono", monospace; font-size: 15px; background: #080e21; border: 1px solid var(--line); color: var(--acc); border-radius: 6px; outline: none !important; transition: border-color 0.2s; }
+.input-group input[type="number"]:focus { border-color: var(--acc); }
+.input-group select { padding: 10px; font-weight: 500; background: var(--accbg); border: 1px solid var(--line); color: var(--ink); border-radius: 6px; outline: none !important; cursor: pointer; }
+.input-group select:focus { border-color: var(--acc); }
+
+/* Panel de Resultados */
+.results { background: var(--accbg); padding: 20px; border-radius: 8px; border-left: 4px solid var(--acc); margin-top: 24px; }
+.res-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed rgba(30, 58, 138, 0.6); padding-bottom: 6px; font-size: 15.5px; }
+.res-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.res-row span { color: var(--mute); }
+.res-row strong { font-family: "IBM Plex Mono", monospace; color: #fff; font-weight: 500; letter-spacing: 0.5px; }
+
+/* Fórmulas */
+code { font-family: "IBM Plex Mono", monospace; color: #60a5fa; background: rgba(96, 165, 250, 0.1); padding: 3px 6px; border-radius: 4px; font-size: 14px; }
+.formulas p { margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
+.formulas span { color: var(--mute); font-size: 14px; }
+
+@media (max-width: 850px) {
+    .calculator-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+    .wrap { padding: 0 14px; }
+    h2 { font-size: 22px; }
+    .input-group label { width: 100%; margin-bottom: -6px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+<a class="home" href="index.html" aria-label="Ir al inicio">
+<img class="logo" src="iconos/ne555.svg" alt="" width="38" height="38">
+<h1>Calculadora NE555</h1>
+</a>
+</div></div>
+
+<header><div class="wrap">
+<p class="lead">Herramienta de simulación paramétrica para el temporizador NE555. Calcula frecuencias, periodos y ciclos de trabajo en tiempo real basándose en la configuración de la red RC.</p>
+</div></header>
+
+<nav><div class="wrap" role="tablist">
+<button role="tab" aria-selected="true" data-t="astable">Modo Astable</button>
+<button role="tab" aria-selected="false" data-t="monostable">Modo Monoestable</button>
+</div></nav>
+
+<main class="wrap">
+
+<!-- SECCIÓN: MODO ASTABLE -->
+<section id="astable" class="on">
+    <h2>Modo Astable (Oscilador Libre)</h2>
+    <p class="sub">El circuito actúa como un oscilador continuo generando una onda cuadrada. Los tiempos de nivel alto y bajo dependen de dos resistencias y un condensador.</p>
+    
+    <div class="calculator-grid">
+        <div class="calc-panel">
+            <h3>Parámetros del Circuito</h3>
+            <div class="input-group">
+                <label>Resistencia 1 (R1)</label>
+                <input type="number" id="ast_r1" value="1" min="0.001" step="any">
+                <select id="ast_r1_u">
+                    <option value="1">Ω</option>
+                    <option value="1000" selected>kΩ</option>
+                    <option value="1000000">MΩ</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Resistencia 2 (R2)</label>
+                <input type="number" id="ast_r2" value="10" min="0.001" step="any">
+                <select id="ast_r2_u">
+                    <option value="1">Ω</option>
+                    <option value="1000" selected>kΩ</option>
+                    <option value="1000000">MΩ</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Capacitor (C)</label>
+                <input type="number" id="ast_c" value="10" min="0.001" step="any">
+                <select id="ast_c_u">
+                    <option value="0.000000000001">pF</option>
+                    <option value="0.000000001">nF</option>
+                    <option value="0.000001" selected>µF</option>
+                    <option value="0.001">mF</option>
+                </select>
+            </div>
+
+            <div class="results">
+                <div class="res-row"><span>Frecuencia (f):</span> <strong id="ast_res_f">0.00 Hz</strong></div>
+                <div class="res-row"><span>Periodo Total (T):</span> <strong id="ast_res_t">0.00 ms</strong></div>
+                <div class="res-row"><span>Tiempo en Alto (T1):</span> <strong id="ast_res_th">0.00 ms</strong></div>
+                <div class="res-row"><span>Tiempo en Bajo (T2):</span> <strong id="ast_res_tl">0.00 ms</strong></div>
+                <div class="res-row"><span>Ciclo de Trabajo (Duty):</span> <strong id="ast_res_dc">0.00 %</strong></div>
+            </div>
+        </div>
+
+        <div class="calc-panel">
+            <h3>Disposición y Fórmulas</h3>
+            <!-- SVG del IC 555 -->
+            <svg viewBox="0 0 200 180" width="100%" max-width="200" style="margin:0 auto 24px; display:block; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));">
+                <rect x="50" y="20" width="100" height="140" rx="8" fill="#15232f" stroke="#1e3a8a" stroke-width="3"/>
+                <circle cx="70" cy="35" r="4" fill="#00f2fe" />
+                <line x1="30" y1="40" x2="50" y2="40" stroke="#9aaab6" stroke-width="4"/><text x="22" y="44" fill="#e6edf3" font-size="12" text-anchor="end" font-family="'IBM Plex Mono', monospace">GND 1</text>
+                <line x1="30" y1="70" x2="50" y2="70" stroke="#9aaab6" stroke-width="4"/><text x="22" y="74" fill="#e6edf3" font-size="12" text-anchor="end" font-family="'IBM Plex Mono', monospace">TRIG 2</text>
+                <line x1="30" y1="100" x2="50" y2="100" stroke="#9aaab6" stroke-width="4"/><text x="22" y="104" fill="#e6edf3" font-size="12" text-anchor="end" font-family="'IBM Plex Mono', monospace">OUT 3</text>
+                <line x1="30" y1="130" x2="50" y2="130" stroke="#9aaab6" stroke-width="4"/><text x="22" y="134" fill="#e6edf3" font-size="12" text-anchor="end" font-family="'IBM Plex Mono', monospace">RST 4</text>
+                <line x1="150" y1="40" x2="170" y2="40" stroke="#9aaab6" stroke-width="4"/><text x="178" y="44" fill="#e6edf3" font-size="12" text-anchor="start" font-family="'IBM Plex Mono', monospace">8 VCC</text>
+                <line x1="150" y1="70" x2="170" y2="70" stroke="#9aaab6" stroke-width="4"/><text x="178" y="74" fill="#e6edf3" font-size="12" text-anchor="start" font-family="'IBM Plex Mono', monospace">7 DIS</text>
+                <line x1="150" y1="100" x2="170" y2="100" stroke="#9aaab6" stroke-width="4"/><text x="178" y="104" fill="#e6edf3" font-size="12" text-anchor="start" font-family="'IBM Plex Mono', monospace">6 THR</text>
+                <line x1="150" y1="130" x2="170" y2="130" stroke="#9aaab6" stroke-width="4"/><text x="178" y="134" fill="#e6edf3" font-size="12" text-anchor="start" font-family="'IBM Plex Mono', monospace">5 CTRL</text>
+                <text x="100" y="100" fill="#00f2fe" font-size="22" font-weight="600" text-anchor="middle" transform="rotate(-90 100 90)" font-family="'IBM Plex Sans', sans-serif">NE555</text>
+            </svg>
+            <div class="formulas">
+                <p><span>Tiempo nivel alto (Descarga bloqueada):</span> <code>T1 = 0.693 × (R1 + R2) × C</code></p>
+                <p><span>Tiempo nivel bajo (Descarga a través de R2):</span> <code>T2 = 0.693 × R2 × C</code></p>
+                <p><span>Periodo Total:</span> <code>T = T1 + T2</code></p>
+                <p><span>Frecuencia de oscilación:</span> <code>f = 1.44 / ((R1 + 2×R2) × C)</code></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECCIÓN: MODO MONOESTABLE -->
+<section id="monostable">
+    <h2>Modo Monoestable (Temporizador de Un Disparo)</h2>
+    <p class="sub">El circuito genera un único pulso de salida de duración predeterminada cuando se aplica una señal de disparo (flanco de bajada) en el pin 2.</p>
+    
+    <div class="calculator-grid">
+        <div class="calc-panel">
+            <h3>Parámetros del Temporizador</h3>
+            <div class="input-group">
+                <label>Resistencia (R)</label>
+                <input type="number" id="mono_r" value="10" min="0.001" step="any">
+                <select id="mono_r_u">
+                    <option value="1">Ω</option>
+                    <option value="1000" selected>kΩ</option>
+                    <option value="1000000">MΩ</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Capacitor (C)</label>
+                <input type="number" id="mono_c" value="100" min="0.001" step="any">
+                <select id="mono_c_u">
+                    <option value="0.000000000001">pF</option>
+                    <option value="0.000000001">nF</option>
+                    <option value="0.000001" selected>µF</option>
+                    <option value="0.001">mF</option>
+                </select>
+            </div>
+
+            <div class="results" style="margin-top: 36px;">
+                <div class="res-row"><span>Duración del Pulso (T):</span> <strong id="mono_res_t" style="color: var(--acc); font-size: 1.2em;">0.00 s</strong></div>
+            </div>
+        </div>
+
+        <div class="calc-panel">
+            <h3>Fórmula Principal</h3>
+            <div class="formulas" style="margin-top: 10px;">
+                <p><span>Ancho del pulso de salida:</span> <code>T = 1.1 × R × C</code></p>
+                <p style="margin-top: 20px; color: var(--mute); font-size: 14.5px; line-height: 1.6;">
+                    <strong>Nota operativa:</strong> En esta configuración, la red RC determina exactamente cuánto tiempo permanecerá el Pin 3 (OUT) en estado ALTO después de que el Pin 2 (TRIG) reciba un pulso negativo que caiga por debajo de 1/3 de VCC.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+    // Gestión de Pestañas
+    const tabs = document.querySelectorAll("nav button");
+    function show(id) {
+        tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.t === id));
+        document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === id));
+    }
+    tabs.forEach(t => {
+        t.onclick = () => { show(t.dataset.t); }
+    });
+
+    // Utilidades de formato
+    function formatTime(s) {
+        if (!isFinite(s) || s <= 0) return "0.00 ms";
+        if (s >= 1) return s.toFixed(3) + " s";
+        if (s >= 0.001) return (s * 1000).toFixed(3) + " ms";
+        if (s >= 0.000001) return (s * 1000000).toFixed(3) + " µs";
+        return (s * 1000000000).toFixed(3) + " ns";
+    }
+
+    function formatFreq(hz) {
+        if (!isFinite(hz) || hz <= 0) return "0.00 Hz";
+        if (hz >= 1000000) return (hz / 1000000).toFixed(3) + " MHz";
+        if (hz >= 1000) return (hz / 1000).toFixed(3) + " kHz";
+        return hz.toFixed(3) + " Hz";
+    }
+
+    // Lógica del Astable
+    function calcAstable() {
+        const r1 = parseFloat(document.getElementById('ast_r1').value) * parseFloat(document.getElementById('ast_r1_u').value);
+        const r2 = parseFloat(document.getElementById('ast_r2').value) * parseFloat(document.getElementById('ast_r2_u').value);
+        const c = parseFloat(document.getElementById('ast_c').value) * parseFloat(document.getElementById('ast_c_u').value);
+
+        if (r1 > 0 && r2 > 0 && c > 0) {
+            const t1 = 0.693 * (r1 + r2) * c;
+            const t2 = 0.693 * r2 * c;
+            const t = t1 + t2;
+            const f = 1.44 / ((r1 + 2 * r2) * c);
+            const dc = (t1 / t) * 100;
+
+            document.getElementById('ast_res_th').textContent = formatTime(t1);
+            document.getElementById('ast_res_tl').textContent = formatTime(t2);
+            document.getElementById('ast_res_t').textContent = formatTime(t);
+            document.getElementById('ast_res_f').textContent = formatFreq(f);
+            document.getElementById('ast_res_dc').textContent = dc.toFixed(2) + " %";
+        } else {
+            document.getElementById('ast_res_th').textContent = "---";
+            document.getElementById('ast_res_tl').textContent = "---";
+            document.getElementById('ast_res_t').textContent = "---";
+            document.getElementById('ast_res_f').textContent = "---";
+            document.getElementById('ast_res_dc').textContent = "---";
+        }
+    }
+
+    // Lógica del Monoestable
+    function calcMonostable() {
+        const r = parseFloat(document.getElementById('mono_r').value) * parseFloat(document.getElementById('mono_r_u').value);
+        const c = parseFloat(document.getElementById('mono_c').value) * parseFloat(document.getElementById('mono_c_u').value);
+
+        if (r > 0 && c > 0) {
+            const t = 1.1 * r * c;
+            document.getElementById('mono_res_t').textContent = formatTime(t);
+        } else {
+            document.getElementById('mono_res_t').textContent = "---";
+        }
+    }
+
+    // Listeners
+    document.querySelectorAll('#astable input, #astable select').forEach(el => el.addEventListener('input', calcAstable));
+    document.querySelectorAll('#monostable input, #monostable select').forEach(el => el.addEventListener('input', calcMonostable));
+
+    // Inicialización
+    calcAstable();
+    calcMonostable();
+})();
+</script>
+</body>
+</html>

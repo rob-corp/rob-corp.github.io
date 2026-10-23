@@ -4,23 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0d1117">
+<meta name="theme-color" content="#0f172a">
 <title>Visualizador 3D</title>
 <link id="favicon" rel="icon" type="image/svg+xml" href="iconos/visualizador3d.svg">
 
 <style>
   :root {
-    --bg: #0d1117;
-    --bg-header: #161b22;
-    --bg-panel: #11161d;
-    --bg-card: #161b22;
-    --border: #21262d;
-    --border-strong: #30363d;
-    --text: #e2e8f0;
-    --text-dim: #8b949e;
-    --text-soft: #c9d1d9;
-    --accent: #e05e1b;
-    --accent-soft: #1c1917;
+    --bg: #0f172a;
+    --bg-header: #0f172a;
+    --bg-panel: #0f172a;
+    --bg-card: #1e293b;
+    --border: #334155;
+    --border-strong: #475569;
+    --text: #f8fafc;
+    --text-dim: #94a3b8;
+    --text-soft: #cbd5e1;
+    --accent: #3b82f6;
+    --accent-soft: rgba(59, 130, 246, 0.10);
     --radius: 6px;
     --tr: 0.2s ease;
   }
@@ -39,8 +39,8 @@
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: #212c3d; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #334155; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
   body {
     background-color: var(--bg);
@@ -191,7 +191,7 @@
   .viewport-container {
     flex: 1;
     position: relative;
-    background: radial-gradient(ellipse at center, #0d1119 0%, #05070a 100%);
+    background: radial-gradient(ellipse at center, #0f172a 0%, #0b1220 100%);
     overflow: hidden;
   }
 
@@ -243,7 +243,7 @@
   }
 
   .btn-reset {
-    background: rgba(22, 27, 34, 0.9);
+    background: rgba(30, 41, 59, 0.9);
     border: 1px solid var(--border-strong);
     color: var(--text);
     padding: 6px 12px;
@@ -270,7 +270,7 @@
     content: '📥 Suelta el archivo aquí';
     position: absolute;
     inset: 0;
-    background: rgba(224, 94, 27, 0.15);
+    background: rgba(59, 130, 246, 0.15);
     border: 3px dashed var(--accent);
     display: flex;
     align-items: center;
@@ -286,7 +286,7 @@
   #loading {
     position: absolute;
     inset: 0;
-    background: rgba(13, 17, 23, 0.7);
+    background: rgba(15, 23, 42, 0.7);
     display: none;
     align-items: center;
     justify-content: center;
@@ -389,7 +389,7 @@
       <div class="upload-box" id="drop-zone" role="button" tabindex="0"
            aria-label="Cargar modelo: seleccionar o arrastrar archivo STL, OBJ o G-code">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-             stroke="#e05e1b" stroke-width="2" aria-hidden="true">
+             stroke="#3b82f6" stroke-width="2" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="17 8 12 3 7 8"></polyline>
           <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -448,7 +448,7 @@ const CONFIG = {
   MAX_PIXEL_RATIO: 2,
   MAX_PIXEL_RATIO_MOBILE: 1.5,
   MAX_FILE_MB: 200,
-  ACCENT: 0xe05e1b,
+  ACCENT: 0x3b82f6,
   RESIZE_DEBOUNCE: 120,
   CAM_ANIM_SPEED: 0.08,
 };
@@ -622,7 +622,7 @@ function init() {
   const h = viewport.clientHeight;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x090d13);
+  scene.background = new THREE.Color(0x0f172a);
 
   camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 3000);
   camera.up.set(0, 0, 1);
@@ -670,12 +670,12 @@ function init() {
 function buildBed() {
   const half = CONFIG.BED_SIZE / 2;
 
-  const gridPrimary = new THREE.GridHelper(CONFIG.BED_SIZE, 47, 0x384454, 0x1c2430);
+  const gridPrimary = new THREE.GridHelper(CONFIG.BED_SIZE, 47, 0x334155, 0x1e293b);
   gridPrimary.rotation.x = Math.PI / 2;
   gridPrimary.position.set(half, half, 0);
   scene.add(gridPrimary);
 
-  const gridSecondary = new THREE.GridHelper(CONFIG.BED_SIZE, 235, 0x18202a, 0x121720);
+  const gridSecondary = new THREE.GridHelper(CONFIG.BED_SIZE, 235, 0x1e293b, 0x0f172a);
   gridSecondary.rotation.x = Math.PI / 2;
   gridSecondary.position.set(half, half, -0.1);
   scene.add(gridSecondary);
@@ -718,10 +718,10 @@ function createOrcaFaceTexture(text, rotationDeg = 0) {
   canvas.width = canvas.height = 256;
   const ctx = canvas.getContext('2d');
 
-  ctx.fillStyle = '#2f343d';
+  ctx.fillStyle = '#1e293b';
   ctx.fillRect(0, 0, 256, 256);
 
-  ctx.strokeStyle = '#434a56';
+  ctx.strokeStyle = '#475569';
   ctx.lineWidth = 2;
   const step = 256 / 3;
   for (let i = 1; i < 3; i++) {
@@ -729,7 +729,7 @@ function createOrcaFaceTexture(text, rotationDeg = 0) {
     ctx.beginPath(); ctx.moveTo(0, i * step); ctx.lineTo(256, i * step); ctx.stroke();
   }
 
-  ctx.strokeStyle = '#555e6d';
+  ctx.strokeStyle = '#64748b';
   ctx.lineWidth = 4;
   ctx.strokeRect(0, 0, 256, 256);
 
@@ -819,7 +819,7 @@ function initViewCube() {
   const cellSize = CONFIG.CUBE_SIZE / 3;
   highlightBlock = new THREE.Mesh(
     new THREE.BoxGeometry(cellSize * 0.98, cellSize * 0.98, cellSize * 0.98),
-    new THREE.MeshBasicMaterial({ color: 0xb86d3b, depthTest: false })
+    new THREE.MeshBasicMaterial({ color: 0x60a5fa, depthTest: false })
   );
   highlightBlock.visible = false;
   highlightBlock.renderOrder = 1001;
