@@ -64,7 +64,7 @@
 
 <header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <a href="index.html" class="inline-flex items-center gap-3.5 group">
+    <a href="/index.html" class="inline-flex items-center gap-3.5 group">
       <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
         <img src="iconos/union.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
       </div>
@@ -99,12 +99,15 @@
 
       <!-- COLUMNA IZQUIERDA: ESQUEMA VECTORIAL -->
       <div class="flex justify-center bg-[#0f172a] rounded-2xl border border-[#334155] p-6 lg:p-10 shadow-inner">
-        <svg viewBox="0 0 400 350" class="w-full max-w-[350px] h-auto text-[#60a5fa] glow-svg">
+        <!-- SVG Ampliado (viewBox modificado para que no corte los textos largos) -->
+        <svg viewBox="-80 0 560 350" class="w-full max-w-[450px] h-auto text-[#60a5fa] glow-svg">
           <!-- Batería / Fuente (V) -->
           <path d="M 80,100 L 80,150" fill="none" stroke="currentColor" stroke-width="4"/>
           <path d="M 60,150 L 100,150" fill="none" stroke="currentColor" stroke-width="6"/> <!-- Placa + -->
           <path d="M 70,170 L 90,170" fill="none" stroke="currentColor" stroke-width="8"/> <!-- Placa - -->
           <path d="M 80,170 L 80,250" fill="none" stroke="currentColor" stroke-width="4"/>
+          
+          <!-- Texto Vout (Alineado a la derecha, con espacio hacia la izquierda) -->
           <text x="45" y="165" fill="currentColor" font-size="28" font-family="monospace" font-weight="bold" text-anchor="end" class="transition-colors duration-300" id="svg-v-val">0 V</text>
           
           <!-- Cables horizontales -->
@@ -114,19 +117,33 @@
           <!-- Flecha de Corriente (I) -->
           <path d="M 160,85 L 240,85" fill="none" stroke="#f0a070" stroke-width="4" stroke-linecap="round" class="glow-orange"/>
           <path d="M 225,75 L 240,85 L 225,95" fill="none" stroke="#f0a070" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="glow-orange"/>
+          <!-- Texto Corriente (Centrado) -->
           <text x="200" y="70" fill="#f0a070" font-size="20" font-family="monospace" font-weight="bold" text-anchor="middle" class="glow-orange transition-colors duration-300" id="svg-i-val">0 A</text>
 
           <!-- Resistencia (R) - Rama derecha -->
           <path d="M 320,100 L 320,135" fill="none" stroke="currentColor" stroke-width="4"/>
           <rect x="300" y="135" width="40" height="80" fill="#1e293b" stroke="currentColor" stroke-width="4" rx="2"/>
+          
+          <!-- Texto Resistencia (Alineado a la izquierda, con mucho espacio hacia la derecha) -->
           <text x="355" y="180" fill="currentColor" font-size="24" font-family="monospace" font-weight="bold" text-anchor="start" dominant-baseline="middle" class="transition-colors duration-300" id="svg-r-val">0 Ω</text>
+          
           <path d="M 320,215 L 320,250" fill="none" stroke="currentColor" stroke-width="4"/>
 
-          <!-- Símbolo de Potencia (P) disipándose (ondas) -->
-          <path d="M 285,145 Q 275,140 285,135" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" class="glow-orange"/>
-          <path d="M 285,175 Q 270,175 285,175" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" class="glow-orange"/>
-          <path d="M 285,205 Q 275,210 285,215" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" class="glow-orange"/>
-          <text x="265" y="240" fill="#f0a070" font-size="20" font-family="monospace" font-weight="bold" text-anchor="end" class="glow-orange transition-colors duration-300" id="svg-p-val">0 W</text>
+          <!-- Ondas de disipación de Potencia (P) bien trazadas -->
+          <g class="glow-orange">
+            <!-- Onda Superior -->
+            <path d="M 290,150 Q 282.5,140 275,150 T 260,150" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 267,145 L 260,150 L 267,155" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Onda Central -->
+            <path d="M 290,175 Q 282.5,165 275,175 T 260,175" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 267,170 L 260,175 L 267,180" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Onda Inferior -->
+            <path d="M 290,200 Q 282.5,190 275,200 T 260,200" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 267,195 L 260,200 L 267,205" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          
+          <!-- Texto Potencia (Alineado a la derecha del bloque de ondas) -->
+          <text x="250" y="240" fill="#f0a070" font-size="20" font-family="monospace" font-weight="bold" text-anchor="end" class="glow-orange transition-colors duration-300" id="svg-p-val">0 W</text>
         </svg>
       </div>
 
@@ -140,8 +157,8 @@
             <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
           </label>
           <div class="flex items-center gap-2 mt-1">
-            <input type="number" id="val-v" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
-            <select id="unit-v" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
+            <input type="number" id="val-v" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-lg px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
+            <select id="unit-v" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded-lg px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
               <option value="0.001">mV</option>
               <option value="1" selected>V</option>
               <option value="1000">kV</option>
@@ -156,8 +173,8 @@
             <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
           </label>
           <div class="flex items-center gap-2 mt-1">
-            <input type="number" id="val-i" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
-            <select id="unit-i" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
+            <input type="number" id="val-i" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-lg px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
+            <select id="unit-i" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded-lg px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
               <option value="0.000001">µA</option>
               <option value="0.001">mA</option>
               <option value="1" selected>A</option>
@@ -172,8 +189,8 @@
             <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
           </label>
           <div class="flex items-center gap-2 mt-1">
-            <input type="number" id="val-r" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
-            <select id="unit-r" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
+            <input type="number" id="val-r" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-lg px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
+            <select id="unit-r" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded-lg px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
               <option value="1" selected>Ω</option>
               <option value="1000">kΩ</option>
               <option value="1000000">MΩ</option>
@@ -188,8 +205,8 @@
             <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
           </label>
           <div class="flex items-center gap-2 mt-1">
-            <input type="number" id="val-p" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono text-lg focus:border-[#f0a070] transition-colors" placeholder="---">
-            <select id="unit-p" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white font-bold cursor-pointer focus:border-[#f0a070] transition-colors">
+            <input type="number" id="val-p" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-lg px-3 py-2 text-white font-mono text-lg focus:border-[#f0a070] transition-colors" placeholder="---">
+            <select id="unit-p" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded-lg px-2 py-2 text-white font-bold cursor-pointer focus:border-[#f0a070] transition-colors">
               <option value="0.001">mW</option>
               <option value="1" selected>W</option>
               <option value="1000">kW</option>
@@ -227,7 +244,7 @@
     }
   };
 
-  let activeInputs = []; // Array para trackear los ultimos 2 inputs modificados manualmente
+  let activeInputs = [];
 
   // --- FORMATEADORES ---
   function getBestUnit(val, type) {
@@ -274,15 +291,15 @@
     const f = fields[key];
     const best = getBestUnit(baseVal, key);
     
+    // Mostramos hasta 4 decimales para precisión (ej. 0.5217)
     f.input.value = parseFloat(best.val.toFixed(4));
     f.unit.value = best.mult;
     
-    // UI Update (Calculado)
     f.input.classList.remove('input-manual');
     f.input.classList.add('input-computed');
     f.card.querySelector('.tag-state').textContent = 'CALCULADO';
     
-    // SVG Update
+    // SVG usa un par de decimales para no sobrecargar visualmente el dibujo
     f.svg.textContent = `${parseFloat(best.val.toFixed(2))} ${getUnitSymbol(best.mult, key)}`;
     f.svg.classList.add('text-[#f0a070]');
   }
@@ -307,7 +324,6 @@
   function calculateOhm() {
     if (activeInputs.length < 2) return;
 
-    // Obtener los 2 identificadores activos
     const k1 = activeInputs[0];
     const k2 = activeInputs[1];
     const v1 = getBaseValue(fields[k1]);
@@ -315,11 +331,9 @@
 
     if (v1 === null || v2 === null) return;
 
-    // Mapa de valores conocidos en unidades base
     const known = { [k1]: v1, [k2]: v2 };
     let v, i, r, p;
 
-    // Rueda de Ohm - 6 Combinaciones posibles
     if (known.v !== undefined && known.i !== undefined) {
       v = known.v; i = known.i;
       r = (i !== 0) ? v / i : 0;
@@ -353,7 +367,6 @@
 
     const computedValues = { v, i, r, p };
 
-    // Asignar los valores calculados a los campos inactivos
     Object.keys(fields).forEach(key => {
       if (!activeInputs.includes(key)) {
         setComputedValue(key, computedValues[key]);
@@ -365,7 +378,6 @@
   function handleInput(e, key) {
     const valStr = e.target.value;
     
-    // Si borra el input
     if (valStr === '') {
       activeInputs = activeInputs.filter(k => k !== key);
       const f = fields[key];
@@ -376,22 +388,18 @@
       return;
     }
 
-    // Agregar a inputs activos (máx 2, FIFO)
     if (!activeInputs.includes(key)) {
       if (activeInputs.length >= 2) {
-        // Remover el más viejo
-        const oldKey = activeInputs.shift();
+        activeInputs.shift();
       }
       activeInputs.push(key);
     } else {
-      // Mover al final (más reciente)
       activeInputs = activeInputs.filter(k => k !== key);
       activeInputs.push(key);
     }
 
     setManualState(key);
     
-    // Asegurarse de que el otro input activo tambien mantenga su estado visual manual
     if (activeInputs.length === 2) {
       setManualState(activeInputs[0]);
     }
@@ -409,7 +417,6 @@
     });
   });
 
-  // Limpiar
   document.getElementById('btn-clear').addEventListener('click', () => {
     activeInputs = [];
     Object.keys(fields).forEach(key => {

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0f172a">
-<title>Capacitores serie/paralelo</title>
+<title>Resistencias serie/paralelo</title>
 <link rel="icon" type="image/svg+xml" href="iconos/union.svg">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -60,12 +60,12 @@
 
 <header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <a href="index.html" class="inline-flex items-center gap-3.5 group">
+    <a href="/index.html" class="inline-flex items-center gap-3.5 group">
       <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
         <img src="iconos/union.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
       </div>
       <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
-        Capacitores serie/paralelo
+        Resistencias serie/paralelo
       </h1>
     </a>
   </div>
@@ -81,7 +81,7 @@
         Valor Deseado
       </h2>
       <p class="text-sm text-slate-400 mt-1">
-        Ingresá la capacitancia que buscás obtener. Los paneles calcularán automáticamente el valor que debe tener cada capacitor según la cantidad.
+        Ingresá la resistencia que buscás obtener. Los paneles calcularán automáticamente el valor que debe tener cada resistencia según la cantidad.
       </p>
       <p class="text-xs text-slate-400 mt-3 font-medium">
         Equivalente comercial más cercano (E12): <strong id="target-e12" class="text-[#f0a070] font-mono text-sm ml-1 bg-[#3a2418] px-2 py-0.5 rounded border border-[#f0a070]/30">--</strong>
@@ -90,10 +90,9 @@
     <div class="flex gap-2 w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
       <input type="number" id="target-val" value="100" min="0" step="any" class="w-full sm:w-32 bg-[#0f172a] border border-[#334155] rounded-lg px-4 py-3 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors">
       <select id="target-unit" class="bg-[#334155] border border-[#334155] rounded-lg px-3 py-3 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
-        <option value="1">pF</option>
-        <option value="1000">nF</option>
-        <option value="1000000" selected>µF</option>
-        <option value="1000000000">mF</option>
+        <option value="1">Ω</option>
+        <option value="1000" selected>kΩ</option>
+        <option value="1000000">MΩ</option>
       </select>
     </div>
   </section>
@@ -108,21 +107,21 @@
       <div class="bg-[#0f172a] p-4 sm:p-5 border-b border-[#334155] flex flex-col justify-between min-h-[136px]">
         <div class="flex justify-between items-center gap-4">
           <h3 class="text-base sm:text-lg font-bold text-[#60a5fa]">Circuito en Serie</h3>
-          <!-- SVG Serie (Capacitores) fijado a h-10 -->
+          <!-- SVG Serie fijado a h-10 -->
           <svg class="h-10 w-auto text-[#60a5fa] shrink-0" viewBox="0 0 120 40" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M0 20 h30" />
-            <path d="M30 10 v20 M38 10 v20" />
-            <text x="34" y="40" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">C1</text>
-            <path d="M38 20 h34" />
-            <path d="M72 10 v20 M80 10 v20" />
-            <text x="76" y="40" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">C2</text>
-            <path d="M80 20 h40" />
+            <path d="M0 20 h20" />
+            <rect x="20" y="12" width="30" height="16" rx="2" fill="#1e293b" />
+            <text x="35" y="23.5" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">R1</text>
+            <path d="M50 20 h20" />
+            <rect x="70" y="12" width="30" height="16" rx="2" fill="#1e293b" />
+            <text x="85" y="23.5" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">R2</text>
+            <path d="M100 20 h20" />
           </svg>
         </div>
         <div>
           <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Equivalente Actual</span>
           <div class="flex items-end gap-3">
-            <div class="text-3xl font-mono font-bold text-white leading-none" id="total-serie">0.00 µF</div>
+            <div class="text-3xl font-mono font-bold text-white leading-none" id="total-serie">0.00 Ω</div>
             <div class="text-xs text-slate-400 font-mono mb-0.5">E12: <span id="e12-serie" class="text-[#f0a070] font-bold">--</span></div>
           </div>
         </div>
@@ -131,12 +130,12 @@
       <!-- Barra de Sugerencia -->
       <div class="bg-[#334155]/40 px-5 py-3 border-b border-[#334155] flex flex-wrap items-center justify-between gap-3">
         <div class="text-xs text-slate-300">
-          Para lograr <strong class="target-label text-white">100 µF</strong> (<span id="count-serie">2</span> cap.):
+          Para lograr <strong class="target-label text-white">100 kΩ</strong> (<span id="count-serie">2</span> res.):
         </div>
         <div class="flex items-center gap-3">
           <div class="flex flex-col items-end">
-            <span class="font-mono text-[#60a5fa] font-bold" id="sug-serie">200 µF c/u</span>
-            <span class="text-[10px] text-[#f0a070] font-mono font-medium leading-none mt-1">E12: <span id="sug-e12-serie">220 µF</span></span>
+            <span class="font-mono text-[#60a5fa] font-bold" id="sug-serie">50 kΩ c/u</span>
+            <span class="text-[10px] text-[#f0a070] font-mono font-medium leading-none mt-1">E12: <span id="sug-e12-serie">47 kΩ</span></span>
           </div>
           <button id="apply-serie" class="text-[11px] font-bold uppercase tracking-wider bg-[#3b82f6] text-[#0f172a] px-2.5 py-1.5 rounded hover:bg-[#60a5fa] transition-colors ml-1">
             Aplicar
@@ -144,7 +143,7 @@
         </div>
       </div>
 
-      <!-- Lista de Capacitores -->
+      <!-- Lista de Resistencias -->
       <div class="p-5 flex-grow flex flex-col gap-3" id="list-serie">
         <!-- Filas de inputs -->
       </div>
@@ -153,7 +152,7 @@
       <div class="px-5 pb-5 mt-auto">
         <button id="btn-add-serie" class="w-full py-2.5 border border-[#334155] bg-[#0f172a] text-[#60a5fa] rounded-lg hover:border-[#3b82f6] transition-colors flex items-center justify-center gap-2 font-medium text-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> 
-          Agregar Capacitor a la Serie
+          Agregar Resistencia a la Serie
         </button>
       </div>
     </div>
@@ -165,26 +164,24 @@
       <div class="bg-[#0f172a] p-4 sm:p-5 border-b border-[#334155] flex flex-col justify-between min-h-[136px]">
         <div class="flex justify-between items-center gap-4">
           <h3 class="text-base sm:text-lg font-bold text-[#60a5fa]">Circuito en Paralelo</h3>
-          <!-- SVG Paralelo (Capacitores) fijado a h-10 -->
-          <svg class="h-10 w-auto text-[#60a5fa] shrink-0" viewBox="0 0 100 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
-            <path d="M0 40 h15" />
-            <circle cx="15" cy="40" r="2.5" fill="currentColor" stroke="none" />
-            <path d="M15 20 v40 M15 20 h20 M15 60 h20" />
-            <!-- C1 -->
-            <path d="M35 10 v20 M43 10 v20" />
-            <text x="39" y="40" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">C1</text>
-            <!-- C2 -->
-            <path d="M35 50 v20 M43 50 v20" />
-            <text x="39" y="80" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">C2</text>
-            <path d="M43 20 h32 M43 60 h32 M75 20 v40" />
-            <circle cx="75" cy="40" r="2.5" fill="currentColor" stroke="none" />
-            <path d="M75 40 h25" />
+          <!-- SVG Paralelo compactado (sin exceso de espacio) y fijado a h-10 -->
+          <svg class="h-10 w-auto text-[#60a5fa] shrink-0" viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+            <path d="M0 30 h15" />
+            <circle cx="15" cy="30" r="2.5" fill="currentColor" stroke="none" />
+            <path d="M15 10 v40 M15 10 h15 M15 50 h15" />
+            <rect x="30" y="2" width="30" height="16" rx="2" fill="#1e293b" />
+            <text x="45" y="13.5" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">R1</text>
+            <rect x="30" y="42" width="30" height="16" rx="2" fill="#1e293b" />
+            <text x="45" y="53.5" fill="currentColor" stroke="none" font-size="8.5" font-family="monospace" text-anchor="middle">R2</text>
+            <path d="M60 10 h15 M60 50 h15 M75 10 v40" />
+            <circle cx="75" cy="30" r="2.5" fill="currentColor" stroke="none" />
+            <path d="M75 30 h25" />
           </svg>
         </div>
         <div>
           <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Equivalente Actual</span>
           <div class="flex items-end gap-3">
-            <div class="text-3xl font-mono font-bold text-white leading-none" id="total-paralelo">0.00 µF</div>
+            <div class="text-3xl font-mono font-bold text-white leading-none" id="total-paralelo">0.00 Ω</div>
             <div class="text-xs text-slate-400 font-mono mb-0.5">E12: <span id="e12-paralelo" class="text-[#f0a070] font-bold">--</span></div>
           </div>
         </div>
@@ -193,12 +190,12 @@
       <!-- Barra de Sugerencia -->
       <div class="bg-[#334155]/40 px-5 py-3 border-b border-[#334155] flex flex-wrap items-center justify-between gap-3">
         <div class="text-xs text-slate-300">
-          Para lograr <strong class="target-label text-white">100 µF</strong> (<span id="count-paralelo">2</span> cap.):
+          Para lograr <strong class="target-label text-white">100 kΩ</strong> (<span id="count-paralelo">2</span> res.):
         </div>
         <div class="flex items-center gap-3">
           <div class="flex flex-col items-end">
-            <span class="font-mono text-[#60a5fa] font-bold" id="sug-paralelo">50 µF c/u</span>
-            <span class="text-[10px] text-[#f0a070] font-mono font-medium leading-none mt-1">E12: <span id="sug-e12-paralelo">47 µF</span></span>
+            <span class="font-mono text-[#60a5fa] font-bold" id="sug-paralelo">200 kΩ c/u</span>
+            <span class="text-[10px] text-[#f0a070] font-mono font-medium leading-none mt-1">E12: <span id="sug-e12-paralelo">220 kΩ</span></span>
           </div>
           <button id="apply-paralelo" class="text-[11px] font-bold uppercase tracking-wider bg-[#3b82f6] text-[#0f172a] px-2.5 py-1.5 rounded hover:bg-[#60a5fa] transition-colors ml-1">
             Aplicar
@@ -206,7 +203,7 @@
         </div>
       </div>
 
-      <!-- Lista de Capacitores -->
+      <!-- Lista de Resistencias -->
       <div class="p-5 flex-grow flex flex-col gap-3" id="list-paralelo">
         <!-- Filas de inputs -->
       </div>
@@ -215,7 +212,7 @@
       <div class="px-5 pb-5 mt-auto">
         <button id="btn-add-paralelo" class="w-full py-2.5 border border-[#334155] bg-[#0f172a] text-[#60a5fa] rounded-lg hover:border-[#3b82f6] transition-colors flex items-center justify-center gap-2 font-medium text-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> 
-          Agregar Capacitor al Paralelo
+          Agregar Resistencia al Paralelo
         </button>
       </div>
     </div>
@@ -230,11 +227,11 @@
   // --- Lógica Comercial E12 ---
   const e12Base = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2, 10.0];
 
-  function getClosestE12(farads) {
-    if (farads === 0 || !isFinite(farads)) return 0;
+  function getClosestE12(ohms) {
+    if (ohms === 0 || !isFinite(ohms)) return 0;
     
-    const magnitude = Math.pow(10, Math.floor(Math.log10(farads)));
-    const normalized = farads / magnitude;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(ohms)));
+    const normalized = ohms / magnitude;
 
     let closest = e12Base[0];
     let minDiff = Math.abs(normalized - closest);
@@ -274,74 +271,67 @@
   const sugE12ParaleloLabel = document.getElementById('sug-e12-paralelo');
   const btnApplyParalelo = document.getElementById('apply-paralelo');
 
-  function formatCap(val) {
-    if (val === 0 || !isFinite(val)) return '0.00 pF';
-    if (val < 1000) return val.toFixed(2).replace(/\.00$/, '') + ' pF';
-    if (val < 1000000) return (val / 1000).toFixed(2).replace(/\.00$/, '') + ' nF';
-    if (val < 1000000000) return (val / 1000000).toFixed(2).replace(/\.00$/, '') + ' µF';
-    return (val / 1000000000).toFixed(2).replace(/\.00$/, '') + ' mF';
+  function formatRes(val) {
+    if (val === 0 || !isFinite(val)) return '0.00 Ω';
+    if (val < 1000) return val.toFixed(2).replace(/\.00$/, '') + ' Ω';
+    if (val < 1000000) return (val / 1000).toFixed(2).replace(/\.00$/, '') + ' kΩ';
+    return (val / 1000000).toFixed(2).replace(/\.00$/, '') + ' MΩ';
   }
 
-  function getBestUnit(pf) {
-    if (pf >= 1000000000) return { val: pf / 1000000000, unit: 1000000000 };
-    if (pf >= 1000000) return { val: pf / 1000000, unit: 1000000 };
-    if (pf >= 1000) return { val: pf / 1000, unit: 1000 };
-    return { val: pf, unit: 1 };
+  function getBestUnit(ohms) {
+    if (ohms >= 1000000) return { val: ohms / 1000000, unit: 1000000 };
+    if (ohms >= 1000) return { val: ohms / 1000, unit: 1000 };
+    return { val: ohms, unit: 1 };
   }
 
   // --- Actualizaciones de Cálculo ---
   function calculateTotals() {
-    // Cálculo Serie (Inversa de sumas) y actualización de E12 individual
+    // Cálculo Serie y actualización de E12 individual
     const rowsSerie = listSerie.querySelectorAll('.res-row');
-    let sumSerieInverse = 0;
-    let hasZeroInSerie = false;
-    let validSerie = 0;
-    
+    let sumSerie = 0;
     rowsSerie.forEach(row => {
       const v = parseFloat(row.querySelector('.res-val').value);
       const m = parseFloat(row.querySelector('.res-unit').value);
       const e12RowLabel = row.querySelector('.row-e12');
-      if (!isNaN(v) && v >= 0) {
-        const cap = v * m;
-        if (cap === 0) hasZeroInSerie = true;
-        else sumSerieInverse += (1 / cap);
-        validSerie++;
-        e12RowLabel.textContent = formatCap(getClosestE12(cap));
+      if (!isNaN(v) && v > 0) {
+        const ohms = v * m;
+        sumSerie += ohms;
+        e12RowLabel.textContent = formatRes(getClosestE12(ohms));
       } else {
         e12RowLabel.textContent = '--';
       }
     });
-
-    let totalSerie = 0;
-    if (validSerie > 0) {
-      if (hasZeroInSerie) totalSerie = 0;
-      else if (sumSerieInverse > 0) totalSerie = 1 / sumSerieInverse;
-    }
     
-    totalSerieLabel.textContent = validSerie > 0 ? formatCap(totalSerie) : '0.00 pF';
-    e12SerieLabel.textContent = validSerie > 0 && totalSerie > 0 ? formatCap(getClosestE12(totalSerie)) : '--';
+    totalSerieLabel.textContent = rowsSerie.length > 0 ? formatRes(sumSerie) : '0.00 Ω';
+    e12SerieLabel.textContent = rowsSerie.length > 0 && sumSerie > 0 ? formatRes(getClosestE12(sumSerie)) : '--';
 
-    // Cálculo Paralelo (Suma directa) y actualización de E12 individual
+    // Cálculo Paralelo y actualización de E12 individual
     const rowsParalelo = listParalelo.querySelectorAll('.res-row');
-    let sumParalelo = 0;
-    let validParalelo = 0;
+    let sumParaleloInverse = 0;
+    let hasZeroInParallel = false;
     
     rowsParalelo.forEach(row => {
       const v = parseFloat(row.querySelector('.res-val').value);
       const m = parseFloat(row.querySelector('.res-unit').value);
       const e12RowLabel = row.querySelector('.row-e12');
-      if (!isNaN(v) && v > 0) {
-        const cap = v * m;
-        sumParalelo += cap;
-        validParalelo++;
-        e12RowLabel.textContent = formatCap(getClosestE12(cap));
+      if (!isNaN(v) && v >= 0) {
+        const ohms = v * m;
+        if (ohms === 0) hasZeroInParallel = true;
+        else sumParaleloInverse += (1 / ohms);
+        e12RowLabel.textContent = formatRes(getClosestE12(ohms));
       } else {
         e12RowLabel.textContent = '--';
       }
     });
 
-    totalParaleloLabel.textContent = validParalelo > 0 ? formatCap(sumParalelo) : '0.00 pF';
-    e12ParaleloLabel.textContent = validParalelo > 0 && sumParalelo > 0 ? formatCap(getClosestE12(sumParalelo)) : '--';
+    let totalParalelo = 0;
+    if (rowsParalelo.length > 0) {
+      if (hasZeroInParallel) totalParalelo = 0;
+      else if (sumParaleloInverse > 0) totalParalelo = 1 / sumParaleloInverse;
+    }
+    
+    totalParaleloLabel.textContent = rowsParalelo.length > 0 ? formatRes(totalParalelo) : '0.00 Ω';
+    e12ParaleloLabel.textContent = rowsParalelo.length > 0 && totalParalelo > 0 ? formatRes(getClosestE12(totalParalelo)) : '--';
   }
 
   function updateTargetSuggestions() {
@@ -349,19 +339,19 @@
     const mult = parseFloat(targetUnitSelect.value);
     
     if (isNaN(val) || val <= 0) return;
-    const targetCap = val * mult;
+    const targetOhms = val * mult;
 
     // Actualizar Labels generales
-    targetLabels.forEach(el => el.textContent = formatCap(targetCap));
-    targetE12Label.textContent = formatCap(getClosestE12(targetCap));
+    targetLabels.forEach(el => el.textContent = formatRes(targetOhms));
+    targetE12Label.textContent = formatRes(getClosestE12(targetOhms));
 
-    // Sugerencia Serie (Fórmula capacitores: Multiplicar Target * Cantidad)
+    // Sugerencia Serie (Repartir: Target / Cantidad)
     const lenSerie = listSerie.children.length;
     countSerieLabel.textContent = lenSerie;
     if (lenSerie > 0) {
-      const reqSerie = targetCap * lenSerie;
-      sugSerieLabel.textContent = formatCap(reqSerie) + ' c/u';
-      sugE12SerieLabel.textContent = formatCap(getClosestE12(reqSerie));
+      const reqSerie = targetOhms / lenSerie;
+      sugSerieLabel.textContent = formatRes(reqSerie) + ' c/u';
+      sugE12SerieLabel.textContent = formatRes(getClosestE12(reqSerie));
       btnApplySerie.dataset.val = reqSerie;
       btnApplySerie.parentElement.style.display = 'flex';
     } else {
@@ -370,13 +360,13 @@
       btnApplySerie.parentElement.style.display = 'none';
     }
 
-    // Sugerencia Paralelo (Fórmula capacitores: Repartir Target / Cantidad)
+    // Sugerencia Paralelo (Multiplicar: Target * Cantidad)
     const lenParalelo = listParalelo.children.length;
     countParaleloLabel.textContent = lenParalelo;
     if (lenParalelo > 0) {
-      const reqParalelo = targetCap / lenParalelo;
-      sugParaleloLabel.textContent = formatCap(reqParalelo) + ' c/u';
-      sugE12ParaleloLabel.textContent = formatCap(getClosestE12(reqParalelo));
+      const reqParalelo = targetOhms * lenParalelo;
+      sugParaleloLabel.textContent = formatRes(reqParalelo) + ' c/u';
+      sugE12ParaleloLabel.textContent = formatRes(getClosestE12(reqParalelo));
       btnApplyParalelo.dataset.val = reqParalelo;
       btnApplyParalelo.parentElement.style.display = 'flex';
     } else {
@@ -409,7 +399,7 @@
     
     if (isSerie) serieCount++; else paraleloCount++;
     const id = isSerie ? serieCount : paraleloCount;
-    const prefix = isSerie ? 'Cs' : 'Cp'; // C de Capacitor
+    const prefix = isSerie ? 'Rs' : 'Rp';
     const accentColor = isSerie ? 'text-[#3b82f6]' : 'text-[#60a5fa]';
 
     const div = document.createElement('div');
@@ -420,10 +410,9 @@
         <div class="font-mono text-xs sm:text-sm font-bold ${accentColor} w-8 sm:w-10 shrink-0">${prefix}${id}</div>
         <input type="number" class="res-val w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono focus:border-[#3b82f6] transition-colors" value="${defaultVal}" min="0" step="any">
         <select class="res-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white cursor-pointer focus:border-[#3b82f6] transition-colors">
-          <option value="1" ${defaultUnit==='1'?'selected':''}>pF</option>
-          <option value="1000" ${defaultUnit==='1000'?'selected':''}>nF</option>
-          <option value="1000000" ${defaultUnit==='1000000'?'selected':''}>µF</option>
-          <option value="1000000000" ${defaultUnit==='1000000000'?'selected':''}>mF</option>
+          <option value="1" ${defaultUnit==='1'?'selected':''}>Ω</option>
+          <option value="1000" ${defaultUnit==='1000'?'selected':''}>kΩ</option>
+          <option value="1000000" ${defaultUnit==='1000000'?'selected':''}>MΩ</option>
         </select>
         <button class="btn-remove shrink-0 text-slate-500 hover:text-[#f0a070] bg-[#1e293b] hover:bg-[#3a2418] transition-colors p-2 rounded" aria-label="Eliminar">
           <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -452,7 +441,7 @@
   function updateLabels(type) {
     const isSerie = type === 'serie';
     const container = isSerie ? listSerie : listParalelo;
-    const prefix = isSerie ? 'Cs' : 'Cp';
+    const prefix = isSerie ? 'Rs' : 'Rp';
     const rows = container.querySelectorAll('.res-row');
     
     rows.forEach((row, i) => {
@@ -466,17 +455,17 @@
   targetValInput.addEventListener('input', updateTargetSuggestions);
   targetUnitSelect.addEventListener('change', updateTargetSuggestions);
 
-  document.getElementById('btn-add-serie').addEventListener('click', () => createRow('serie', 10, '1000000'));
-  document.getElementById('btn-add-paralelo').addEventListener('click', () => createRow('paralelo', 10, '1000000'));
+  document.getElementById('btn-add-serie').addEventListener('click', () => createRow('serie', 10, '1000'));
+  document.getElementById('btn-add-paralelo').addEventListener('click', () => createRow('paralelo', 10, '1000'));
 
   btnApplySerie.addEventListener('click', () => applySuggestion('serie'));
   btnApplyParalelo.addEventListener('click', () => applySuggestion('paralelo'));
 
-  // Inicio por defecto con 2 capacitores cada lado (10 µF)
-  createRow('serie', 10, '1000000');
-  createRow('serie', 10, '1000000');
-  createRow('paralelo', 10, '1000000');
-  createRow('paralelo', 10, '1000000');
+  // Inicio por defecto con 2 resistencias cada lado
+  createRow('serie', 10, '1000');
+  createRow('serie', 10, '1000');
+  createRow('paralelo', 10, '1000');
+  createRow('paralelo', 10, '1000');
 
 })();
 </script>
