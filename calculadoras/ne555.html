@@ -1,87 +1,71 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f172a">
 <title>Calculadora NE555</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="icon" type="image/svg+xml" href="iconos/union.svg">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          navyBg: '#0f172a',
+          navyCard: '#1e293b',
+          navyBorder: '#334155',
+          cyanAccent: '#3b82f6',
+          cyanGlow: '#60a5fa',
+          amberGlow: '#f0a070',
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'Consolas', 'Monaco', 'monospace'],
+        }
+      }
+    }
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-/* Esquema de colores técnico (Navy / Cyan) */
-:root {
-    --bg: #0b132b; 
-    --panel: #132042; 
-    --ink: #e6edf3; 
-    --mute: #9aaab6; 
-    --line: #1e3a8a; 
-    --acc: #00f2fe; 
-    --accbg: #1c2d54; 
-    --warn: #f0a070; 
-    --warnbg: #3a2418;
-    box-sizing: border-box;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
-*, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 "IBM Plex Sans", system-ui, sans-serif; }
+  *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
 
-.wrap { max-width: 1200px; margin: 0 auto; padding: 0 18px; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
 
-.topbar { border-bottom: 1px solid var(--line); background: #080e21; }
-.home { display: flex; align-items: center; gap: 12px; width: fit-content; padding: 14px 0; color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; user-select: none; outline: none !important; }
-.home h1 { font-size: clamp(19px, 4.6vw, 26px); line-height: 1.2; margin: 0; font-weight: 600; letter-spacing: -.01em; }
-.logo { width: 38px; height: 38px; flex: none; object-fit: contain; -webkit-user-drag: none; }
+  /* Ocultar flechas numéricas y definir appearance estándar (Mismo método que muestra.txt) */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none; appearance: none; margin: 0;
+  }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 
-header { padding: 22px 0 8px; }
-header p.lead { max-width: 80ch; color: var(--mute); margin: 0 0 14px; font-size: 1.1em; }
+  .glow-svg { filter: drop-shadow(0 0 12px rgba(96,165,250,0.3)); }
+  .glow-orange { filter: drop-shadow(0 0 12px rgba(240,160,112,0.4)); }
 
-nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
-nav .wrap { display: flex; gap: 4px; overflow-x: auto; }
-nav button { font: 500 15px "IBM Plex Sans", sans-serif; padding: 13px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--mute); cursor: pointer; white-space: nowrap; outline: none !important; -webkit-tap-highlight-color: transparent; transition: color 0.2s, border-color 0.2s; }
-nav button[aria-selected=true] { color: var(--acc); border-bottom-color: var(--acc); }
-nav button:hover { color: var(--ink); }
-
-section { display: none; padding: 26px 0 48px; animation: fadeIn 0.3s ease; }
-section.on { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-h2 { font-size: 26px; margin: 0 0 6px; font-weight: 600; color: #fff; }
-h3 { font-size: 19px; margin: 0 0 20px; font-weight: 600; color: var(--acc); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
-p { margin: 0 0 14px; max-width: 85ch; }
-.sub { color: var(--mute); margin-bottom: 24px; font-size: 1.05em; }
-
-/* Grid de la Calculadora */
-.calculator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; }
-.calc-panel { background: var(--panel); border: 1px solid var(--line); padding: 24px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-
-/* Inputs y Selectores */
-.input-group { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
-.input-group label { width: 140px; font-weight: 500; color: var(--ink); }
-.input-group input[type="number"] { flex: 1; min-width: 120px; padding: 10px 12px; font-family: "IBM Plex Mono", monospace; font-size: 15px; background: #080e21; border: 1px solid var(--line); color: var(--acc); border-radius: 6px; outline: none !important; transition: border-color 0.2s; }
-.input-group input[type="number"]:focus { border-color: var(--acc); }
-.input-group select { padding: 10px; font-weight: 500; background: var(--accbg); border: 1px solid var(--line); color: var(--ink); border-radius: 6px; outline: none !important; cursor: pointer; }
-.input-group select:focus { border-color: var(--acc); }
-
-/* Panel de Resultados */
-.results { background: var(--accbg); padding: 20px; border-radius: 8px; border-left: 4px solid var(--acc); margin-top: 24px; }
-.res-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed rgba(30, 58, 138, 0.6); padding-bottom: 6px; font-size: 15.5px; }
-.res-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.res-row span { color: var(--mute); }
-.res-row strong { font-family: "IBM Plex Mono", monospace; color: #fff; font-weight: 500; letter-spacing: 0.5px; }
-
-/* Fórmulas */
-code { font-family: "IBM Plex Mono", monospace; color: #60a5fa; background: rgba(96, 165, 250, 0.1); padding: 3px 6px; border-radius: 4px; font-size: 14px; }
-.formulas p { margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
-.formulas span { color: var(--mute); font-size: 14px; }
-
-@media (max-width: 850px) {
-    .calculator-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 600px) {
-    .wrap { padding: 0 14px; }
-    h2 { font-size: 22px; }
-    .input-group label { width: 100%; margin-bottom: -6px; }
-}
+  /* Estilos para Transiciones de Pestañas */
+  .tab-btn { transition: all 0.3s ease; }
+  .tab-active { background-color: #3b82f6; color: #0f172a; border-color: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.3); }
+  .tab-inactive { background-color: #1e293b; color: #94a3b8; border-color: #334155; }
+  .tab-inactive:hover { background-color: #334155; color: #f8fafc; }
 </style>
 </head>
 <!-- Google tag (gtag.js) -->
@@ -93,220 +77,524 @@ code { font-family: "IBM Plex Mono", monospace; color: #60a5fa; background: rgba
 
   gtag('config', 'G-ESQB0M5W6R');
 </script>
-<body>
+<body class="bg-[#0f172a] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#3b82f6] selection:text-[#0f172a]">
 
-<div class="topbar"><div class="wrap">
-<a class="home" href="/index.html" aria-label="Ir al inicio">
-<img class="logo" src="/iconos/ne555.svg" alt="" width="38" height="38">
-<h1>Calculadora NE555</h1>
-</a>
-</div></div>
+<header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="inline-flex items-center gap-3.5 group">
+      <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
+        <img src="iconos/union.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
+      </div>
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
+        Calculadora NE555
+      </h1>
+    </a>
+  </div>
+</header>
 
-<header><div class="wrap">
-<p class="lead">Herramienta de simulación paramétrica para el temporizador NE555. Calcula frecuencias, periodos y ciclos de trabajo en tiempo real basándose en la configuración de la red RC.</p>
-</div></header>
+<main class="flex-grow w-full max-w-[1200px] mx-auto px-4 py-8 sm:px-8 flex flex-col items-center">
 
-<nav><div class="wrap" role="tablist">
-<button role="tab" aria-selected="true" data-t="astable">Modo Astable</button>
-<button role="tab" aria-selected="false" data-t="monostable">Modo Monoestable</button>
-</div></nav>
-
-<main class="wrap">
-
-<!-- SECCIÓN: MODO ASTABLE -->
-<section id="astable" class="on">
-    <h2>Modo Astable (Oscilador Libre)</h2>
-    <p class="sub">El circuito actúa como un oscilador continuo generando una onda cuadrada. Los tiempos de nivel alto y bajo dependen de dos resistencias y un condensador.</p>
+  <div class="w-full bg-[#1e293b] border border-[#334155] rounded-3xl p-6 sm:p-10 shadow-2xl shadow-black/40">
     
-    <div class="calculator-grid">
-        <div class="calc-panel">
-            <h3>Parámetros del Circuito</h3>
-            <div class="input-group">
-                <label>Resistencia 1 (R1)</label>
-                <input type="number" id="ast_r1" value="1" min="0.001" step="any">
-                <select id="ast_r1_u">
-                    <option value="1">Ω</option>
-                    <option value="1000" selected>kΩ</option>
-                    <option value="1000000">MΩ</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Resistencia 2 (R2)</label>
-                <input type="number" id="ast_r2" value="10" min="0.001" step="any">
-                <select id="ast_r2_u">
-                    <option value="1">Ω</option>
-                    <option value="1000" selected>kΩ</option>
-                    <option value="1000000">MΩ</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Capacitor (C)</label>
-                <input type="number" id="ast_c" value="10" min="0.001" step="any">
-                <select id="ast_c_u">
-                    <option value="0.000000000001">pF</option>
-                    <option value="0.000000001">nF</option>
-                    <option value="0.000001" selected>µF</option>
-                    <option value="0.001">mF</option>
-                </select>
-            </div>
-
-            <div class="results">
-                <div class="res-row"><span>Frecuencia (f):</span> <strong id="ast_res_f">0.00 Hz</strong></div>
-                <div class="res-row"><span>Periodo Total (T):</span> <strong id="ast_res_t">0.00 ms</strong></div>
-                <div class="res-row"><span>Tiempo en Alto (T1):</span> <strong id="ast_res_th">0.00 ms</strong></div>
-                <div class="res-row"><span>Tiempo en Bajo (T2):</span> <strong id="ast_res_tl">0.00 ms</strong></div>
-                <div class="res-row"><span>Ciclo de Trabajo (Duty):</span> <strong id="ast_res_dc">0.00 %</strong></div>
-            </div>
-        </div>
-
-        <div class="calc-panel">
-            <h3>Disposición y Fórmulas</h3>
-            <!-- SVG del IC 555 -->
-            <svg viewBox="0 0 200 180" width="100%" max-width="200" style="margin:0 auto 24px; display:block; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));">
-                <rect x="50" y="20" width="100" height="140" rx="8" fill="#15232f" stroke="#1e3a8a" stroke-width="3"/>
-                <circle cx="70" cy="35" r="4" fill="#00f2fe" />
-                <line x1="30" y1="40" x2="50" y2="40" stroke="#9aaab6" stroke-width="4"/><text x="22" y="44" fill="#e6edf3" font-size="12" text-anchor="end" font-family="'IBM Plex Mono', monospace">GND 1</text>
-                <line x1="30" y1="70" x2="50" y2="70" stroke="#9aaab6" stroke-width="4"/><text x="22" y="74" fill="#e6edf3" font-size="12" text-anchor="end" font-family="'IBM Plex Mono', monospace">TRIG 2</text>
-                <line x1="30" y1="100" x2="50" y2="100" stroke="#9aaab6" stroke-width="4"/><text x="22" y="104" fill="#e6edf3" font-size="12" text-anchor="end" font-family="'IBM Plex Mono', monospace">OUT 3</text>
-                <line x1="30" y1="130" x2="50" y2="130" stroke="#9aaab6" stroke-width="4"/><text x="22" y="134" fill="#e6edf3" font-size="12" text-anchor="end" font-family="'IBM Plex Mono', monospace">RST 4</text>
-                <line x1="150" y1="40" x2="170" y2="40" stroke="#9aaab6" stroke-width="4"/><text x="178" y="44" fill="#e6edf3" font-size="12" text-anchor="start" font-family="'IBM Plex Mono', monospace">8 VCC</text>
-                <line x1="150" y1="70" x2="170" y2="70" stroke="#9aaab6" stroke-width="4"/><text x="178" y="74" fill="#e6edf3" font-size="12" text-anchor="start" font-family="'IBM Plex Mono', monospace">7 DIS</text>
-                <line x1="150" y1="100" x2="170" y2="100" stroke="#9aaab6" stroke-width="4"/><text x="178" y="104" fill="#e6edf3" font-size="12" text-anchor="start" font-family="'IBM Plex Mono', monospace">6 THR</text>
-                <line x1="150" y1="130" x2="170" y2="130" stroke="#9aaab6" stroke-width="4"/><text x="178" y="134" fill="#e6edf3" font-size="12" text-anchor="start" font-family="'IBM Plex Mono', monospace">5 CTRL</text>
-                <text x="100" y="100" fill="#00f2fe" font-size="22" font-weight="600" text-anchor="middle" transform="rotate(-90 100 90)" font-family="'IBM Plex Sans', sans-serif">NE555</text>
-            </svg>
-            <div class="formulas">
-                <p><span>Tiempo nivel alto (Descarga bloqueada):</span> <code>T1 = 0.693 × (R1 + R2) × C</code></p>
-                <p><span>Tiempo nivel bajo (Descarga a través de R2):</span> <code>T2 = 0.693 × R2 × C</code></p>
-                <p><span>Periodo Total:</span> <code>T = T1 + T2</code></p>
-                <p><span>Frecuencia de oscilación:</span> <code>f = 1.44 / ((R1 + 2×R2) × C)</code></p>
-            </div>
-        </div>
+    <!-- Selector de Modo -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 border-b border-[#334155] pb-8">
+      <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mr-0 sm:mr-4">Modo de Operación:</h2>
+      <div class="flex bg-[#0f172a] p-1.5 rounded-xl border border-[#334155] w-full sm:w-auto">
+        <button id="btn-astable" class="tab-btn tab-active flex-1 sm:w-40 py-2.5 rounded-xl text-sm font-bold tracking-wide uppercase">
+          Astable
+        </button>
+        <button id="btn-mono" class="tab-btn tab-inactive flex-1 sm:w-40 py-2.5 rounded-xl text-sm font-bold tracking-wide uppercase">
+          Monoestable
+        </button>
+      </div>
     </div>
-</section>
 
-<!-- SECCIÓN: MODO MONOESTABLE -->
-<section id="monostable">
-    <h2>Modo Monoestable (Temporizador de Un Disparo)</h2>
-    <p class="sub">El circuito genera un único pulso de salida de duración predeterminada cuando se aplica una señal de disparo (flanco de bajada) en el pin 2.</p>
-    
-    <div class="calculator-grid">
-        <div class="calc-panel">
-            <h3>Parámetros del Temporizador</h3>
-            <div class="input-group">
-                <label>Resistencia (R)</label>
-                <input type="number" id="mono_r" value="10" min="0.001" step="any">
-                <select id="mono_r_u">
-                    <option value="1">Ω</option>
-                    <option value="1000" selected>kΩ</option>
-                    <option value="1000000">MΩ</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Capacitor (C)</label>
-                <input type="number" id="mono_c" value="100" min="0.001" step="any">
-                <select id="mono_c_u">
-                    <option value="0.000000000001">pF</option>
-                    <option value="0.000000001">nF</option>
-                    <option value="0.000001" selected>µF</option>
-                    <option value="0.001">mF</option>
-                </select>
-            </div>
+    <!-- Layout Dividido (Esquema + Controles) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-start">
 
-            <div class="results" style="margin-top: 36px;">
-                <div class="res-row"><span>Duración del Pulso (T):</span> <strong id="mono_res_t" style="color: var(--acc); font-size: 1.2em;">0.00 s</strong></div>
+      <!-- ================= ESQUEMAS (SVG) ================= -->
+      <div class="flex justify-center bg-[#0f172a] rounded-2xl border border-[#334155] p-6 shadow-inner h-full min-h-[400px] items-center relative overflow-hidden">
+        
+        <!-- SVG: MODO ASTABLE -->
+        <svg id="svg-astable" viewBox="-60 -20 460 420" class="w-full max-w-[420px] h-auto text-[#60a5fa] glow-svg transition-opacity duration-300">
+          <!-- VCC y GND Rails -->
+          <path d="M 0,20 L 250,20" fill="none" stroke="#f0a070" stroke-width="4"/>
+          <text x="-10" y="25" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">+VCC</text>
+          
+          <path d="M 0,380 L 250,380" fill="none" stroke="#4ade80" stroke-width="4"/>
+          <text x="-10" y="385" fill="#4ade80" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">GND</text>
+
+          <!-- Chip NE555 -->
+          <rect x="150" y="100" width="100" height="200" rx="8" fill="#1e293b" stroke="currentColor" stroke-width="4"/>
+          <circle cx="170" cy="120" r="5" fill="#334155"/> <!-- Notch indicator -->
+          <text x="200" y="205" fill="#ffffff" font-size="22" font-family="sans-serif" font-weight="bold" text-anchor="middle" letter-spacing="2">555</text>
+
+          <!-- Pines Arriba (8 VCC, 4 RST) -->
+          <path d="M 180,100 L 180,20" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="180" cy="20" r="4" fill="#f0a070"/>
+          <text x="170" y="90" fill="#94a3b8" font-size="12" font-family="monospace">8</text>
+          
+          <path d="M 220,100 L 220,50 L 180,50" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="180" cy="50" r="4" fill="currentColor"/>
+          <text x="230" y="90" fill="#94a3b8" font-size="12" font-family="monospace">4</text>
+
+          <!-- Pin Abajo (1 GND) -->
+          <path d="M 200,300 L 200,380" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="200" cy="380" r="4" fill="#4ade80"/>
+          <text x="212" y="320" fill="#94a3b8" font-size="12" font-family="monospace">1</text>
+
+          <!-- Pin Derecha (3 OUT) -->
+          <path d="M 250,200 L 320,200" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="320" cy="200" r="5" fill="#f0a070"/>
+          <text x="240" y="195" fill="#94a3b8" font-size="12" font-family="monospace" text-anchor="end">3</text>
+          <text x="335" y="205" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold" class="glow-orange">OUT</text>
+
+          <!-- Pines Izquierda y Componentes -->
+          <!-- R1 -->
+          <path d="M 80,20 L 80,60" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="80" cy="20" r="4" fill="#f0a070"/>
+          <rect x="65" y="60" width="30" height="60" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
+          <text x="50" y="95" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">R1</text>
+          <path d="M 80,120 L 80,160" fill="none" stroke="currentColor" stroke-width="3"/>
+
+          <!-- Pin 7 DIS -->
+          <path d="M 150,140 L 80,140" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="80" cy="140" r="4" fill="currentColor"/> <!-- Nodo P7 -->
+          <text x="160" y="135" fill="#94a3b8" font-size="12" font-family="monospace">7</text>
+
+          <!-- R2 -->
+          <rect x="65" y="160" width="30" height="60" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
+          <text x="50" y="195" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">R2</text>
+          <path d="M 80,220 L 80,310" fill="none" stroke="currentColor" stroke-width="3"/>
+          
+          <!-- Pin 6 THR & 2 TRG -->
+          <text x="160" y="195" fill="#94a3b8" font-size="12" font-family="monospace">6</text>
+          <text x="160" y="255" fill="#94a3b8" font-size="12" font-family="monospace">2</text>
+          
+          <path d="M 150,200 L 120,200 L 120,260 L 80,260" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M 150,260 L 120,260" fill="none" stroke="currentColor" stroke-width="3"/>
+          
+          <circle cx="120" cy="260" r="4" fill="currentColor"/> 
+          <circle cx="80" cy="260" r="4" fill="currentColor"/> 
+          
+          <!-- C1 -->
+          <path d="M 60,310 L 100,310" fill="none" stroke="currentColor" stroke-width="4"/>
+          <path d="M 60,325 L 100,325" fill="none" stroke="currentColor" stroke-width="4"/>
+          <text x="50" y="325" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">C1</text>
+          <path d="M 80,325 L 80,380" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="80" cy="380" r="4" fill="#4ade80"/>
+        </svg>
+
+        <!-- SVG: MODO MONOESTABLE -->
+        <svg id="svg-mono" viewBox="-60 -20 460 420" class="w-full max-w-[420px] h-auto text-[#f0a070] glow-orange hidden transition-opacity duration-300">
+          <!-- VCC y GND Rails -->
+          <path d="M 0,20 L 250,20" fill="none" stroke="#f0a070" stroke-width="4"/>
+          <text x="-10" y="25" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">+VCC</text>
+          
+          <path d="M 0,380 L 250,380" fill="none" stroke="#4ade80" stroke-width="4"/>
+          <text x="-10" y="385" fill="#4ade80" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">GND</text>
+
+          <!-- Chip NE555 -->
+          <rect x="150" y="100" width="100" height="200" rx="8" fill="#1e293b" stroke="currentColor" stroke-width="4"/>
+          <circle cx="170" cy="120" r="5" fill="#334155"/> <!-- Notch indicator -->
+          <text x="200" y="205" fill="#ffffff" font-size="22" font-family="sans-serif" font-weight="bold" text-anchor="middle" letter-spacing="2">555</text>
+
+          <!-- Pines Arriba (8 VCC, 4 RST) -->
+          <path d="M 180,100 L 180,20" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="180" cy="20" r="4" fill="#f0a070"/>
+          <text x="170" y="90" fill="#94a3b8" font-size="12" font-family="monospace">8</text>
+          
+          <path d="M 220,100 L 220,50 L 180,50" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="180" cy="50" r="4" fill="currentColor"/>
+          <text x="230" y="90" fill="#94a3b8" font-size="12" font-family="monospace">4</text>
+
+          <!-- Pin Abajo (1 GND) -->
+          <path d="M 200,300 L 200,380" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="200" cy="380" r="4" fill="#4ade80"/>
+          <text x="212" y="320" fill="#94a3b8" font-size="12" font-family="monospace">1</text>
+
+          <!-- Pin Derecha (3 OUT) -->
+          <path d="M 250,200 L 320,200" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="320" cy="200" r="5" fill="#60a5fa"/>
+          <text x="240" y="195" fill="#94a3b8" font-size="12" font-family="monospace" text-anchor="end">3</text>
+          <text x="335" y="205" fill="#60a5fa" font-size="16" font-family="monospace" font-weight="bold" class="glow-svg">OUT</text>
+
+          <!-- ================= COMPONENTES IZQUIERDA ================= -->
+          
+          <!-- R1 (Timing Resistor) -->
+          <path d="M 80,20 L 80,50" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="80" cy="20" r="4" fill="#f0a070"/>
+          <rect x="65" y="50" width="30" height="60" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
+          <text x="50" y="85" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">R1</text>
+          <path d="M 80,110 L 80,240" fill="none" stroke="currentColor" stroke-width="3"/>
+          
+          <!-- Pines 7 (DIS) y 6 (THR) -->
+          <text x="160" y="155" fill="#94a3b8" font-size="12" font-family="monospace">7</text>
+          <path d="M 150,160 L 80,160" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="80" cy="160" r="4" fill="currentColor"/> <!-- Nodo Pin 7 -->
+          
+          <text x="160" y="195" fill="#94a3b8" font-size="12" font-family="monospace">6</text>
+          <path d="M 150,200 L 80,200" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="80" cy="200" r="4" fill="currentColor"/> <!-- Nodo Pin 6 -->
+
+          <!-- C1 (Timing Capacitor) -->
+          <path d="M 60,240 L 100,240" fill="none" stroke="currentColor" stroke-width="4"/>
+          <path d="M 60,255 L 100,255" fill="none" stroke="currentColor" stroke-width="4"/>
+          <text x="50" y="255" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">C1</text>
+          <path d="M 80,255 L 80,380" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="80" cy="380" r="4" fill="#4ade80"/>
+
+          <!-- Pin 2 TRG Directo (Sin R2 de Pull-up) -->
+          <text x="160" y="275" fill="#94a3b8" font-size="12" font-family="monospace">2</text>
+          <path d="M 150,280 L -20,280" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="-20" cy="280" r="4" fill="#c084fc"/>
+          <text x="-30" y="285" fill="#c084fc" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">TRIG</text>
+        </svg>
+
+      </div>
+
+      <!-- ================= CONTROLES E INPUTS ================= -->
+      <div class="flex flex-col gap-6">
+        
+        <!-- AUTO-CALCULADORA POR FRECUENCIA (Solo Astable) -->
+        <div id="panel-freq-generator" class="bg-[#1e293b] border border-[#3b82f6]/50 rounded-2xl p-5 shadow-lg flex flex-col gap-3 transition-opacity duration-300">
+          <div class="flex items-center gap-2 mb-1">
+            <svg class="w-4 h-4 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <h3 class="text-xs font-bold text-white uppercase tracking-widest">Diseño por Frecuencia</h3>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex flex-grow gap-2">
+              <input type="number" id="target-freq" placeholder="Ej: 1000" min="0" step="any" class="w-full bg-[#0f172a] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-mono text-base focus:border-[#3b82f6] transition-colors">
+              <select id="target-freq-unit" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors">
+                <option value="1" selected>Hz</option>
+                <option value="1000">kHz</option>
+              </select>
             </div>
+            <button id="btn-generate-freq" class="bg-[#3b82f6] hover:bg-[#60a5fa] text-[#0f172a] font-bold uppercase tracking-wider text-xs px-4 py-2.5 rounded-xl transition-colors shrink-0">
+              Calcular
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-400">Ingresá la frecuencia y calcularemos automáticamente C1, R1 y R2 (Duty ~66%).</p>
         </div>
 
-        <div class="calc-panel">
-            <h3>Fórmula Principal</h3>
-            <div class="formulas" style="margin-top: 10px;">
-                <p><span>Ancho del pulso de salida:</span> <code>T = 1.1 × R × C</code></p>
-                <p style="margin-top: 20px; color: var(--mute); font-size: 14.5px; line-height: 1.6;">
-                    <strong>Nota operativa:</strong> En esta configuración, la red RC determina exactamente cuánto tiempo permanecerá el Pin 3 (OUT) en estado ALTO después de que el Pin 2 (TRIG) reciba un pulso negativo que caiga por debajo de 1/3 de VCC.
-                </p>
+        <!-- Panel de Componentes (Inputs Manuales) -->
+        <div class="bg-[#0f172a] border border-[#334155] rounded-2xl p-5 shadow-lg flex flex-col gap-5">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-[#334155] pb-2">Componentes de Temporización</h3>
+          
+          <!-- R1 -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> Resistencia 1 (R1)
+            </label>
+            <div class="flex gap-2">
+              <input type="number" id="val-r1" value="10" min="0" step="any" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors">
+              <select id="unit-r1" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors">
+                <option value="1">Ω</option>
+                <option value="1000" selected>kΩ</option>
+                <option value="1000000">MΩ</option>
+              </select>
             </div>
+            <div class="text-[10.5px] text-slate-400 pl-1 mt-0.5 font-medium">E12 Comercial: <span id="e12-r1" class="text-[#f0a070] font-mono font-bold">--</span></div>
+          </div>
+
+          <!-- R2 (Oculto en Monoestable) -->
+          <div id="row-r2" class="flex flex-col gap-1.5 transition-opacity duration-300">
+            <label class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> Resistencia 2 (R2)
+            </label>
+            <div class="flex gap-2">
+              <input type="number" id="val-r2" value="10" min="0" step="any" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors">
+              <select id="unit-r2" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors">
+                <option value="1">Ω</option>
+                <option value="1000" selected>kΩ</option>
+                <option value="1000000">MΩ</option>
+              </select>
+            </div>
+            <div class="text-[10.5px] text-slate-400 pl-1 mt-0.5 font-medium">E12 Comercial: <span id="e12-r2" class="text-[#f0a070] font-mono font-bold">--</span></div>
+          </div>
+
+          <!-- C1 -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#60a5fa]"></span> Capacitor (C1)
+            </label>
+            <div class="flex gap-2">
+              <input type="number" id="val-c1" value="100" min="0" step="any" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors">
+              <select id="unit-c1" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors">
+                <option value="0.000000000001">pF</option>
+                <option value="0.000000001" selected>nF</option>
+                <option value="0.000001">µF</option>
+                <option value="0.001">mF</option>
+              </select>
+            </div>
+            <div class="text-[10.5px] text-slate-400 pl-1 mt-0.5 font-medium">E12 Comercial: <span id="e12-c1" class="text-[#f0a070] font-mono font-bold">--</span></div>
+          </div>
+
         </div>
+
+        <!-- Panel de Resultados (Astable) -->
+        <div id="results-astable" class="bg-[#0f172a] border border-[#60a5fa]/50 rounded-2xl p-5 shadow-[0_0_20px_rgba(96,165,250,0.1)] flex flex-col gap-4 transition-all">
+          <h3 class="text-xs font-bold text-[#60a5fa] uppercase tracking-widest border-b border-[#334155] pb-2">Resultados Astable</h3>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-[#1e293b] p-3 rounded-xl border border-[#334155] flex flex-col items-center">
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Frecuencia (f)</span>
+              <span id="out-freq" class="text-xl font-mono font-bold text-white mt-1">480.8 Hz</span>
+            </div>
+            <div class="bg-[#1e293b] p-3 rounded-xl border border-[#334155] flex flex-col items-center">
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ciclo Trabajo (D)</span>
+              <span id="out-duty" class="text-xl font-mono font-bold text-white mt-1">66.6 %</span>
+            </div>
+            <div class="bg-[#1e293b] p-3 rounded-xl border border-[#334155] flex flex-col items-center">
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tiempo Alto (Th)</span>
+              <span id="out-th" class="text-lg font-mono font-bold text-[#60a5fa] mt-1">1.386 ms</span>
+            </div>
+            <div class="bg-[#1e293b] p-3 rounded-xl border border-[#334155] flex flex-col items-center">
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tiempo Bajo (Tl)</span>
+              <span id="out-tl" class="text-lg font-mono font-bold text-[#60a5fa] mt-1">0.693 ms</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel de Resultados (Monoestable) -->
+        <div id="results-mono" class="hidden bg-[#0f172a] border border-[#f0a070]/50 rounded-2xl p-5 shadow-[0_0_20px_rgba(240,160,112,0.1)] flex flex-col gap-4 transition-all">
+          <h3 class="text-xs font-bold text-[#f0a070] uppercase tracking-widest border-b border-[#334155] pb-2">Resultado Monoestable</h3>
+          
+          <div class="bg-[#1e293b] p-6 rounded-xl border border-[#334155] flex flex-col items-center justify-center py-8">
+            <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Tiempo de Pulso (T)</span>
+            <span id="out-tpulse" class="text-4xl font-mono font-bold text-[#f0a070]">1.100 ms</span>
+            <span class="text-xs text-slate-500 mt-3 text-center">Duración de la señal en estado ALTO tras el disparo.</span>
+          </div>
+        </div>
+
+      </div>
+
     </div>
-</section>
-
+  </div>
 </main>
 
 <script>
-(function(){
-    // Gestión de Pestañas
-    const tabs = document.querySelectorAll("nav button");
-    function show(id) {
-        tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.t === id));
-        document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === id));
-    }
-    tabs.forEach(t => {
-        t.onclick = () => { show(t.dataset.t); }
-    });
+(() => {
+  'use strict';
 
-    // Utilidades de formato
-    function formatTime(s) {
-        if (!isFinite(s) || s <= 0) return "0.00 ms";
-        if (s >= 1) return s.toFixed(3) + " s";
-        if (s >= 0.001) return (s * 1000).toFixed(3) + " ms";
-        if (s >= 0.000001) return (s * 1000000).toFixed(3) + " µs";
-        return (s * 1000000000).toFixed(3) + " ns";
-    }
-
-    function formatFreq(hz) {
-        if (!isFinite(hz) || hz <= 0) return "0.00 Hz";
-        if (hz >= 1000000) return (hz / 1000000).toFixed(3) + " MHz";
-        if (hz >= 1000) return (hz / 1000).toFixed(3) + " kHz";
-        return hz.toFixed(3) + " Hz";
-    }
-
-    // Lógica del Astable
-    function calcAstable() {
-        const r1 = parseFloat(document.getElementById('ast_r1').value) * parseFloat(document.getElementById('ast_r1_u').value);
-        const r2 = parseFloat(document.getElementById('ast_r2').value) * parseFloat(document.getElementById('ast_r2_u').value);
-        const c = parseFloat(document.getElementById('ast_c').value) * parseFloat(document.getElementById('ast_c_u').value);
-
-        if (r1 > 0 && r2 > 0 && c > 0) {
-            const t1 = 0.693 * (r1 + r2) * c;
-            const t2 = 0.693 * r2 * c;
-            const t = t1 + t2;
-            const f = 1.44 / ((r1 + 2 * r2) * c);
-            const dc = (t1 / t) * 100;
-
-            document.getElementById('ast_res_th').textContent = formatTime(t1);
-            document.getElementById('ast_res_tl').textContent = formatTime(t2);
-            document.getElementById('ast_res_t').textContent = formatTime(t);
-            document.getElementById('ast_res_f').textContent = formatFreq(f);
-            document.getElementById('ast_res_dc').textContent = dc.toFixed(2) + " %";
-        } else {
-            document.getElementById('ast_res_th').textContent = "---";
-            document.getElementById('ast_res_tl').textContent = "---";
-            document.getElementById('ast_res_t').textContent = "---";
-            document.getElementById('ast_res_f').textContent = "---";
-            document.getElementById('ast_res_dc').textContent = "---";
+  // Lógica E12
+  const e12Base = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
+  
+  function getClosestE12Val(val) {
+    if (!val || val <= 0 || !isFinite(val)) return 0;
+    let mag = Math.pow(10, Math.floor(Math.log10(val)));
+    let norm = val / mag;
+    
+    let closest = e12Base[0];
+    let minDiff = Math.abs(norm - closest);
+    for (let i = 1; i < e12Base.length; i++) {
+        let diff = Math.abs(norm - e12Base[i]);
+        if (diff < minDiff) {
+            minDiff = diff;
+            closest = e12Base[i];
         }
     }
+    if (Math.abs(norm - 10.0) < minDiff) closest = 10.0;
+    
+    return closest * mag;
+  }
 
-    // Lógica del Monoestable
-    function calcMonostable() {
-        const r = parseFloat(document.getElementById('mono_r').value) * parseFloat(document.getElementById('mono_r_u').value);
-        const c = parseFloat(document.getElementById('mono_c').value) * parseFloat(document.getElementById('mono_c_u').value);
+  // Formateadores para E12 Labels y Auto-calculadora
+  function getResistorBestFormat(ohms) {
+    if (ohms >= 1e6) return { val: ohms / 1e6, mult: 1e6, str: (ohms / 1e6).toFixed(2).replace(/\.00$/, '') + ' MΩ' };
+    if (ohms >= 1e3) return { val: ohms / 1e3, mult: 1e3, str: (ohms / 1e3).toFixed(2).replace(/\.00$/, '') + ' kΩ' };
+    return { val: ohms, mult: 1, str: ohms.toFixed(2).replace(/\.00$/, '') + ' Ω' };
+  }
 
-        if (r > 0 && c > 0) {
-            const t = 1.1 * r * c;
-            document.getElementById('mono_res_t').textContent = formatTime(t);
-        } else {
-            document.getElementById('mono_res_t').textContent = "---";
-        }
+  function getCapacitorBestFormat(farads) {
+    if (farads >= 1e-3) return { val: farads / 1e-3, mult: 1e-3, str: (farads / 1e-3).toFixed(2).replace(/\.00$/, '') + ' mF' };
+    if (farads >= 1e-6) return { val: farads / 1e-6, mult: 1e-6, str: (farads / 1e-6).toFixed(2).replace(/\.00$/, '') + ' µF' };
+    if (farads >= 1e-9) return { val: farads / 1e-9, mult: 1e-9, str: (farads / 1e-9).toFixed(2).replace(/\.00$/, '') + ' nF' };
+    return { val: farads / 1e-12, mult: 1e-12, str: (farads / 1e-12).toFixed(2).replace(/\.00$/, '') + ' pF' };
+  }
+
+  // UI Elements
+  const btnAstable = document.getElementById('btn-astable');
+  const btnMono = document.getElementById('btn-mono');
+  
+  const svgAstable = document.getElementById('svg-astable');
+  const svgMono = document.getElementById('svg-mono');
+  const panelFreqGen = document.getElementById('panel-freq-generator');
+  const rowR2 = document.getElementById('row-r2');
+  
+  const resultsAstable = document.getElementById('results-astable');
+  const resultsMono = document.getElementById('results-mono');
+
+  // Input Elements
+  const valR1 = document.getElementById('val-r1');
+  const unitR1 = document.getElementById('unit-r1');
+  const lblE12R1 = document.getElementById('e12-r1');
+
+  const valR2 = document.getElementById('val-r2');
+  const unitR2 = document.getElementById('unit-r2');
+  const lblE12R2 = document.getElementById('e12-r2');
+
+  const valC1 = document.getElementById('val-c1');
+  const unitC1 = document.getElementById('unit-c1');
+  const lblE12C1 = document.getElementById('e12-c1');
+
+  // Generador de Frecuencia
+  const targetFreqInput = document.getElementById('target-freq');
+  const targetFreqUnit = document.getElementById('target-freq-unit');
+  const btnGenerateFreq = document.getElementById('btn-generate-freq');
+
+  // Output Elements
+  const outFreq = document.getElementById('out-freq');
+  const outDuty = document.getElementById('out-duty');
+  const outTh = document.getElementById('out-th');
+  const outTl = document.getElementById('out-tl');
+  const outTpulse = document.getElementById('out-tpulse');
+
+  let currentMode = 'astable'; // 'astable' | 'mono'
+
+  // Formateador de Tiempo y Frecuencia
+  function formatTime(seconds) {
+    if (seconds === 0 || !isFinite(seconds)) return '0.00 ms';
+    if (seconds >= 1) return seconds.toFixed(3) + ' s';
+    if (seconds >= 0.001) return (seconds * 1000).toFixed(3) + ' ms';
+    return (seconds * 1000000).toFixed(3) + ' µs';
+  }
+
+  function formatFreq(hz) {
+    if (hz === 0 || !isFinite(hz)) return '0.00 Hz';
+    if (hz >= 1000000) return (hz / 1000000).toFixed(3) + ' MHz';
+    if (hz >= 1000) return (hz / 1000).toFixed(3) + ' kHz';
+    return hz.toFixed(2) + ' Hz';
+  }
+
+  // Cálculo Principal
+  function calculate() {
+    const r1 = (parseFloat(valR1.value) || 0) * parseFloat(unitR1.value);
+    const r2 = (parseFloat(valR2.value) || 0) * parseFloat(unitR2.value);
+    const c1 = (parseFloat(valC1.value) || 0) * parseFloat(unitC1.value);
+
+    // Actualizar Labels E12
+    lblE12R1.textContent = getResistorBestFormat(getClosestE12Val(r1)).str;
+    lblE12R2.textContent = getResistorBestFormat(getClosestE12Val(r2)).str;
+    lblE12C1.textContent = getCapacitorBestFormat(getClosestE12Val(c1)).str;
+
+    if (currentMode === 'astable') {
+      if (r1 > 0 && r2 > 0 && c1 > 0) {
+        const tHigh = 0.693 * (r1 + r2) * c1;
+        const tLow = 0.693 * r2 * c1;
+        const tTotal = tHigh + tLow;
+        const freq = 1.44 / ((r1 + 2 * r2) * c1); 
+        const duty = (tHigh / tTotal) * 100;
+
+        outFreq.textContent = formatFreq(freq);
+        outDuty.textContent = duty.toFixed(1) + ' %';
+        outTh.textContent = formatTime(tHigh);
+        outTl.textContent = formatTime(tLow);
+      } else {
+        outFreq.textContent = '--';
+        outDuty.textContent = '--';
+        outTh.textContent = '--';
+        outTl.textContent = '--';
+      }
+    } 
+    else if (currentMode === 'mono') {
+      if (r1 > 0 && c1 > 0) {
+        const tPulse = 1.1 * r1 * c1;
+        outTpulse.textContent = formatTime(tPulse);
+      } else {
+        outTpulse.textContent = '--';
+      }
     }
+  }
 
-    // Listeners
-    document.querySelectorAll('#astable input, #astable select').forEach(el => el.addEventListener('input', calcAstable));
-    document.querySelectorAll('#monostable input, #monostable select').forEach(el => el.addEventListener('input', calcMonostable));
+  // Auto-Calcular Componentes por Frecuencia Deseada
+  function generateFromFrequency() {
+    let tFreq = parseFloat(targetFreqInput.value);
+    let fMult = parseFloat(targetFreqUnit.value);
+    
+    if(isNaN(tFreq) || tFreq <= 0) return;
+    
+    let f = tFreq * fMult;
+    let c1_base;
+    
+    // Elegir Capacitor adecuado según el rango de frecuencia
+    if (f < 10) c1_base = 10e-6;          // 10 uF
+    else if (f < 100) c1_base = 1e-6;     // 1 uF
+    else if (f < 1000) c1_base = 100e-9;  // 100 nF
+    else if (f < 10000) c1_base = 10e-9;  // 10 nF
+    else c1_base = 1e-9;                  // 1 nF
 
-    // Inicialización
-    calcAstable();
-    calcMonostable();
+    // Asumir R1 = R2 (Duty = 66.6%)
+    // f = 1.44 / (3 * R * C1)  =>  R = 1.44 / (3 * f * C1)
+    let r_teorico = 1.44 / (3 * f * c1_base);
+    let r_e12 = getClosestE12Val(r_teorico);
+
+    // Asignar C1 a Inputs
+    let cFmt = getCapacitorBestFormat(c1_base);
+    valC1.value = cFmt.val;
+    unitC1.value = cFmt.mult;
+
+    // Asignar R1 y R2 a Inputs
+    let rFmt = getResistorBestFormat(r_e12);
+    valR1.value = parseFloat(rFmt.val.toFixed(3));
+    unitR1.value = rFmt.mult;
+    valR2.value = parseFloat(rFmt.val.toFixed(3));
+    unitR2.value = rFmt.mult;
+
+    calculate(); // Actualizar Todo
+  }
+
+  // Cambiar Modos
+  function setMode(mode) {
+    currentMode = mode;
+    if (mode === 'astable') {
+      btnAstable.classList.replace('tab-inactive', 'tab-active');
+      btnMono.classList.replace('tab-active', 'tab-inactive');
+      
+      svgAstable.classList.remove('hidden');
+      svgMono.classList.add('hidden');
+      
+      panelFreqGen.classList.remove('hidden');
+      rowR2.classList.remove('hidden');
+      resultsAstable.classList.remove('hidden');
+      resultsMono.classList.add('hidden');
+      
+      document.querySelectorAll('.focus\\:border-\\[\\#f0a070\\]').forEach(el => {
+        el.classList.replace('focus:border-[#f0a070]', 'focus:border-[#3b82f6]');
+      });
+
+    } else {
+      btnMono.classList.replace('tab-inactive', 'tab-active');
+      btnAstable.classList.replace('tab-active', 'tab-inactive');
+      
+      svgMono.classList.remove('hidden');
+      svgAstable.classList.add('hidden');
+      
+      panelFreqGen.classList.add('hidden');
+      rowR2.classList.add('hidden');
+      resultsMono.classList.remove('hidden');
+      resultsAstable.classList.add('hidden');
+
+      document.querySelectorAll('.focus\\:border-\\[\\#3b82f6\\]').forEach(el => {
+        el.classList.replace('focus:border-[#3b82f6]', 'focus:border-[#f0a070]');
+      });
+    }
+    calculate();
+  }
+
+  // Listeners
+  btnAstable.addEventListener('click', () => setMode('astable'));
+  btnMono.addEventListener('click', () => setMode('mono'));
+  btnGenerateFreq.addEventListener('click', generateFromFrequency);
+
+  [valR1, unitR1, valR2, unitR2, valC1, unitC1].forEach(el => {
+    el.addEventListener('input', calculate);
+    el.addEventListener('change', calculate);
+  });
+
+  // Inicializar
+  calculate();
+
 })();
 </script>
 </body>

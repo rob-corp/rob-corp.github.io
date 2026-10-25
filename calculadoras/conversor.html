@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f172a">
+<title>Conversor de Bases Numéricas</title>
+<link rel="icon" type="image/svg+xml" href="/iconos/conversor.svg">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          navyBg: '#0f172a',
+          navyCard: '#1e293b',
+          navyBorder: '#334155',
+          cyanAccent: '#3b82f6',
+          cyanGlow: '#60a5fa',
+          amberGlow: '#f0a070',
+          greenGlow: '#4ade80',
+          purpleGlow: '#c084fc'
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'Consolas', 'Monaco', 'monospace'],
+        }
+      }
+    }
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  :focus { outline: none; }
+  :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 6px; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+  html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
+
+  .glow-svg { filter: drop-shadow(0 0 12px rgba(96,165,250,0.3)); }
+  
+  /* Input customizado para las bases */
+  .base-input {
+    width: 100%;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 0.5rem; /* rounded-lg */
+    padding: 0.75rem 1rem;
+    color: #ffffff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.125rem;
+    transition: all 0.2s ease;
+  }
+  .base-input:focus {
+    border-color: var(--focus-color, #3b82f6);
+    background-color: #0f172a;
+    box-shadow: 0 0 10px var(--focus-shadow, rgba(59,130,246,0.2));
+  }
+  .base-input::placeholder { color: #475569; }
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ESQB0M5W6R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ESQB0M5W6R');
+</script>
+<body class="bg-[#0f172a] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#3b82f6] selection:text-[#0f172a]">
+
+<header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="/index.html" class="inline-flex items-center gap-3.5 group">
+      <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
+        <img src="/iconos/conversor.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
+      </div>
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
+        Conversor Numérico
+      </h1>
+    </a>
+  </div>
+</header>
+
+<main class="flex-grow w-full max-w-[1200px] mx-auto px-4 py-8 sm:px-8 flex flex-col items-center justify-center">
+
+  <div class="w-full bg-[#1e293b] border border-[#334155] rounded-3xl p-6 sm:p-10 shadow-2xl shadow-black/40">
+    
+    <!-- Header informativo -->
+    <div class="mb-8 pb-6 border-b border-[#334155] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span>
+          Conversión en Tiempo Real
+        </h2>
+        <p class="text-sm text-slate-400 mt-1">Ingresá un valor en <strong class="text-white">cualquiera de las bases</strong> para calcular el resto instantáneamente.</p>
+      </div>
+      <button id="btn-clear" class="shrink-0 text-xs font-bold uppercase tracking-wider bg-[#334155] hover:bg-[#475569] text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Limpiar Todo
+      </button>
+    </div>
+
+    <!-- Layout Simétrico 3 Columnas -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_250px_1fr] gap-8 items-center">
+
+      <!-- COLUMNA IZQUIERDA: Decimal & Binario -->
+      <div class="flex flex-col gap-6">
+        
+        <!-- Decimal (Base 10) -->
+        <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-5 shadow-lg relative group transition-colors duration-300 focus-within:border-[#3b82f6]">
+          <div class="flex justify-between items-center mb-3">
+            <label for="input-dec" class="font-bold text-white uppercase tracking-wider flex items-center gap-2 text-sm">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> Decimal <span class="text-slate-500 font-mono text-[10px]">(Base 10)</span>
+            </label>
+            <button class="btn-copy text-slate-500 hover:text-[#3b82f6] transition-colors" data-target="input-dec" title="Copiar">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </button>
+          </div>
+          <input type="text" id="input-dec" class="base-input" style="--focus-color: #3b82f6; --focus-shadow: rgba(59,130,246,0.15);" placeholder="Ej: 255" autocomplete="off" spellcheck="false">
+        </div>
+
+        <!-- Binario (Base 2) -->
+        <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-5 shadow-lg relative group transition-colors duration-300 focus-within:border-[#4ade80]">
+          <div class="flex justify-between items-center mb-3">
+            <label for="input-bin" class="font-bold text-white uppercase tracking-wider flex items-center gap-2 text-sm">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#4ade80]"></span> Binario <span class="text-slate-500 font-mono text-[10px]">(Base 2)</span>
+            </label>
+            <button class="btn-copy text-slate-500 hover:text-[#4ade80] transition-colors" data-target="input-bin" title="Copiar">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </button>
+          </div>
+          <input type="text" id="input-bin" class="base-input" style="--focus-color: #4ade80; --focus-shadow: rgba(74,222,128,0.15);" placeholder="Ej: 11111111" autocomplete="off" spellcheck="false">
+        </div>
+
+      </div>
+
+      <!-- COLUMNA CENTRAL: ESQUEMA CONECTOR -->
+      <div class="hidden lg:flex justify-center pointer-events-none">
+        <!-- viewBox ampliado en X para no recortar los círculos de los extremos -->
+        <svg viewBox="-15 0 230 300" class="w-full h-auto text-[#334155]">
+          <!-- Nodos y Conexiones -->
+          <path d="M 0,60 L 100,150 L 0,240" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 200,60 L 100,150 L 200,240" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          
+          <!-- Núcleo Central -->
+          <circle cx="100" cy="150" r="35" fill="#0f172a" stroke="#60a5fa" stroke-width="3" class="glow-svg"/>
+          <!-- Texto centrado perfectamente en Y=150 (alineado con el círculo) -->
+          <text x="100" y="150" fill="#ffffff" font-size="13" font-family="sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="middle" tracking-widest dy=".1em">DATA</text>
+          
+          <!-- Puntos de Conexión Extremos (Radio ampliado levemente para mejor definición) -->
+          <circle cx="0" cy="60" r="5" fill="#3b82f6"/>
+          <circle cx="0" cy="240" r="5" fill="#4ade80"/>
+          <circle cx="200" cy="60" r="5" fill="#f0a070"/>
+          <circle cx="200" cy="240" r="5" fill="#c084fc"/>
+        </svg>
+      </div>
+
+      <!-- COLUMNA DERECHA: Hexadecimal & Octal -->
+      <div class="flex flex-col gap-6">
+        
+        <!-- Hexadecimal (Base 16) -->
+        <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-5 shadow-lg relative group transition-colors duration-300 focus-within:border-[#f0a070]">
+          <div class="flex justify-between items-center mb-3">
+            <label for="input-hex" class="font-bold text-white uppercase tracking-wider flex items-center gap-2 text-sm">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#f0a070]"></span> Hexadecimal <span class="text-slate-500 font-mono text-[10px]">(Base 16)</span>
+            </label>
+            <button class="btn-copy text-slate-500 hover:text-[#f0a070] transition-colors" data-target="input-hex" title="Copiar">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </button>
+          </div>
+          <input type="text" id="input-hex" class="base-input uppercase" style="--focus-color: #f0a070; --focus-shadow: rgba(240,160,112,0.15);" placeholder="Ej: FF" autocomplete="off" spellcheck="false">
+        </div>
+
+        <!-- Octal (Base 8) -->
+        <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-5 shadow-lg relative group transition-colors duration-300 focus-within:border-[#c084fc]">
+          <div class="flex justify-between items-center mb-3">
+            <label for="input-oct" class="font-bold text-white uppercase tracking-wider flex items-center gap-2 text-sm">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#c084fc]"></span> Octal <span class="text-slate-500 font-mono text-[10px]">(Base 8)</span>
+            </label>
+            <button class="btn-copy text-slate-500 hover:text-[#c084fc] transition-colors" data-target="input-oct" title="Copiar">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </button>
+          </div>
+          <input type="text" id="input-oct" class="base-input" style="--focus-color: #c084fc; --focus-shadow: rgba(192,132,252,0.15);" placeholder="Ej: 377" autocomplete="off" spellcheck="false">
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Tostada Notificación Copiado -->
+<div id="toast" class="fixed bottom-5 right-5 bg-[#3b82f6] text-[#0f172a] font-bold px-4 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+  <span>¡Copiado al portapapeles!</span>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  // Referencias a los inputs
+  const inDec = document.getElementById('input-dec');
+  const inBin = document.getElementById('input-bin');
+  const inHex = document.getElementById('input-hex');
+  const inOct = document.getElementById('input-oct');
+  const btnClear = document.getElementById('btn-clear');
+  const toast = document.getElementById('toast');
+
+  // Filtros Regex para escritura en tiempo real
+  const regexFilters = {
+    10: /[^0-9]/g,
+    2: /[^0-1]/g,
+    16: /[^0-9A-Fa-f]/g,
+    8: /[^0-7]/g
+  };
+
+  // Función para parsear usando BigInt (soporta números inmensos)
+  function parseToBigInt(str, base) {
+    if (!str) return null;
+    try {
+      if (base === 10) return BigInt(str);
+      if (base === 2) return BigInt('0b' + str);
+      if (base === 16) return BigInt('0x' + str);
+      if (base === 8) return BigInt('0o' + str);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Lógica principal de conversión
+  function convertFrom(sourceInput, base) {
+    // 1. Filtrar caracteres inválidos al instante
+    let rawVal = sourceInput.value;
+    let filteredVal = rawVal.replace(regexFilters[base], '');
+    
+    if (rawVal !== filteredVal) {
+      sourceInput.value = filteredVal; // Corrige visualmente al usuario
+    }
+
+    // Si borró todo, vaciar los demás
+    if (filteredVal === '') {
+      if(base !== 10) inDec.value = '';
+      if(base !== 2) inBin.value = '';
+      if(base !== 16) inHex.value = '';
+      if(base !== 8) inOct.value = '';
+      return;
+    }
+
+    // 2. Convertir a Decimal Base (BigInt)
+    let decValue = parseToBigInt(filteredVal, base);
+    if (decValue === null) return;
+
+    // 3. Imprimir en el resto de los campos
+    if (base !== 10) inDec.value = decValue.toString(10);
+    if (base !== 2)  inBin.value = decValue.toString(2);
+    if (base !== 16) inHex.value = decValue.toString(16).toUpperCase();
+    if (base !== 8)  inOct.value = decValue.toString(8);
+  }
+
+  // Event Listeners para cada input (Evento 'input' para reacción instantánea)
+  inDec.addEventListener('input', function() { convertFrom(this, 10); });
+  inBin.addEventListener('input', function() { convertFrom(this, 2); });
+  inHex.addEventListener('input', function() { convertFrom(this, 16); });
+  inOct.addEventListener('input', function() { convertFrom(this, 8); });
+
+  // Botón Limpiar Todo
+  btnClear.addEventListener('click', () => {
+    inDec.value = '';
+    inBin.value = '';
+    inHex.value = '';
+    inOct.value = '';
+  });
+
+  // Funcionalidad Portapapeles (Copy)
+  const copyButtons = document.querySelectorAll('.btn-copy');
+  let toastTimeout;
+
+  copyButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-target');
+      const inputEl = document.getElementById(targetId);
+      
+      if (inputEl.value) {
+        navigator.clipboard.writeText(inputEl.value).then(() => {
+          // Mostrar Tostada
+          toast.classList.remove('translate-y-20', 'opacity-0');
+          
+          clearTimeout(toastTimeout);
+          toastTimeout = setTimeout(() => {
+            toast.classList.add('translate-y-20', 'opacity-0');
+          }, 2500);
+        });
+      }
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
