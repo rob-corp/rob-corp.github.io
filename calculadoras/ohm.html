@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0f172a">
-<title>Calculadora de Ley de Ohm y Potencia</title>
+<title>Ley de Ohm</title>
 <link rel="icon" type="image/svg+xml" href="/iconos/ohm.svg">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -47,7 +47,6 @@
   ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
   html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
 
-  /* Ocultar flechas de inputs numéricos */
   input[type="number"]::-webkit-inner-spin-button, 
   input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
   input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
@@ -55,7 +54,6 @@
   .glow-svg { filter: drop-shadow(0 0 12px rgba(96,165,250,0.3)); }
   .glow-orange { filter: drop-shadow(0 0 12px rgba(240,160,112,0.4)); }
   
-  /* Estados de input: manual vs calculado */
   .input-manual { color: #ffffff !important; border-color: #3b82f6 !important; }
   .input-computed { color: #f0a070 !important; border-color: #f0a07050 !important; background-color: #f0a07005 !important; }
 </style>
@@ -88,7 +86,6 @@
 
   <div class="w-full bg-[#1e293b] border border-[#334155] rounded-3xl p-6 sm:p-10 shadow-2xl shadow-black/40">
     
-    <!-- Header informativo -->
     <div class="mb-8 pb-6 border-b border-[#334155] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -103,123 +100,167 @@
       </button>
     </div>
 
-    <!-- Layout Dividido -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
-      <!-- COLUMNA IZQUIERDA: ESQUEMA VECTORIAL -->
       <div class="flex justify-center bg-[#0f172a] rounded-2xl border border-[#334155] p-6 lg:p-10 shadow-inner">
-        <!-- SVG Ampliado (viewBox modificado para que no corte los textos largos) -->
         <svg viewBox="-80 0 560 350" class="w-full max-w-[450px] h-auto text-[#60a5fa] glow-svg">
-          <!-- Batería / Fuente (V) -->
           <path d="M 80,100 L 80,150" fill="none" stroke="currentColor" stroke-width="4"/>
-          <path d="M 60,150 L 100,150" fill="none" stroke="currentColor" stroke-width="6"/> <!-- Placa + -->
-          <path d="M 70,170 L 90,170" fill="none" stroke="currentColor" stroke-width="8"/> <!-- Placa - -->
+          <path d="M 60,150 L 100,150" fill="none" stroke="currentColor" stroke-width="6"/>
+          <path d="M 70,170 L 90,170" fill="none" stroke="currentColor" stroke-width="8"/>
           <path d="M 80,170 L 80,250" fill="none" stroke="currentColor" stroke-width="4"/>
           
-          <!-- Texto Vout (Alineado a la derecha, con espacio hacia la izquierda) -->
           <text x="45" y="165" fill="currentColor" font-size="28" font-family="monospace" font-weight="bold" text-anchor="end" class="transition-colors duration-300" id="svg-v-val">0 V</text>
           
-          <!-- Cables horizontales -->
           <path d="M 80,100 L 320,100" fill="none" stroke="currentColor" stroke-width="4"/>
           <path d="M 80,250 L 320,250" fill="none" stroke="currentColor" stroke-width="4"/>
           
-          <!-- Flecha de Corriente (I) -->
           <path d="M 160,85 L 240,85" fill="none" stroke="#f0a070" stroke-width="4" stroke-linecap="round" class="glow-orange"/>
           <path d="M 225,75 L 240,85 L 225,95" fill="none" stroke="#f0a070" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="glow-orange"/>
-          <!-- Texto Corriente (Centrado) -->
           <text x="200" y="70" fill="#f0a070" font-size="20" font-family="monospace" font-weight="bold" text-anchor="middle" class="glow-orange transition-colors duration-300" id="svg-i-val">0 A</text>
 
-          <!-- Resistencia (R) - Rama derecha -->
           <path d="M 320,100 L 320,135" fill="none" stroke="currentColor" stroke-width="4"/>
           <rect x="300" y="135" width="40" height="80" fill="#1e293b" stroke="currentColor" stroke-width="4" rx="2"/>
           
-          <!-- Texto Resistencia (Alineado a la izquierda, con mucho espacio hacia la derecha) -->
           <text x="355" y="180" fill="currentColor" font-size="24" font-family="monospace" font-weight="bold" text-anchor="start" dominant-baseline="middle" class="transition-colors duration-300" id="svg-r-val">0 Ω</text>
           
           <path d="M 320,215 L 320,250" fill="none" stroke="currentColor" stroke-width="4"/>
 
-          <!-- Ondas de disipación de Potencia (P) bien trazadas -->
           <g class="glow-orange">
-            <!-- Onda Superior -->
             <path d="M 290,150 Q 282.5,140 275,150 T 260,150" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M 267,145 L 260,150 L 267,155" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Onda Central -->
             <path d="M 290,175 Q 282.5,165 275,175 T 260,175" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M 267,170 L 260,175 L 267,180" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Onda Inferior -->
             <path d="M 290,200 Q 282.5,190 275,200 T 260,200" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M 267,195 L 260,200 L 267,205" fill="none" stroke="#f0a070" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
           </g>
           
-          <!-- Texto Potencia (Alineado a la derecha del bloque de ondas) -->
           <text x="250" y="240" fill="#f0a070" font-size="20" font-family="monospace" font-weight="bold" text-anchor="end" class="glow-orange transition-colors duration-300" id="svg-p-val">0 W</text>
         </svg>
       </div>
 
-      <!-- COLUMNA DERECHA: PANELES DE INPUT -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         
-        <!-- Tarjeta Voltaje (V) -->
+        <!-- V -->
         <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 shadow-lg flex flex-col gap-2 transition-colors duration-300" id="card-v">
           <label class="text-sm font-bold text-white uppercase tracking-wider flex justify-between items-center">
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> Voltaje (V)</span>
             <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
           </label>
           <div class="flex items-center gap-2 mt-1">
-            <input type="number" id="val-v" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-lg px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
-            <select id="unit-v" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded-lg px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
-              <option value="0.001">mV</option>
-              <option value="1" selected>V</option>
-              <option value="1000">kV</option>
-            </select>
+            <input type="number" id="val-v" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-2xl px-3 py-2 text-white font-mono text-lg font-semibold focus:border-[#3b82f6] transition-colors" placeholder="---">
+            <div class="relative shrink-0">
+              <select id="unit-v" class="field-unit hidden">
+                <option value="0.001">mV</option>
+                <option value="1" selected>V</option>
+                <option value="1000">kV</option>
+              </select>
+              <button type="button" data-unit-btn="v" aria-haspopup="listbox" aria-expanded="false" aria-label="Unidad de voltaje"
+                      class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#3b82f6] rounded-2xl pl-3 pr-2 py-2 text-white font-mono font-extrabold text-lg tracking-wide flex items-center gap-1.5 transition-colors cursor-pointer min-w-[88px] justify-between">
+                <span data-unit-label="v">V</span>
+                <svg class="w-3.5 h-3.5 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div data-unit-menu="v" role="listbox"
+                   class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-2xl p-1.5 shadow-2xl shadow-black/60 space-y-1 min-w-[102px]">
+                <button type="button" data-unit-opt data-value="0.001" class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">mV</button>
+                <button type="button" data-unit-opt data-value="1"     class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-bold text-white bg-[#3b82f6] rounded-xl transition-colors whitespace-nowrap shadow-sm">V</button>
+                <button type="button" data-unit-opt data-value="1000"  class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">kV</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Tarjeta Corriente (I) -->
+        <!-- I -->
         <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 shadow-lg flex flex-col gap-2 transition-colors duration-300" id="card-i">
           <label class="text-sm font-bold text-white uppercase tracking-wider flex justify-between items-center">
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#60a5fa]"></span> Corriente (I)</span>
             <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
           </label>
           <div class="flex items-center gap-2 mt-1">
-            <input type="number" id="val-i" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-lg px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
-            <select id="unit-i" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded-lg px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
-              <option value="0.000001">µA</option>
-              <option value="0.001">mA</option>
-              <option value="1" selected>A</option>
-            </select>
+            <input type="number" id="val-i" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-2xl px-3 py-2 text-white font-mono text-lg font-semibold focus:border-[#3b82f6] transition-colors" placeholder="---">
+            <div class="relative shrink-0">
+              <select id="unit-i" class="field-unit hidden">
+                <option value="0.000001">µA</option>
+                <option value="0.001">mA</option>
+                <option value="1" selected>A</option>
+              </select>
+              <button type="button" data-unit-btn="i" aria-haspopup="listbox" aria-expanded="false" aria-label="Unidad de corriente"
+                      class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#3b82f6] rounded-2xl pl-3 pr-2 py-2 text-white font-mono font-extrabold text-lg tracking-wide flex items-center gap-1.5 transition-colors cursor-pointer min-w-[88px] justify-between">
+                <span data-unit-label="i">A</span>
+                <svg class="w-3.5 h-3.5 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div data-unit-menu="i" role="listbox"
+                   class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-2xl p-1.5 shadow-2xl shadow-black/60 space-y-1 min-w-[102px]">
+                <button type="button" data-unit-opt data-value="0.000001" class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">µA</button>
+                <button type="button" data-unit-opt data-value="0.001"    class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">mA</button>
+                <button type="button" data-unit-opt data-value="1"        class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-bold text-white bg-[#3b82f6] rounded-xl transition-colors whitespace-nowrap shadow-sm">A</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Tarjeta Resistencia (R) -->
+        <!-- R -->
         <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 shadow-lg flex flex-col gap-2 transition-colors duration-300" id="card-r">
           <label class="text-sm font-bold text-white uppercase tracking-wider flex justify-between items-center">
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#93c5fd]"></span> Resistencia (R)</span>
             <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
           </label>
           <div class="flex items-center gap-2 mt-1">
-            <input type="number" id="val-r" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-lg px-3 py-2 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors" placeholder="---">
-            <select id="unit-r" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded-lg px-2 py-2 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
-              <option value="1" selected>Ω</option>
-              <option value="1000">kΩ</option>
-              <option value="1000000">MΩ</option>
-            </select>
+            <input type="number" id="val-r" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-2xl px-3 py-2 text-white font-mono text-lg font-semibold focus:border-[#3b82f6] transition-colors" placeholder="---">
+            <div class="relative shrink-0">
+              <select id="unit-r" class="field-unit hidden">
+                <option value="1" selected>Ω</option>
+                <option value="1000">kΩ</option>
+                <option value="1000000">MΩ</option>
+              </select>
+              <button type="button" data-unit-btn="r" aria-haspopup="listbox" aria-expanded="false" aria-label="Unidad de resistencia"
+                      class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#3b82f6] rounded-2xl pl-3 pr-2 py-2 text-white font-mono font-extrabold text-lg tracking-wide flex items-center gap-1.5 transition-colors cursor-pointer min-w-[88px] justify-between">
+                <span data-unit-label="r">Ω</span>
+                <svg class="w-3.5 h-3.5 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div data-unit-menu="r" role="listbox"
+                   class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-2xl p-1.5 shadow-2xl shadow-black/60 space-y-1 min-w-[102px]">
+                <button type="button" data-unit-opt data-value="1"       class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-bold text-white bg-[#3b82f6] rounded-xl transition-colors whitespace-nowrap shadow-sm">Ω</button>
+                <button type="button" data-unit-opt data-value="1000"    class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">kΩ</button>
+                <button type="button" data-unit-opt data-value="1000000" class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">MΩ</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Tarjeta Potencia (P) -->
+        <!-- P -->
         <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-4 shadow-lg flex flex-col gap-2 transition-colors duration-300" id="card-p">
           <label class="text-sm font-bold text-[#f0a070] uppercase tracking-wider flex justify-between items-center">
             <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#f0a070]"></span> Potencia (P)</span>
             <span class="text-[10px] text-slate-500 font-mono tag-state"></span>
           </label>
           <div class="flex items-center gap-2 mt-1">
-            <input type="number" id="val-p" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-lg px-3 py-2 text-white font-mono text-lg focus:border-[#f0a070] transition-colors" placeholder="---">
-            <select id="unit-p" class="field-unit shrink-0 bg-[#334155] border border-[#334155] rounded-lg px-2 py-2 text-white font-bold cursor-pointer focus:border-[#f0a070] transition-colors">
-              <option value="0.001">mW</option>
-              <option value="1" selected>W</option>
-              <option value="1000">kW</option>
-            </select>
+            <input type="number" id="val-p" min="0" step="any" class="field-input w-full bg-[#1e293b] border border-[#334155] rounded-2xl px-3 py-2 text-white font-mono text-lg font-semibold focus:border-[#f0a070] transition-colors" placeholder="---">
+            <div class="relative shrink-0">
+              <select id="unit-p" class="field-unit hidden">
+                <option value="0.001">mW</option>
+                <option value="1" selected>W</option>
+                <option value="1000">kW</option>
+              </select>
+              <button type="button" data-unit-btn="p" aria-haspopup="listbox" aria-expanded="false" aria-label="Unidad de potencia"
+                      class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#f0a070] rounded-2xl pl-3 pr-2 py-2 text-white font-mono font-extrabold text-lg tracking-wide flex items-center gap-1.5 transition-colors cursor-pointer min-w-[88px] justify-between">
+                <span data-unit-label="p">W</span>
+                <svg class="w-3.5 h-3.5 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div data-unit-menu="p" role="listbox"
+                   class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-2xl p-1.5 shadow-2xl shadow-black/60 space-y-1 min-w-[102px]">
+                <button type="button" data-unit-opt data-value="0.001" class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#f0a070] hover:text-[#0f172a] rounded-xl transition-colors whitespace-nowrap border border-transparent">mW</button>
+                <button type="button" data-unit-opt data-value="1"     class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-bold text-[#0f172a] bg-[#f0a070] rounded-xl transition-colors whitespace-nowrap shadow-sm">W</button>
+                <button type="button" data-unit-opt data-value="1000"  class="unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#f0a070] hover:text-[#0f172a] rounded-xl transition-colors whitespace-nowrap border border-transparent">kW</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -233,32 +274,17 @@
 (() => {
   'use strict';
 
-  // --- ESTRUCTURA DE CAMPOS ---
   const fields = {
-    v: { 
-      card: document.getElementById('card-v'), input: document.getElementById('val-v'), unit: document.getElementById('unit-v'), 
-      svg: document.getElementById('svg-v-val'), type: 'v' 
-    },
-    i: { 
-      card: document.getElementById('card-i'), input: document.getElementById('val-i'), unit: document.getElementById('unit-i'), 
-      svg: document.getElementById('svg-i-val'), type: 'i' 
-    },
-    r: { 
-      card: document.getElementById('card-r'), input: document.getElementById('val-r'), unit: document.getElementById('unit-r'), 
-      svg: document.getElementById('svg-r-val'), type: 'r' 
-    },
-    p: { 
-      card: document.getElementById('card-p'), input: document.getElementById('val-p'), unit: document.getElementById('unit-p'), 
-      svg: document.getElementById('svg-p-val'), type: 'p' 
-    }
+    v: { card: document.getElementById('card-v'), input: document.getElementById('val-v'), unit: document.getElementById('unit-v'), svg: document.getElementById('svg-v-val'), type: 'v' },
+    i: { card: document.getElementById('card-i'), input: document.getElementById('val-i'), unit: document.getElementById('unit-i'), svg: document.getElementById('svg-i-val'), type: 'i' },
+    r: { card: document.getElementById('card-r'), input: document.getElementById('val-r'), unit: document.getElementById('unit-r'), svg: document.getElementById('svg-r-val'), type: 'r' },
+    p: { card: document.getElementById('card-p'), input: document.getElementById('val-p'), unit: document.getElementById('unit-p'), svg: document.getElementById('svg-p-val'), type: 'p' }
   };
 
   let activeInputs = [];
 
-  // --- FORMATEADORES ---
   function getBestUnit(val, type) {
     if (val === 0 || isNaN(val) || !isFinite(val)) return { val: 0, mult: 1 };
-    
     const absVal = Math.abs(val);
     if (type === 'v') {
       if (absVal >= 1000) return { val: val / 1000, mult: 1000 };
@@ -299,18 +325,14 @@
   function setComputedValue(key, baseVal) {
     const f = fields[key];
     const best = getBestUnit(baseVal, key);
-    
-    // Mostramos hasta 4 decimales para precisión (ej. 0.5217)
     f.input.value = parseFloat(best.val.toFixed(4));
     f.unit.value = best.mult;
-    
     f.input.classList.remove('input-manual');
     f.input.classList.add('input-computed');
     f.card.querySelector('.tag-state').textContent = 'CALCULADO';
-    
-    // SVG usa un par de decimales para no sobrecargar visualmente el dibujo
     f.svg.textContent = `${parseFloat(best.val.toFixed(2))} ${getUnitSymbol(best.mult, key)}`;
     f.svg.classList.add('text-[#f0a070]');
+    if (f._syncUnit) f._syncUnit();
   }
 
   function setManualState(key) {
@@ -318,7 +340,6 @@
     f.input.classList.remove('input-computed');
     f.input.classList.add('input-manual');
     f.card.querySelector('.tag-state').textContent = 'INGRESADO';
-    
     const v = getBaseValue(f);
     if (v !== null) {
       const best = getBestUnit(v, key);
@@ -329,15 +350,12 @@
     f.svg.classList.remove('text-[#f0a070]');
   }
 
-  // --- LÓGICA MATEMÁTICA ---
   function calculateOhm() {
     if (activeInputs.length < 2) return;
-
     const k1 = activeInputs[0];
     const k2 = activeInputs[1];
     const v1 = getBaseValue(fields[k1]);
     const v2 = getBaseValue(fields[k2]);
-
     if (v1 === null || v2 === null) return;
 
     const known = { [k1]: v1, [k2]: v2 };
@@ -347,46 +365,36 @@
       v = known.v; i = known.i;
       r = (i !== 0) ? v / i : 0;
       p = v * i;
-    } 
-    else if (known.v !== undefined && known.r !== undefined) {
+    } else if (known.v !== undefined && known.r !== undefined) {
       v = known.v; r = known.r;
       i = (r !== 0) ? v / r : 0;
       p = (r !== 0) ? (v * v) / r : 0;
-    } 
-    else if (known.v !== undefined && known.p !== undefined) {
+    } else if (known.v !== undefined && known.p !== undefined) {
       v = known.v; p = known.p;
       i = (v !== 0) ? p / v : 0;
       r = (p !== 0) ? (v * v) / p : 0;
-    } 
-    else if (known.i !== undefined && known.r !== undefined) {
+    } else if (known.i !== undefined && known.r !== undefined) {
       i = known.i; r = known.r;
       v = i * r;
       p = i * i * r;
-    } 
-    else if (known.i !== undefined && known.p !== undefined) {
+    } else if (known.i !== undefined && known.p !== undefined) {
       i = known.i; p = known.p;
       v = (i !== 0) ? p / i : 0;
       r = (i !== 0) ? p / (i * i) : 0;
-    } 
-    else if (known.r !== undefined && known.p !== undefined) {
+    } else if (known.r !== undefined && known.p !== undefined) {
       r = known.r; p = known.p;
       v = Math.sqrt(p * r);
       i = (r !== 0) ? Math.sqrt(p / r) : 0;
     }
 
     const computedValues = { v, i, r, p };
-
     Object.keys(fields).forEach(key => {
-      if (!activeInputs.includes(key)) {
-        setComputedValue(key, computedValues[key]);
-      }
+      if (!activeInputs.includes(key)) setComputedValue(key, computedValues[key]);
     });
   }
 
-  // --- EVENT LISTENERS ---
   function handleInput(e, key) {
     const valStr = e.target.value;
-    
     if (valStr === '') {
       activeInputs = activeInputs.filter(k => k !== key);
       const f = fields[key];
@@ -396,23 +404,15 @@
       f.svg.classList.remove('text-[#f0a070]');
       return;
     }
-
     if (!activeInputs.includes(key)) {
-      if (activeInputs.length >= 2) {
-        activeInputs.shift();
-      }
+      if (activeInputs.length >= 2) activeInputs.shift();
       activeInputs.push(key);
     } else {
       activeInputs = activeInputs.filter(k => k !== key);
       activeInputs.push(key);
     }
-
     setManualState(key);
-    
-    if (activeInputs.length === 2) {
-      setManualState(activeInputs[0]);
-    }
-
+    if (activeInputs.length === 2) setManualState(activeInputs[0]);
     calculateOhm();
   }
 
@@ -437,6 +437,79 @@
       f.svg.classList.remove('text-[#f0a070]');
     });
   });
+
+  // --- CUSTOM DROPDOWNS DE UNIDADES ---
+  function setupUnitDropdowns() {
+    const allMenus = () => document.querySelectorAll('[data-unit-menu]');
+    const allButtons = () => document.querySelectorAll('[data-unit-btn]');
+
+    const closeAll = () => {
+      allMenus().forEach(m => m.classList.add('hidden'));
+      allButtons().forEach(b => {
+        b.setAttribute('aria-expanded', 'false');
+        b.querySelector('svg')?.classList.remove('rotate-180');
+      });
+    };
+
+    Object.keys(fields).forEach(key => {
+      const btn    = document.querySelector(`[data-unit-btn="${key}"]`);
+      const menu   = document.querySelector(`[data-unit-menu="${key}"]`);
+      const label  = document.querySelector(`[data-unit-label="${key}"]`);
+      const select = fields[key].unit;
+      if (!btn || !menu || !label || !select) return;
+
+      const options = menu.querySelectorAll('[data-unit-opt]');
+      const isPower = key === 'p';
+
+      const activeClass = isPower
+        ? 'unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-bold text-[#0f172a] bg-[#f0a070] rounded-xl transition-colors whitespace-nowrap shadow-sm'
+        : 'unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-bold text-white bg-[#3b82f6] rounded-xl transition-colors whitespace-nowrap shadow-sm';
+
+      const idleClass = isPower
+        ? 'unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#f0a070] hover:text-[#0f172a] rounded-xl transition-colors whitespace-nowrap border border-transparent'
+        : 'unit-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent';
+
+      const syncActive = () => {
+        const currentVal = select.value;
+        options.forEach(opt => {
+          const isActive = opt.dataset.value === currentVal;
+          opt.className = isActive ? activeClass : idleClass;
+          if (isActive) label.textContent = opt.textContent.trim();
+        });
+      };
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !menu.classList.contains('hidden');
+        closeAll();
+        if (!isOpen) {
+          menu.classList.remove('hidden');
+          btn.setAttribute('aria-expanded', 'true');
+          btn.querySelector('svg')?.classList.add('rotate-180');
+        }
+      });
+
+      options.forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const newVal = opt.dataset.value;
+          if (select.value !== newVal) {
+            select.value = newVal;
+            select.dispatchEvent(new Event('change'));
+          }
+          syncActive();
+          closeAll();
+        });
+      });
+
+      fields[key]._syncUnit = syncActive;
+      syncActive();
+    });
+
+    document.addEventListener('click', closeAll);
+  }
+
+  setupUnitDropdowns();
 
 })();
 </script>

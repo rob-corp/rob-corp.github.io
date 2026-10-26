@@ -47,7 +47,6 @@
   *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; }
 
-  /* Foco visible SOLO con teclado */
   :focus { outline: none; }
   :focus-visible {
     outline: 2px solid #3b82f6;
@@ -76,11 +75,9 @@
     transition: background-color 5000s ease-in-out 0s;
   }
 
-  /* Control de visibilidad de modales (evita conflicto hidden/flex de Tailwind) */
   .modal { display: none; }
   .modal.modal-open { display: flex; }
 
-  /* Botón guardando con spinner */
   .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
   .btn-loading::after {
     content: ''; position: absolute; inset: 0; margin: auto;
@@ -172,14 +169,31 @@
           <input type="text" id="jobDetail" autocomplete="off" name="calc_job_field" placeholder="Ej: Impresión 3D / Diseño" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-medium">
         </div>
 
+        <!-- DIFICULTAD: desplegable personalizado (igual tamaño que los inputs) -->
         <div class="space-y-1">
-          <label for="difficulty" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Dificultad / Tipo</label>
-          <select id="difficulty" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:border-cyan-500 font-medium">
-            <option value="7">Baja ($7 USD/hs)</option>
-            <option value="10" selected>Media ($10 USD/hs)</option>
-            <option value="15">Alta ($15 USD/hs)</option>
-            <option value="custom">Personalizada…</option>
-          </select>
+          <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Dificultad / Tipo</label>
+          <div class="relative">
+            <select id="difficulty" class="hidden">
+              <option value="7">Baja ($7 USD/hs)</option>
+              <option value="10" selected>Media ($10 USD/hs)</option>
+              <option value="15">Alta ($15 USD/hs)</option>
+              <option value="custom">Personalizada…</option>
+            </select>
+            <button type="button" id="dd-difficulty-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="dd-difficulty-menu"
+                    class="w-full bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:border-cyan-500 font-medium flex items-center justify-between gap-2 transition-colors cursor-pointer text-left">
+              <span id="dd-difficulty-label" class="truncate">Media ($10 USD/hs)</span>
+              <svg class="w-3.5 h-3.5 text-slate-400 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div id="dd-difficulty-menu" role="listbox"
+                 class="hidden absolute top-full left-0 right-0 mt-1.5 z-50 bg-slate-900 border border-slate-700 rounded-xl p-1 shadow-2xl shadow-black/60 space-y-0.5">
+              <button type="button" data-dd-opt data-value="7" class="dd-opt w-full text-left px-3 py-2 text-xs font-medium text-slate-200 hover:bg-cyan-600 hover:text-white rounded-lg transition-colors whitespace-nowrap border border-transparent">Baja ($7 USD/hs)</button>
+              <button type="button" data-dd-opt data-value="10" class="dd-opt w-full text-left px-3 py-2 text-xs font-bold text-white bg-cyan-600 rounded-lg transition-colors whitespace-nowrap shadow-sm">Media ($10 USD/hs)</button>
+              <button type="button" data-dd-opt data-value="15" class="dd-opt w-full text-left px-3 py-2 text-xs font-medium text-slate-200 hover:bg-cyan-600 hover:text-white rounded-lg transition-colors whitespace-nowrap border border-transparent">Alta ($15 USD/hs)</button>
+              <button type="button" data-dd-opt data-value="custom" class="dd-opt w-full text-left px-3 py-2 text-xs font-medium text-slate-200 hover:bg-cyan-600 hover:text-white rounded-lg transition-colors whitespace-nowrap border border-transparent">Personalizada…</button>
+            </div>
+          </div>
         </div>
 
         <div class="space-y-1">
@@ -192,14 +206,31 @@
           <input type="number" id="materialCost" min="0" step="0.01" placeholder="Ej: 1500,50" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500 font-mono">
         </div>
 
+        <!-- MARGEN: desplegable personalizado (igual tamaño que los inputs) -->
         <div class="space-y-1">
-          <label for="margin" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Margen de Imprevistos (%)</label>
-          <select id="margin" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:border-cyan-500 font-medium">
-            <option value="5">5% - Riesgo Bajo</option>
-            <option value="10">10% - Estándar</option>
-            <option value="15" selected>15% - Riesgo Medio</option>
-            <option value="20">20% - Alto / Complejo</option>
-          </select>
+          <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Margen de Imprevistos (%)</label>
+          <div class="relative">
+            <select id="margin" class="hidden">
+              <option value="5">5% - Riesgo Bajo</option>
+              <option value="10">10% - Estándar</option>
+              <option value="15" selected>15% - Riesgo Medio</option>
+              <option value="20">20% - Alto / Complejo</option>
+            </select>
+            <button type="button" id="dd-margin-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="dd-margin-menu"
+                    class="w-full bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:border-cyan-500 font-medium flex items-center justify-between gap-2 transition-colors cursor-pointer text-left">
+              <span id="dd-margin-label" class="truncate">15% - Riesgo Medio</span>
+              <svg class="w-3.5 h-3.5 text-slate-400 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div id="dd-margin-menu" role="listbox"
+                 class="hidden absolute top-full left-0 right-0 mt-1.5 z-50 bg-slate-900 border border-slate-700 rounded-xl p-1 shadow-2xl shadow-black/60 space-y-0.5">
+              <button type="button" data-dd-opt data-value="5"  class="dd-opt w-full text-left px-3 py-2 text-xs font-medium text-slate-200 hover:bg-cyan-600 hover:text-white rounded-lg transition-colors whitespace-nowrap border border-transparent">5% - Riesgo Bajo</button>
+              <button type="button" data-dd-opt data-value="10" class="dd-opt w-full text-left px-3 py-2 text-xs font-medium text-slate-200 hover:bg-cyan-600 hover:text-white rounded-lg transition-colors whitespace-nowrap border border-transparent">10% - Estándar</button>
+              <button type="button" data-dd-opt data-value="15" class="dd-opt w-full text-left px-3 py-2 text-xs font-bold text-white bg-cyan-600 rounded-lg transition-colors whitespace-nowrap shadow-sm">15% - Riesgo Medio</button>
+              <button type="button" data-dd-opt data-value="20" class="dd-opt w-full text-left px-3 py-2 text-xs font-medium text-slate-200 hover:bg-cyan-600 hover:text-white rounded-lg transition-colors whitespace-nowrap border border-transparent">20% - Alto / Complejo</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -216,11 +247,28 @@
         <div class="relative flex-1">
           <input type="text" id="search-filter" autocomplete="off" name="search_history_query" placeholder="🔍 Buscar por cliente o detalle…" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-600 focus:border-cyan-500">
         </div>
-        <select id="sort-order" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:border-cyan-500" aria-label="Ordenar historial">
-          <option value="newest">Más recientes</option>
-          <option value="az">Cliente (A-Z)</option>
-          <option value="amount">Mayor monto</option>
-        </select>
+
+        <!-- ORDEN: desplegable personalizado (igual tamaño que el buscador) -->
+        <div class="relative flex-shrink-0">
+          <select id="sort-order" class="hidden" aria-label="Ordenar historial">
+            <option value="newest">Más recientes</option>
+            <option value="az">Cliente (A-Z)</option>
+            <option value="amount">Mayor monto</option>
+          </select>
+          <button type="button" id="dd-sort-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="dd-sort-menu"
+                  class="bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:border-cyan-500 font-medium flex items-center justify-between gap-2 transition-colors cursor-pointer whitespace-nowrap min-w-[150px]">
+            <span id="dd-sort-label" class="truncate">Más recientes</span>
+            <svg class="w-3.5 h-3.5 text-slate-400 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="dd-sort-menu" role="listbox"
+               class="hidden absolute top-full right-0 mt-1.5 z-50 bg-slate-900 border border-slate-700 rounded-xl p-1 shadow-2xl shadow-black/60 space-y-0.5 min-w-full">
+            <button type="button" data-dd-opt data-value="newest" class="dd-opt w-full text-left px-3 py-2 text-xs font-bold text-white bg-cyan-600 rounded-lg transition-colors whitespace-nowrap shadow-sm">Más recientes</button>
+            <button type="button" data-dd-opt data-value="az"     class="dd-opt w-full text-left px-3 py-2 text-xs font-medium text-slate-200 hover:bg-cyan-600 hover:text-white rounded-lg transition-colors whitespace-nowrap border border-transparent">Cliente (A-Z)</button>
+            <button type="button" data-dd-opt data-value="amount" class="dd-opt w-full text-left px-3 py-2 text-xs font-medium text-slate-200 hover:bg-cyan-600 hover:text-white rounded-lg transition-colors whitespace-nowrap border border-transparent">Mayor monto</button>
+          </div>
+        </div>
       </div>
 
       <div id="history-container" class="space-y-2 min-h-[120px]"></div>
@@ -373,9 +421,6 @@
 (() => {
 'use strict';
 
-/* =========================================================
-   CONFIGURACIÓN
-   ========================================================= */
 const SUPABASE_URL = 'https://btjgctebliydjyqopvjo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0amdjdGVibGl5ZGp5cW9wdmpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1Mzk2MDMsImV4cCI6MjEwNjExNTYwM30.MrJcVSAiWbxsKmeezRE76sAuwUjXVyugCUEKvXLCbnw';
 
@@ -396,9 +441,6 @@ const _supabase = (SUPABASE_URL.startsWith('http') && !SUPABASE_URL.includes('tu
     })
   : null;
 
-/* =========================================================
-   ESTADO
-   ========================================================= */
 let dollarRate = 0;
 let editingId = null;
 let pendingDeleteId = null;
@@ -407,9 +449,10 @@ let userQuotes = [];
 let isSignUpMode = false;
 let lastFocusedBeforeModal = null;
 
-/* =========================================================
-   DOM CACHE
-   ========================================================= */
+let difficultyDD = null;
+let marginDD = null;
+let sortDD = null;
+
 const $ = (id) => document.getElementById(id);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
@@ -452,9 +495,6 @@ const dom = {
   authError:       $('auth-error'),
 };
 
-/* =========================================================
-   UTILIDADES
-   ========================================================= */
 const escapeHTML = (str) => String(str ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]));
 
 const formatARS = (amount) => 'ARS $' + Math.round(Number(amount) || 0).toLocaleString('es-AR');
@@ -466,7 +506,6 @@ const debounce = (fn, wait) => {
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-/* Normaliza la clave de ordenación (local id numérico vs UUID cloud) */
 const getSortKey = (q) => {
   if (typeof q.id === 'number') return q.id;
   if (q.created_at) return new Date(q.created_at).getTime();
@@ -481,17 +520,11 @@ const getDollarFallback = () => {
   } catch { return CONFIG.DOLLAR_FALLBACK_DEFAULT; }
 };
 
-/* =========================================================
-   MODALES (con focus trap + Escape)
-   ========================================================= */
 function openModal(id) {
   const el = document.getElementById(id);
   if (!el || el.classList.contains('modal-open')) return;
-
   lastFocusedBeforeModal = document.activeElement;
   el.classList.add('modal-open');
-
-  // Foco en el primer input/botón significativo
   const focusable = el.querySelector('input:not([type=hidden]):not([disabled]), select, textarea, button:not([data-close-modal]):not([disabled])');
   if (focusable) setTimeout(() => focusable.focus(), 60);
 }
@@ -510,7 +543,6 @@ function closeAllModals() {
   $$('.modal.modal-open').forEach(m => m.classList.remove('modal-open'));
 }
 
-// Escape cierra modales + click en backdrop
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeAllModals();
 });
@@ -521,36 +553,26 @@ document.addEventListener('click', (e) => {
     closeModal(closer.getAttribute('data-close-modal'));
     return;
   }
-  // Click en backdrop
   const modal = e.target.closest('.modal');
   if (modal && e.target === modal) modal.classList.remove('modal-open');
 });
 
-/* =========================================================
-   ALERT MODAL
-   ========================================================= */
 function showAlertModal(title, message) {
   dom.alertTitle.textContent = title;
   dom.alertMsg.textContent = message;
   openModal('modal-alert');
 }
 
-/* =========================================================
-   FOCUS TRAP (Tab dentro del modal abierto)
-   ========================================================= */
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Tab') return;
   const modal = document.querySelector('.modal.modal-open');
   if (!modal) return;
-
   const focusables = Array.from(modal.querySelectorAll(
     'a[href], button:not([disabled]), input:not([type=hidden]):not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
   )).filter(el => el.offsetParent !== null);
   if (!focusables.length) return;
-
   const first = focusables[0];
   const last = focusables[focusables.length - 1];
-
   if (e.shiftKey && document.activeElement === first) {
     e.preventDefault(); last.focus();
   } else if (!e.shiftKey && document.activeElement === last) {
@@ -558,15 +580,86 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-/* =========================================================
-   SESIÓN SUPABASE
-   ========================================================= */
+// =========================================================
+// DESPLEGABLES PERSONALIZADOS (mismo tamaño que los inputs)
+// =========================================================
+function closeAllCustomMenus() {
+  document.querySelectorAll('[id^="dd-"][id$="-menu"]').forEach(m => m.classList.add('hidden'));
+  document.querySelectorAll('[id^="dd-"][id$="-btn"]').forEach(b => {
+    b.setAttribute('aria-expanded', 'false');
+    b.querySelector('svg')?.classList.remove('rotate-180');
+  });
+}
+
+function setupCustomDropdown({ selectId, btnId, menuId, labelId, activeClass, idleClass }) {
+  const select = $(selectId);
+  const btn    = $(btnId);
+  const menu   = $(menuId);
+  const label  = $(labelId);
+  if (!select || !btn || !menu || !label) return null;
+
+  const options = menu.querySelectorAll('[data-dd-opt]');
+
+  const sync = () => {
+    const currentVal = select.value;
+    const currentOption = Array.from(select.options).find(o => o.value === currentVal);
+    if (currentOption) label.textContent = currentOption.textContent.trim();
+    options.forEach(opt => {
+      opt.className = opt.dataset.value === currentVal ? activeClass : idleClass;
+    });
+  };
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = !menu.classList.contains('hidden');
+    closeAllCustomMenus();
+    if (!isOpen) {
+      menu.classList.remove('hidden');
+      btn.setAttribute('aria-expanded', 'true');
+      btn.querySelector('svg')?.classList.add('rotate-180');
+    }
+  });
+
+  options.forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (select.value !== opt.dataset.value) {
+        select.value = opt.dataset.value;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      sync();
+      closeAllCustomMenus();
+    });
+  });
+
+  sync();
+  return { sync };
+}
+
+function setupAllDropdowns() {
+  const activeClass = 'dd-opt w-full text-left px-3 py-2 text-xs font-bold text-white bg-cyan-600 rounded-lg transition-colors whitespace-nowrap shadow-sm';
+  const idleClass   = 'dd-opt w-full text-left px-3 py-2 text-xs font-medium text-slate-200 hover:bg-cyan-600 hover:text-white rounded-lg transition-colors whitespace-nowrap border border-transparent';
+
+  difficultyDD = setupCustomDropdown({
+    selectId: 'difficulty', btnId: 'dd-difficulty-btn', menuId: 'dd-difficulty-menu', labelId: 'dd-difficulty-label',
+    activeClass, idleClass
+  });
+  marginDD = setupCustomDropdown({
+    selectId: 'margin', btnId: 'dd-margin-btn', menuId: 'dd-margin-menu', labelId: 'dd-margin-label',
+    activeClass, idleClass
+  });
+  sortDD = setupCustomDropdown({
+    selectId: 'sort-order', btnId: 'dd-sort-btn', menuId: 'dd-sort-menu', labelId: 'dd-sort-label',
+    activeClass, idleClass
+  });
+}
+
+document.addEventListener('click', closeAllCustomMenus);
+
 async function initAuthSession() {
   if (!_supabase) return;
-
   const { data: { session } } = await _supabase.auth.getSession();
   updateSessionState(session);
-
   _supabase.auth.onAuthStateChange((_e, session) => updateSessionState(session));
 }
 
@@ -590,25 +683,18 @@ function updateSessionState(session) {
   }
 }
 
-/* =========================================================
-   DÓLAR BLUE
-   ========================================================= */
 async function fetchDollar(attempt = 1) {
   const { price, status, dot } = dom.dollar;
-
   try {
     const res = await fetch(CONFIG.DOLLAR_API, { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
-
     const data = await res.json();
     const venta = Number(data?.venta);
     if (!Number.isFinite(venta) || venta <= 0) throw new Error('Precio inválido');
-
     dollarRate = venta;
     price.textContent = formatARS(dollarRate);
     status.textContent = 'Dólar Blue en tiempo real';
     dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
-
   } catch (err) {
     if (attempt < CONFIG.DOLLAR_RETRIES) {
       await sleep(CONFIG.DOLLAR_RETRY_DELAY * attempt);
@@ -619,17 +705,12 @@ async function fetchDollar(attempt = 1) {
     status.textContent = 'Dólar de respaldo (sin conexión)';
     dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
   }
-
   calculate();
   renderHistory();
 }
 
-/* =========================================================
-   CÁLCULO
-   ========================================================= */
 function calculate() {
   if (dollarRate === 0) return null;
-
   const hours            = parseFloat(dom.estimatedHours.value) || 0;
   const hourlyRateUSD    = parseFloat(dom.hourlyRate.value) || 0;
   const materialCostARS  = parseFloat(dom.materialCost.value) || 0;
@@ -650,24 +731,16 @@ function calculate() {
 
   dom.currentRateBadge.textContent = `USD $${hourlyRateUSD}/h`;
 
-  return {
-    hours, laborARS, laborUSD, materialCostARS, marginARS, marginPercent,
-    totalARS, totalUSD, hourlyRateUSD,
-  };
+  return { hours, laborARS, laborUSD, materialCostARS, marginARS, marginPercent, totalARS, totalUSD, hourlyRateUSD };
 }
 
-/* =========================================================
-   STORAGE LOCAL (con try/catch)
-   ========================================================= */
 function getLocalQuotes() {
   try {
     const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 function saveLocalQuotes(quotes) {
@@ -681,9 +754,6 @@ function saveLocalQuotes(quotes) {
   }
 }
 
-/* =========================================================
-   HANDLERS DE UI
-   ========================================================= */
 $('btn-login-modal').addEventListener('click', () => {
   dom.authError.classList.add('hidden');
   openModal('modal-auth');
@@ -717,19 +787,16 @@ $('btn-confirm-custom-rate').addEventListener('click', () => {
   dom.hourlyRate.value = val;
   const customOpt = dom.difficulty.querySelector('option[value="custom"]');
   customOpt.textContent = `Personalizada ($${val} USD/hs)`;
+  if (difficultyDD) difficultyDD.sync();
   closeModal('modal-custom-rate');
   calculate();
 });
 
-// Recalcular en cualquier input relevante
 ['estimatedHours', 'materialCost'].forEach(id => {
   $(id).addEventListener('input', calculate);
 });
 dom.margin.addEventListener('change', calculate);
 
-/* =========================================================
-   GUARDAR PRESUPUESTO
-   ========================================================= */
 $('btn-save-trigger').addEventListener('click', () => {
   const calc = calculate();
   if (!calc || calc.totalARS === 0) {
@@ -738,7 +805,6 @@ $('btn-save-trigger').addEventListener('click', () => {
   }
   const today = new Date().toISOString().split('T')[0];
   if (!$('modal-startDate').value) $('modal-startDate').value = today;
-
   if (editingId === null) {
     $('modal-phone').value = '';
     $('modal-notes').value = '';
@@ -766,11 +832,9 @@ $('btn-confirm-save').addEventListener('click', async () => {
         totals: calc,
         saved_at: new Date().toLocaleDateString('es-AR'),
       };
-
       const { error } = editingId
         ? await _supabase.from('presupuestos').update(payload).eq('id', editingId)
         : await _supabase.from('presupuestos').insert([payload]);
-
       if (error) throw error;
       await fetchUserQuotes();
     } else {
@@ -792,7 +856,6 @@ $('btn-confirm-save').addEventListener('click', async () => {
       if (!saveLocalQuotes(quotes)) return;
       renderHistory();
     }
-
     closeModal('modal-save-profile');
     resetForm();
   } catch (err) {
@@ -804,13 +867,9 @@ $('btn-confirm-save').addEventListener('click', async () => {
   }
 });
 
-/* =========================================================
-   RENDER DEL HISTORIAL (con delegación de eventos)
-   ========================================================= */
 function renderHistory() {
   const allQuotes = (_supabase && currentUser) ? userQuotes : getLocalQuotes();
 
-  // Datalist con DOM API (sin innerHTML)
   const uniqueClients = Array.from(new Set(
     allQuotes.map(q => q.client || q.job_detail).filter(Boolean)
   ));
@@ -903,14 +962,11 @@ function renderHistory() {
   dom.history.replaceChildren(frag);
 }
 
-/* Delegación: 1 listener para todas las filas */
 dom.history.addEventListener('click', (e) => {
   const actionBtn = e.target.closest('[data-action]');
   const row = e.target.closest('[data-id]');
   if (!row) return;
-
   const id = row.dataset.id;
-
   if (actionBtn) {
     e.stopPropagation();
     if (actionBtn.dataset.action === 'edit') loadQuoteIntoForm(id);
@@ -941,13 +997,21 @@ function loadQuoteIntoForm(id) {
   dom.jobDetail.value = q.jobDetail || q.job_detail || '';
   dom.estimatedHours.value = q.totals?.hours || '';
   dom.materialCost.value = q.totals?.materialCostARS || '';
-  dom.margin.value = q.totals?.marginPercent ?? '15';
+
+  if (q.difficulty === 'custom' && q.totals?.hourlyRateUSD) {
+    const customOpt = dom.difficulty.querySelector('option[value="custom"]');
+    if (customOpt) customOpt.textContent = `Personalizada ($${q.totals.hourlyRateUSD} USD/hs)`;
+  }
   dom.difficulty.value = q.difficulty || '10';
   dom.hourlyRate.value = q.totals?.hourlyRateUSD || '10';
+  dom.margin.value = q.totals?.marginPercent ?? '15';
 
   $('modal-phone').value = q.phone || '';
   $('modal-startDate').value = q.startDate || q.start_date || '';
   $('modal-notes').value = q.notes || '';
+
+  if (difficultyDD) difficultyDD.sync();
+  if (marginDD) marginDD.sync();
 
   dom.btnSaveTrigger.querySelector('span').textContent = 'Actualizar Presupuesto';
   dom.btnCancelEdit.classList.remove('hidden');
@@ -967,17 +1031,17 @@ function resetForm() {
   dom.margin.value = '15';
   dom.btnSaveTrigger.querySelector('span').textContent = 'Guardar Presupuesto';
   dom.btnCancelEdit.classList.add('hidden');
+
+  if (difficultyDD) difficultyDD.sync();
+  if (marginDD) marginDD.sync();
+
   calculate();
 }
 
 dom.btnCancelEdit.addEventListener('click', resetForm);
 
-/* =========================================================
-   ELIMINAR
-   ========================================================= */
 $('btn-confirm-delete').addEventListener('click', async () => {
   if (pendingDeleteId === null) return;
-
   try {
     if (_supabase && currentUser) {
       const { error } = await _supabase.from('presupuestos').delete().eq('id', pendingDeleteId);
@@ -988,7 +1052,6 @@ $('btn-confirm-delete').addEventListener('click', async () => {
       saveLocalQuotes(quotes);
       renderHistory();
     }
-
     if (String(editingId) === String(pendingDeleteId)) resetForm();
     pendingDeleteId = null;
     closeModal('modal-confirm-delete');
@@ -998,15 +1061,9 @@ $('btn-confirm-delete').addEventListener('click', async () => {
   }
 });
 
-/* =========================================================
-   BÚSQUEDA DEBOUNCED
-   ========================================================= */
 dom.searchFilter.addEventListener('input', debounce(renderHistory, CONFIG.SEARCH_DEBOUNCE));
 dom.sortOrder.addEventListener('change', renderHistory);
 
-/* =========================================================
-   EXPORTAR EXCEL
-   ========================================================= */
 dom.btnExport.addEventListener('click', async () => {
   const quotes = (_supabase && currentUser) ? userQuotes : getLocalQuotes();
   if (!quotes.length) {
@@ -1032,7 +1089,6 @@ dom.btnExport.addEventListener('click', async () => {
     const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
     ws['!cols'] = [{wch:20},{wch:32},{wch:12},{wch:8},{wch:12},{wch:15},{wch:12},{wch:15},{wch:12},{wch:28}];
 
-    // Aplicar formato de moneda a las columnas de dinero
     const range = XLSX.utils.decode_range(ws['!ref']);
     for (let R = 1; R <= range.e.r; R++) {
       for (const C of [7, 8]) {
@@ -1061,9 +1117,6 @@ dom.btnExport.addEventListener('click', async () => {
   }
 });
 
-/* =========================================================
-   AUTENTICACIÓN
-   ========================================================= */
 $('btn-auth-toggle').addEventListener('click', () => {
   isSignUpMode = !isSignUpMode;
   $('auth-modal-title').textContent = isSignUpMode ? '🔑 Crear Cuenta' : '🔑 Iniciar Sesión';
@@ -1082,7 +1135,6 @@ $('btn-auth-submit').addEventListener('click', async () => {
     showAlertModal('Configuración', 'Supabase no está configurado. La app funciona en modo local.');
     return;
   }
-
   const email = $('auth-email').value.trim();
   const password = $('auth-password').value;
   dom.authError.classList.add('hidden');
@@ -1120,16 +1172,12 @@ $('btn-auth-submit').addEventListener('click', async () => {
   }
 });
 
-// Enter en los inputs de auth envía
 ['auth-email', 'auth-password'].forEach(id => {
   $(id).addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); $('btn-auth-submit').click(); }
   });
 });
 
-/* =========================================================
-   CLOUD FETCH
-   ========================================================= */
 async function fetchUserQuotes() {
   if (!_supabase || !currentUser) return;
   try {
@@ -1146,9 +1194,8 @@ async function fetchUserQuotes() {
   }
 }
 
-/* =========================================================
-   INIT
-   ========================================================= */
+setupAllDropdowns();
+
 document.addEventListener('DOMContentLoaded', () => {
   renderHistory();
   initAuthSession();

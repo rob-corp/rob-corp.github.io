@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0f172a">
 <title>Calculadora NE555</title>
-<link rel="icon" type="image/svg+xml" href="iconos/union.svg">
+<link rel="icon" type="image/svg+xml" href="/iconos/ne555.svg">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -51,7 +51,6 @@
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
 
-  /* Ocultar flechas numéricas y definir appearance estándar (Mismo método que muestra.txt) */
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none; appearance: none; margin: 0;
@@ -61,7 +60,6 @@
   .glow-svg { filter: drop-shadow(0 0 12px rgba(96,165,250,0.3)); }
   .glow-orange { filter: drop-shadow(0 0 12px rgba(240,160,112,0.4)); }
 
-  /* Estilos para Transiciones de Pestañas */
   .tab-btn { transition: all 0.3s ease; }
   .tab-active { background-color: #3b82f6; color: #0f172a; border-color: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.3); }
   .tab-inactive { background-color: #1e293b; color: #94a3b8; border-color: #334155; }
@@ -81,9 +79,9 @@
 
 <header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <a href="index.html" class="inline-flex items-center gap-3.5 group">
+    <a href="/index.html" class="inline-flex items-center gap-3.5 group">
       <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
-        <img src="iconos/union.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
+        <img src="/iconos/ne555.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
       </div>
       <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
         Calculadora NE555
@@ -117,19 +115,16 @@
         
         <!-- SVG: MODO ASTABLE -->
         <svg id="svg-astable" viewBox="-60 -20 460 420" class="w-full max-w-[420px] h-auto text-[#60a5fa] glow-svg transition-opacity duration-300">
-          <!-- VCC y GND Rails -->
           <path d="M 0,20 L 250,20" fill="none" stroke="#f0a070" stroke-width="4"/>
           <text x="-10" y="25" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">+VCC</text>
           
           <path d="M 0,380 L 250,380" fill="none" stroke="#4ade80" stroke-width="4"/>
           <text x="-10" y="385" fill="#4ade80" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">GND</text>
 
-          <!-- Chip NE555 -->
           <rect x="150" y="100" width="100" height="200" rx="8" fill="#1e293b" stroke="currentColor" stroke-width="4"/>
-          <circle cx="170" cy="120" r="5" fill="#334155"/> <!-- Notch indicator -->
+          <circle cx="170" cy="120" r="5" fill="#334155"/>
           <text x="200" y="205" fill="#ffffff" font-size="22" font-family="sans-serif" font-weight="bold" text-anchor="middle" letter-spacing="2">555</text>
 
-          <!-- Pines Arriba (8 VCC, 4 RST) -->
           <path d="M 180,100 L 180,20" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="180" cy="20" r="4" fill="#f0a070"/>
           <text x="170" y="90" fill="#94a3b8" font-size="12" font-family="monospace">8</text>
@@ -138,36 +133,29 @@
           <circle cx="180" cy="50" r="4" fill="currentColor"/>
           <text x="230" y="90" fill="#94a3b8" font-size="12" font-family="monospace">4</text>
 
-          <!-- Pin Abajo (1 GND) -->
           <path d="M 200,300 L 200,380" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="200" cy="380" r="4" fill="#4ade80"/>
           <text x="212" y="320" fill="#94a3b8" font-size="12" font-family="monospace">1</text>
 
-          <!-- Pin Derecha (3 OUT) -->
           <path d="M 250,200 L 320,200" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="320" cy="200" r="5" fill="#f0a070"/>
           <text x="240" y="195" fill="#94a3b8" font-size="12" font-family="monospace" text-anchor="end">3</text>
           <text x="335" y="205" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold" class="glow-orange">OUT</text>
 
-          <!-- Pines Izquierda y Componentes -->
-          <!-- R1 -->
           <path d="M 80,20 L 80,60" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="80" cy="20" r="4" fill="#f0a070"/>
           <rect x="65" y="60" width="30" height="60" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
           <text x="50" y="95" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">R1</text>
           <path d="M 80,120 L 80,160" fill="none" stroke="currentColor" stroke-width="3"/>
 
-          <!-- Pin 7 DIS -->
           <path d="M 150,140 L 80,140" fill="none" stroke="currentColor" stroke-width="3"/>
-          <circle cx="80" cy="140" r="4" fill="currentColor"/> <!-- Nodo P7 -->
+          <circle cx="80" cy="140" r="4" fill="currentColor"/>
           <text x="160" y="135" fill="#94a3b8" font-size="12" font-family="monospace">7</text>
 
-          <!-- R2 -->
           <rect x="65" y="160" width="30" height="60" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
           <text x="50" y="195" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">R2</text>
           <path d="M 80,220 L 80,310" fill="none" stroke="currentColor" stroke-width="3"/>
           
-          <!-- Pin 6 THR & 2 TRG -->
           <text x="160" y="195" fill="#94a3b8" font-size="12" font-family="monospace">6</text>
           <text x="160" y="255" fill="#94a3b8" font-size="12" font-family="monospace">2</text>
           
@@ -177,7 +165,6 @@
           <circle cx="120" cy="260" r="4" fill="currentColor"/> 
           <circle cx="80" cy="260" r="4" fill="currentColor"/> 
           
-          <!-- C1 -->
           <path d="M 60,310 L 100,310" fill="none" stroke="currentColor" stroke-width="4"/>
           <path d="M 60,325 L 100,325" fill="none" stroke="currentColor" stroke-width="4"/>
           <text x="50" y="325" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">C1</text>
@@ -187,19 +174,16 @@
 
         <!-- SVG: MODO MONOESTABLE -->
         <svg id="svg-mono" viewBox="-60 -20 460 420" class="w-full max-w-[420px] h-auto text-[#f0a070] glow-orange hidden transition-opacity duration-300">
-          <!-- VCC y GND Rails -->
           <path d="M 0,20 L 250,20" fill="none" stroke="#f0a070" stroke-width="4"/>
           <text x="-10" y="25" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">+VCC</text>
           
           <path d="M 0,380 L 250,380" fill="none" stroke="#4ade80" stroke-width="4"/>
           <text x="-10" y="385" fill="#4ade80" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">GND</text>
 
-          <!-- Chip NE555 -->
           <rect x="150" y="100" width="100" height="200" rx="8" fill="#1e293b" stroke="currentColor" stroke-width="4"/>
-          <circle cx="170" cy="120" r="5" fill="#334155"/> <!-- Notch indicator -->
+          <circle cx="170" cy="120" r="5" fill="#334155"/>
           <text x="200" y="205" fill="#ffffff" font-size="22" font-family="sans-serif" font-weight="bold" text-anchor="middle" letter-spacing="2">555</text>
 
-          <!-- Pines Arriba (8 VCC, 4 RST) -->
           <path d="M 180,100 L 180,20" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="180" cy="20" r="4" fill="#f0a070"/>
           <text x="170" y="90" fill="#94a3b8" font-size="12" font-family="monospace">8</text>
@@ -208,43 +192,35 @@
           <circle cx="180" cy="50" r="4" fill="currentColor"/>
           <text x="230" y="90" fill="#94a3b8" font-size="12" font-family="monospace">4</text>
 
-          <!-- Pin Abajo (1 GND) -->
           <path d="M 200,300 L 200,380" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="200" cy="380" r="4" fill="#4ade80"/>
           <text x="212" y="320" fill="#94a3b8" font-size="12" font-family="monospace">1</text>
 
-          <!-- Pin Derecha (3 OUT) -->
           <path d="M 250,200 L 320,200" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="320" cy="200" r="5" fill="#60a5fa"/>
           <text x="240" y="195" fill="#94a3b8" font-size="12" font-family="monospace" text-anchor="end">3</text>
           <text x="335" y="205" fill="#60a5fa" font-size="16" font-family="monospace" font-weight="bold" class="glow-svg">OUT</text>
 
-          <!-- ================= COMPONENTES IZQUIERDA ================= -->
-          
-          <!-- R1 (Timing Resistor) -->
           <path d="M 80,20 L 80,50" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="80" cy="20" r="4" fill="#f0a070"/>
           <rect x="65" y="50" width="30" height="60" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
           <text x="50" y="85" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">R1</text>
           <path d="M 80,110 L 80,240" fill="none" stroke="currentColor" stroke-width="3"/>
           
-          <!-- Pines 7 (DIS) y 6 (THR) -->
           <text x="160" y="155" fill="#94a3b8" font-size="12" font-family="monospace">7</text>
           <path d="M 150,160 L 80,160" fill="none" stroke="currentColor" stroke-width="3"/>
-          <circle cx="80" cy="160" r="4" fill="currentColor"/> <!-- Nodo Pin 7 -->
+          <circle cx="80" cy="160" r="4" fill="currentColor"/>
           
           <text x="160" y="195" fill="#94a3b8" font-size="12" font-family="monospace">6</text>
           <path d="M 150,200 L 80,200" fill="none" stroke="currentColor" stroke-width="3"/>
-          <circle cx="80" cy="200" r="4" fill="currentColor"/> <!-- Nodo Pin 6 -->
+          <circle cx="80" cy="200" r="4" fill="currentColor"/>
 
-          <!-- C1 (Timing Capacitor) -->
           <path d="M 60,240 L 100,240" fill="none" stroke="currentColor" stroke-width="4"/>
           <path d="M 60,255 L 100,255" fill="none" stroke="currentColor" stroke-width="4"/>
           <text x="50" y="255" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">C1</text>
           <path d="M 80,255 L 80,380" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="80" cy="380" r="4" fill="#4ade80"/>
 
-          <!-- Pin 2 TRG Directo (Sin R2 de Pull-up) -->
           <text x="160" y="275" fill="#94a3b8" font-size="12" font-family="monospace">2</text>
           <path d="M 150,280 L -20,280" fill="none" stroke="currentColor" stroke-width="3"/>
           <circle cx="-20" cy="280" r="4" fill="#c084fc"/>
@@ -265,10 +241,24 @@
           <div class="flex flex-col sm:flex-row gap-3">
             <div class="flex flex-grow gap-2">
               <input type="number" id="target-freq" placeholder="Ej: 1000" min="0" step="any" class="w-full bg-[#0f172a] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-mono text-base focus:border-[#3b82f6] transition-colors">
-              <select id="target-freq-unit" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors">
-                <option value="1" selected>Hz</option>
-                <option value="1000">kHz</option>
-              </select>
+              <div class="relative shrink-0">
+                <select id="target-freq-unit" class="hidden">
+                  <option value="1" selected>Hz</option>
+                  <option value="1000">kHz</option>
+                </select>
+                <button type="button" id="dd-freq-unit-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Unidad de frecuencia"
+                        class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#3b82f6] rounded-2xl pl-3 pr-2 py-2.5 text-white font-mono font-bold text-base flex items-center gap-1.5 transition-colors cursor-pointer min-w-[78px] justify-between">
+                  <span id="dd-freq-unit-label">Hz</span>
+                  <svg class="w-3.5 h-3.5 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+                <div id="dd-freq-unit-menu" role="listbox"
+                     class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-2xl p-1.5 shadow-2xl shadow-black/60 space-y-1 min-w-[88px]">
+                  <button type="button" data-dd-opt data-value="1" class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-bold text-white bg-[#3b82f6] rounded-xl transition-colors whitespace-nowrap shadow-sm">Hz</button>
+                  <button type="button" data-dd-opt data-value="1000" class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-medium text-slate-100 hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">kHz</button>
+                </div>
+              </div>
             </div>
             <button id="btn-generate-freq" class="bg-[#3b82f6] hover:bg-[#60a5fa] text-[#0f172a] font-bold uppercase tracking-wider text-xs px-4 py-2.5 rounded-xl transition-colors shrink-0">
               Calcular
@@ -288,11 +278,26 @@
             </label>
             <div class="flex gap-2">
               <input type="number" id="val-r1" value="10" min="0" step="any" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors">
-              <select id="unit-r1" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors">
-                <option value="1">Ω</option>
-                <option value="1000" selected>kΩ</option>
-                <option value="1000000">MΩ</option>
-              </select>
+              <div class="relative shrink-0">
+                <select id="unit-r1" class="hidden">
+                  <option value="1">Ω</option>
+                  <option value="1000" selected>kΩ</option>
+                  <option value="1000000">MΩ</option>
+                </select>
+                <button type="button" id="dd-r1-unit-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Unidad de R1"
+                        class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#3b82f6] rounded-2xl pl-3 pr-2 py-2.5 text-white font-mono font-bold text-base flex items-center gap-1.5 transition-colors cursor-pointer min-w-[78px] justify-between">
+                  <span id="dd-r1-unit-label">kΩ</span>
+                  <svg class="w-3.5 h-3.5 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+                <div id="dd-r1-unit-menu" role="listbox"
+                     class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-2xl p-1.5 shadow-2xl shadow-black/60 space-y-1 min-w-[88px]">
+                  <button type="button" data-dd-opt data-value="1"       class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-medium text-slate-100 hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">Ω</button>
+                  <button type="button" data-dd-opt data-value="1000"    class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-bold text-white bg-[#3b82f6] rounded-xl transition-colors whitespace-nowrap shadow-sm">kΩ</button>
+                  <button type="button" data-dd-opt data-value="1000000" class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-medium text-slate-100 hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">MΩ</button>
+                </div>
+              </div>
             </div>
             <div class="text-[10.5px] text-slate-400 pl-1 mt-0.5 font-medium">E12 Comercial: <span id="e12-r1" class="text-[#f0a070] font-mono font-bold">--</span></div>
           </div>
@@ -304,11 +309,26 @@
             </label>
             <div class="flex gap-2">
               <input type="number" id="val-r2" value="10" min="0" step="any" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors">
-              <select id="unit-r2" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors">
-                <option value="1">Ω</option>
-                <option value="1000" selected>kΩ</option>
-                <option value="1000000">MΩ</option>
-              </select>
+              <div class="relative shrink-0">
+                <select id="unit-r2" class="hidden">
+                  <option value="1">Ω</option>
+                  <option value="1000" selected>kΩ</option>
+                  <option value="1000000">MΩ</option>
+                </select>
+                <button type="button" id="dd-r2-unit-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Unidad de R2"
+                        class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#3b82f6] rounded-2xl pl-3 pr-2 py-2.5 text-white font-mono font-bold text-base flex items-center gap-1.5 transition-colors cursor-pointer min-w-[78px] justify-between">
+                  <span id="dd-r2-unit-label">kΩ</span>
+                  <svg class="w-3.5 h-3.5 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+                <div id="dd-r2-unit-menu" role="listbox"
+                     class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-2xl p-1.5 shadow-2xl shadow-black/60 space-y-1 min-w-[88px]">
+                  <button type="button" data-dd-opt data-value="1"       class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-medium text-slate-100 hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">Ω</button>
+                  <button type="button" data-dd-opt data-value="1000"    class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-bold text-white bg-[#3b82f6] rounded-xl transition-colors whitespace-nowrap shadow-sm">kΩ</button>
+                  <button type="button" data-dd-opt data-value="1000000" class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-medium text-slate-100 hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">MΩ</button>
+                </div>
+              </div>
             </div>
             <div class="text-[10.5px] text-slate-400 pl-1 mt-0.5 font-medium">E12 Comercial: <span id="e12-r2" class="text-[#f0a070] font-mono font-bold">--</span></div>
           </div>
@@ -320,12 +340,28 @@
             </label>
             <div class="flex gap-2">
               <input type="number" id="val-c1" value="100" min="0" step="any" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors">
-              <select id="unit-c1" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors">
-                <option value="0.000000000001">pF</option>
-                <option value="0.000000001" selected>nF</option>
-                <option value="0.000001">µF</option>
-                <option value="0.001">mF</option>
-              </select>
+              <div class="relative shrink-0">
+                <select id="unit-c1" class="hidden">
+                  <option value="0.000000000001">pF</option>
+                  <option value="0.000000001" selected>nF</option>
+                  <option value="0.000001">µF</option>
+                  <option value="0.001">mF</option>
+                </select>
+                <button type="button" id="dd-c1-unit-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Unidad de C1"
+                        class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#3b82f6] rounded-2xl pl-3 pr-2 py-2.5 text-white font-mono font-bold text-base flex items-center gap-1.5 transition-colors cursor-pointer min-w-[78px] justify-between">
+                  <span id="dd-c1-unit-label">nF</span>
+                  <svg class="w-3.5 h-3.5 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+                <div id="dd-c1-unit-menu" role="listbox"
+                     class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-2xl p-1.5 shadow-2xl shadow-black/60 space-y-1 min-w-[88px]">
+                  <button type="button" data-dd-opt data-value="0.000000000001" class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-medium text-slate-100 hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">pF</button>
+                  <button type="button" data-dd-opt data-value="0.000000001"    class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-bold text-white bg-[#3b82f6] rounded-xl transition-colors whitespace-nowrap shadow-sm">nF</button>
+                  <button type="button" data-dd-opt data-value="0.000001"       class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-medium text-slate-100 hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">µF</button>
+                  <button type="button" data-dd-opt data-value="0.001"          class="dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-medium text-slate-100 hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent">mF</button>
+                </div>
+              </div>
             </div>
             <div class="text-[10.5px] text-slate-400 pl-1 mt-0.5 font-medium">E12 Comercial: <span id="e12-c1" class="text-[#f0a070] font-mono font-bold">--</span></div>
           </div>
@@ -399,7 +435,6 @@
     return closest * mag;
   }
 
-  // Formateadores para E12 Labels y Auto-calculadora
   function getResistorBestFormat(ohms) {
     if (ohms >= 1e6) return { val: ohms / 1e6, mult: 1e6, str: (ohms / 1e6).toFixed(2).replace(/\.00$/, '') + ' MΩ' };
     if (ohms >= 1e3) return { val: ohms / 1e3, mult: 1e3, str: (ohms / 1e3).toFixed(2).replace(/\.00$/, '') + ' kΩ' };
@@ -450,7 +485,13 @@
   const outTl = document.getElementById('out-tl');
   const outTpulse = document.getElementById('out-tpulse');
 
-  let currentMode = 'astable'; // 'astable' | 'mono'
+  let currentMode = 'astable';
+
+  // Referencias a los desplegables personalizados
+  let freqUnitDD = null;
+  let r1UnitDD = null;
+  let r2UnitDD = null;
+  let c1UnitDD = null;
 
   // Formateador de Tiempo y Frecuencia
   function formatTime(seconds) {
@@ -473,7 +514,6 @@
     const r2 = (parseFloat(valR2.value) || 0) * parseFloat(unitR2.value);
     const c1 = (parseFloat(valC1.value) || 0) * parseFloat(unitC1.value);
 
-    // Actualizar Labels E12
     lblE12R1.textContent = getResistorBestFormat(getClosestE12Val(r1)).str;
     lblE12R2.textContent = getResistorBestFormat(getClosestE12Val(r2)).str;
     lblE12C1.textContent = getCapacitorBestFormat(getClosestE12Val(c1)).str;
@@ -517,15 +557,12 @@
     let f = tFreq * fMult;
     let c1_base;
     
-    // Elegir Capacitor adecuado según el rango de frecuencia
-    if (f < 10) c1_base = 10e-6;          // 10 uF
-    else if (f < 100) c1_base = 1e-6;     // 1 uF
-    else if (f < 1000) c1_base = 100e-9;  // 100 nF
-    else if (f < 10000) c1_base = 10e-9;  // 10 nF
-    else c1_base = 1e-9;                  // 1 nF
+    if (f < 10) c1_base = 10e-6;
+    else if (f < 100) c1_base = 1e-6;
+    else if (f < 1000) c1_base = 100e-9;
+    else if (f < 10000) c1_base = 10e-9;
+    else c1_base = 1e-9;
 
-    // Asumir R1 = R2 (Duty = 66.6%)
-    // f = 1.44 / (3 * R * C1)  =>  R = 1.44 / (3 * f * C1)
     let r_teorico = 1.44 / (3 * f * c1_base);
     let r_e12 = getClosestE12Val(r_teorico);
 
@@ -541,7 +578,12 @@
     valR2.value = parseFloat(rFmt.val.toFixed(3));
     unitR2.value = rFmt.mult;
 
-    calculate(); // Actualizar Todo
+    // Sincronizar desplegables personalizados con los nuevos valores de unidad
+    if (r1UnitDD) r1UnitDD.sync();
+    if (r2UnitDD) r2UnitDD.sync();
+    if (c1UnitDD) c1UnitDD.sync();
+
+    calculate();
   }
 
   // Cambiar Modos
@@ -582,7 +624,92 @@
     calculate();
   }
 
-  // Listeners
+  // =========================================================
+  // DESPLEGABLES PERSONALIZADOS (bordes redondeados)
+  // =========================================================
+  function closeAllCustomMenus() {
+    document.querySelectorAll('[id^="dd-"][id$="-menu"]').forEach(m => m.classList.add('hidden'));
+    document.querySelectorAll('[id^="dd-"][id$="-btn"]').forEach(b => {
+      b.setAttribute('aria-expanded', 'false');
+      b.querySelector('svg')?.classList.remove('rotate-180');
+    });
+  }
+
+  function setupCustomDropdown({ selectId, btnId, menuId, labelId, activeClass, idleClass }) {
+    const select = document.getElementById(selectId);
+    const btn    = document.getElementById(btnId);
+    const menu   = document.getElementById(menuId);
+    const label  = document.getElementById(labelId);
+    if (!select || !btn || !menu || !label) return null;
+
+    const options = menu.querySelectorAll('[data-dd-opt]');
+
+    const sync = () => {
+      const currentVal = select.value;
+      const currentOption = Array.from(select.options).find(o => o.value === currentVal);
+      if (currentOption) label.textContent = currentOption.textContent.trim();
+      options.forEach(opt => {
+        opt.className = opt.dataset.value === currentVal ? activeClass : idleClass;
+      });
+    };
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = !menu.classList.contains('hidden');
+      closeAllCustomMenus();
+      if (!isOpen) {
+        menu.classList.remove('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+        btn.querySelector('svg')?.classList.add('rotate-180');
+      }
+    });
+
+    options.forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (select.value !== opt.dataset.value) {
+          select.value = opt.dataset.value;
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        sync();
+        closeAllCustomMenus();
+      });
+    });
+
+    sync();
+    return { sync };
+  }
+
+  function setupAllDropdowns() {
+    const activeClass = 'dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-bold text-white bg-[#3b82f6] rounded-xl transition-colors whitespace-nowrap shadow-sm';
+    const idleClass   = 'dd-opt w-full text-left px-3.5 py-2 text-sm font-mono font-medium text-slate-100 hover:bg-[#3b82f6] hover:text-white rounded-xl transition-colors whitespace-nowrap border border-transparent';
+
+    freqUnitDD = setupCustomDropdown({
+      selectId: 'target-freq-unit', btnId: 'dd-freq-unit-btn', menuId: 'dd-freq-unit-menu', labelId: 'dd-freq-unit-label',
+      activeClass, idleClass
+    });
+    r1UnitDD = setupCustomDropdown({
+      selectId: 'unit-r1', btnId: 'dd-r1-unit-btn', menuId: 'dd-r1-unit-menu', labelId: 'dd-r1-unit-label',
+      activeClass, idleClass
+    });
+    r2UnitDD = setupCustomDropdown({
+      selectId: 'unit-r2', btnId: 'dd-r2-unit-btn', menuId: 'dd-r2-unit-menu', labelId: 'dd-r2-unit-label',
+      activeClass, idleClass
+    });
+    c1UnitDD = setupCustomDropdown({
+      selectId: 'unit-c1', btnId: 'dd-c1-unit-btn', menuId: 'dd-c1-unit-menu', labelId: 'dd-c1-unit-label',
+      activeClass, idleClass
+    });
+  }
+
+  // Cierra menús al hacer clic fuera
+  document.addEventListener('click', closeAllCustomMenus);
+
+  // =========================================================
+  // INICIALIZACIÓN
+  // =========================================================
+  setupAllDropdowns();
+
   btnAstable.addEventListener('click', () => setMode('astable'));
   btnMono.addEventListener('click', () => setMode('mono'));
   btnGenerateFreq.addEventListener('click', generateFromFrequency);
@@ -592,7 +719,6 @@
     el.addEventListener('change', calculate);
   });
 
-  // Inicializar
   calculate();
 
 })();

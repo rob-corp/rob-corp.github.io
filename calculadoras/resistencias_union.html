@@ -47,12 +47,11 @@
   ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
   html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
 
-  /* Ocultar flechas de inputs numéricos con soporte estándar */
   input[type="number"]::-webkit-inner-spin-button, 
   input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
   input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 
-  .anim-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+  .anim-fade-in { animation: fadeIn 0.3s ease-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
@@ -97,12 +96,27 @@
       </p>
     </div>
     <div class="flex gap-2 w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
-      <input type="number" id="target-val" value="100" min="0" step="any" class="w-full sm:w-32 bg-[#0f172a] border border-[#334155] rounded-lg px-4 py-3 text-white font-mono text-lg focus:border-[#3b82f6] transition-colors">
-      <select id="target-unit" class="bg-[#334155] border border-[#334155] rounded-lg px-3 py-3 text-white font-bold cursor-pointer focus:border-[#3b82f6] transition-colors">
-        <option value="1">Ω</option>
-        <option value="1000" selected>kΩ</option>
-        <option value="1000000">MΩ</option>
-      </select>
+      <input type="number" id="target-val" value="100" min="0" step="any" class="w-full sm:w-32 bg-[#0f172a] border border-[#334155] rounded-md px-4 py-3 text-white font-mono text-lg font-semibold focus:border-[#3b82f6] transition-colors">
+      <div class="relative shrink-0">
+        <select id="target-unit" class="hidden">
+          <option value="1">Ω</option>
+          <option value="1000" selected>kΩ</option>
+          <option value="1000000">MΩ</option>
+        </select>
+        <button type="button" id="dd-target-unit-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="dd-target-unit-menu" aria-label="Unidad del valor deseado"
+                class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#3b82f6] rounded-md pl-4 pr-2.5 py-3 text-white font-mono font-extrabold text-lg tracking-wide flex items-center gap-2 transition-colors cursor-pointer min-w-[96px] justify-between h-full">
+          <span id="dd-target-unit-label">kΩ</span>
+          <svg class="w-4 h-4 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div id="dd-target-unit-menu" role="listbox"
+             class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-md p-1 shadow-2xl shadow-black/60 space-y-0.5 min-w-[112px]">
+          <button type="button" data-unit-opt data-value="1"       class="dd-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-sm transition-colors whitespace-nowrap border border-transparent">Ω</button>
+          <button type="button" data-unit-opt data-value="1000"    class="dd-opt w-full text-left px-4 py-2.5 text-base font-mono font-bold text-white bg-[#3b82f6] rounded-sm transition-colors whitespace-nowrap shadow-sm">kΩ</button>
+          <button type="button" data-unit-opt data-value="1000000" class="dd-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-sm transition-colors whitespace-nowrap border border-transparent">MΩ</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -110,13 +124,11 @@
   <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
     
     <!-- COLUMNA IZQUIERDA: SERIE -->
-    <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg flex flex-col h-full">
+    <div class="bg-[#1e293b] border border-[#334155] rounded-xl shadow-lg flex flex-col h-full">
       
-      <!-- Cuadro Azul Oscuro (Simétrico) -->
-      <div class="bg-[#0f172a] p-4 sm:p-5 border-b border-[#334155] flex flex-col justify-between min-h-[136px]">
+      <div class="bg-[#0f172a] p-4 sm:p-5 border-b border-[#334155] flex flex-col justify-between min-h-[136px] rounded-t-xl">
         <div class="flex justify-between items-center gap-4">
           <h3 class="text-base sm:text-lg font-bold text-[#60a5fa]">Circuito en Serie</h3>
-          <!-- SVG Serie fijado a h-10 -->
           <svg class="h-10 w-auto text-[#60a5fa] shrink-0" viewBox="0 0 120 40" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M0 20 h20" />
             <rect x="20" y="12" width="30" height="16" rx="2" fill="#1e293b" />
@@ -136,7 +148,6 @@
         </div>
       </div>
 
-      <!-- Barra de Sugerencia -->
       <div class="bg-[#334155]/40 px-5 py-3 border-b border-[#334155] flex flex-wrap items-center justify-between gap-3">
         <div class="text-xs text-slate-300">
           Para lograr <strong class="target-label text-white">100 kΩ</strong> (<span id="count-serie">2</span> res.):
@@ -146,20 +157,16 @@
             <span class="font-mono text-[#60a5fa] font-bold" id="sug-serie">50 kΩ c/u</span>
             <span class="text-[10px] text-[#f0a070] font-mono font-medium leading-none mt-1">E12: <span id="sug-e12-serie">47 kΩ</span></span>
           </div>
-          <button id="apply-serie" class="text-[11px] font-bold uppercase tracking-wider bg-[#3b82f6] text-[#0f172a] px-2.5 py-1.5 rounded hover:bg-[#60a5fa] transition-colors ml-1">
+          <button id="apply-serie" class="text-[11px] font-bold uppercase tracking-wider bg-[#3b82f6] text-[#0f172a] px-2.5 py-1.5 rounded-md hover:bg-[#60a5fa] transition-colors ml-1">
             Aplicar
           </button>
         </div>
       </div>
 
-      <!-- Lista de Resistencias -->
-      <div class="p-5 flex-grow flex flex-col gap-3" id="list-serie">
-        <!-- Filas de inputs -->
-      </div>
+      <div class="p-5 flex-grow flex flex-col gap-3" id="list-serie"></div>
       
-      <!-- Botón Agregar -->
       <div class="px-5 pb-5 mt-auto">
-        <button id="btn-add-serie" class="w-full py-2.5 border border-[#334155] bg-[#0f172a] text-[#60a5fa] rounded-lg hover:border-[#3b82f6] transition-colors flex items-center justify-center gap-2 font-medium text-sm">
+        <button id="btn-add-serie" class="w-full py-2.5 border border-[#334155] bg-[#0f172a] text-[#60a5fa] rounded-md hover:border-[#3b82f6] transition-colors flex items-center justify-center gap-2 font-medium text-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> 
           Agregar Resistencia a la Serie
         </button>
@@ -167,13 +174,11 @@
     </div>
 
     <!-- COLUMNA DERECHA: PARALELO -->
-    <div class="bg-[#1e293b] border border-[#334155] rounded-xl overflow-hidden shadow-lg flex flex-col h-full">
+    <div class="bg-[#1e293b] border border-[#334155] rounded-xl shadow-lg flex flex-col h-full">
       
-      <!-- Cuadro Azul Oscuro (Simétrico y Compacto) -->
-      <div class="bg-[#0f172a] p-4 sm:p-5 border-b border-[#334155] flex flex-col justify-between min-h-[136px]">
+      <div class="bg-[#0f172a] p-4 sm:p-5 border-b border-[#334155] flex flex-col justify-between min-h-[136px] rounded-t-xl">
         <div class="flex justify-between items-center gap-4">
           <h3 class="text-base sm:text-lg font-bold text-[#60a5fa]">Circuito en Paralelo</h3>
-          <!-- SVG Paralelo compactado (sin exceso de espacio) y fijado a h-10 -->
           <svg class="h-10 w-auto text-[#60a5fa] shrink-0" viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
             <path d="M0 30 h15" />
             <circle cx="15" cy="30" r="2.5" fill="currentColor" stroke="none" />
@@ -196,7 +201,6 @@
         </div>
       </div>
 
-      <!-- Barra de Sugerencia -->
       <div class="bg-[#334155]/40 px-5 py-3 border-b border-[#334155] flex flex-wrap items-center justify-between gap-3">
         <div class="text-xs text-slate-300">
           Para lograr <strong class="target-label text-white">100 kΩ</strong> (<span id="count-paralelo">2</span> res.):
@@ -206,20 +210,16 @@
             <span class="font-mono text-[#60a5fa] font-bold" id="sug-paralelo">200 kΩ c/u</span>
             <span class="text-[10px] text-[#f0a070] font-mono font-medium leading-none mt-1">E12: <span id="sug-e12-paralelo">220 kΩ</span></span>
           </div>
-          <button id="apply-paralelo" class="text-[11px] font-bold uppercase tracking-wider bg-[#3b82f6] text-[#0f172a] px-2.5 py-1.5 rounded hover:bg-[#60a5fa] transition-colors ml-1">
+          <button id="apply-paralelo" class="text-[11px] font-bold uppercase tracking-wider bg-[#3b82f6] text-[#0f172a] px-2.5 py-1.5 rounded-md hover:bg-[#60a5fa] transition-colors ml-1">
             Aplicar
           </button>
         </div>
       </div>
 
-      <!-- Lista de Resistencias -->
-      <div class="p-5 flex-grow flex flex-col gap-3" id="list-paralelo">
-        <!-- Filas de inputs -->
-      </div>
+      <div class="p-5 flex-grow flex flex-col gap-3" id="list-paralelo"></div>
       
-      <!-- Botón Agregar -->
       <div class="px-5 pb-5 mt-auto">
-        <button id="btn-add-paralelo" class="w-full py-2.5 border border-[#334155] bg-[#0f172a] text-[#60a5fa] rounded-lg hover:border-[#3b82f6] transition-colors flex items-center justify-center gap-2 font-medium text-sm">
+        <button id="btn-add-paralelo" class="w-full py-2.5 border border-[#334155] bg-[#0f172a] text-[#60a5fa] rounded-md hover:border-[#3b82f6] transition-colors flex items-center justify-center gap-2 font-medium text-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> 
           Agregar Resistencia al Paralelo
         </button>
@@ -233,29 +233,21 @@
 (() => {
   'use strict';
 
-  // --- Lógica Comercial E12 ---
   const e12Base = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2, 10.0];
 
   function getClosestE12(ohms) {
     if (ohms === 0 || !isFinite(ohms)) return 0;
-    
     const magnitude = Math.pow(10, Math.floor(Math.log10(ohms)));
     const normalized = ohms / magnitude;
-
     let closest = e12Base[0];
     let minDiff = Math.abs(normalized - closest);
-
     for (let i = 1; i < e12Base.length; i++) {
       const diff = Math.abs(normalized - e12Base[i]);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closest = e12Base[i];
-      }
+      if (diff < minDiff) { minDiff = diff; closest = e12Base[i]; }
     }
     return closest * magnitude;
   }
 
-  // --- Utilidades DOM ---
   let serieCount = 0;
   let paraleloCount = 0;
 
@@ -293,9 +285,75 @@
     return { val: ohms, unit: 1 };
   }
 
-  // --- Actualizaciones de Cálculo ---
+  // =========================================================
+  // DESPLEGABLES (redondeo sutil + valores legibles)
+  // =========================================================
+  function closeAllCustomMenus() {
+    document.querySelectorAll('[id^="dd-"][id$="-menu"], [data-unit-menu]').forEach(m => m.classList.add('hidden'));
+    document.querySelectorAll('[id^="dd-"][id$="-btn"], [data-unit-btn]').forEach(b => {
+      b.setAttribute('aria-expanded', 'false');
+      b.querySelector('svg')?.classList.remove('rotate-180');
+    });
+    document.querySelectorAll('.res-row').forEach(r => { r.style.zIndex = ''; });
+  }
+
+  document.addEventListener('click', closeAllCustomMenus);
+
+  function setupUnitDropdown(selectEl, btnEl, menuEl, labelEl, opts = {}) {
+    if (!selectEl || !btnEl || !menuEl || !labelEl) return null;
+
+    const activeClass = opts.activeClass || 'dd-opt w-full text-left px-4 py-2.5 text-base font-mono font-bold text-white bg-[#3b82f6] rounded-sm transition-colors whitespace-nowrap shadow-sm';
+    const idleClass   = opts.idleClass   || 'dd-opt w-full text-left px-4 py-2.5 text-base font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-sm transition-colors whitespace-nowrap border border-transparent';
+
+    const options = menuEl.querySelectorAll('[data-unit-opt]');
+
+    const sync = () => {
+      const currentVal = selectEl.value;
+      const currentOption = Array.from(selectEl.options).find(o => o.value === currentVal);
+      if (currentOption) labelEl.textContent = currentOption.textContent.trim();
+      options.forEach(opt => {
+        opt.className = opt.dataset.value === currentVal ? activeClass : idleClass;
+      });
+    };
+
+    btnEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = !menuEl.classList.contains('hidden');
+      closeAllCustomMenus();
+      if (!isOpen) {
+        menuEl.classList.remove('hidden');
+        btnEl.setAttribute('aria-expanded', 'true');
+        btnEl.querySelector('svg')?.classList.add('rotate-180');
+        const row = btnEl.closest('.res-row');
+        if (row) row.style.zIndex = '30';
+      }
+    });
+
+    options.forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (selectEl.value !== opt.dataset.value) {
+          selectEl.value = opt.dataset.value;
+          selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        sync();
+        closeAllCustomMenus();
+      });
+    });
+
+    sync();
+    return { sync };
+  }
+
+  // Desplegable superior
+  const targetUnitDD = setupUnitDropdown(
+    document.getElementById('target-unit'),
+    document.getElementById('dd-target-unit-btn'),
+    document.getElementById('dd-target-unit-menu'),
+    document.getElementById('dd-target-unit-label')
+  );
+
   function calculateTotals() {
-    // Cálculo Serie y actualización de E12 individual
     const rowsSerie = listSerie.querySelectorAll('.res-row');
     let sumSerie = 0;
     rowsSerie.forEach(row => {
@@ -310,15 +368,12 @@
         e12RowLabel.textContent = '--';
       }
     });
-    
     totalSerieLabel.textContent = rowsSerie.length > 0 ? formatRes(sumSerie) : '0.00 Ω';
     e12SerieLabel.textContent = rowsSerie.length > 0 && sumSerie > 0 ? formatRes(getClosestE12(sumSerie)) : '--';
 
-    // Cálculo Paralelo y actualización de E12 individual
     const rowsParalelo = listParalelo.querySelectorAll('.res-row');
     let sumParaleloInverse = 0;
     let hasZeroInParallel = false;
-    
     rowsParalelo.forEach(row => {
       const v = parseFloat(row.querySelector('.res-val').value);
       const m = parseFloat(row.querySelector('.res-unit').value);
@@ -338,7 +393,6 @@
       if (hasZeroInParallel) totalParalelo = 0;
       else if (sumParaleloInverse > 0) totalParalelo = 1 / sumParaleloInverse;
     }
-    
     totalParaleloLabel.textContent = rowsParalelo.length > 0 ? formatRes(totalParalelo) : '0.00 Ω';
     e12ParaleloLabel.textContent = rowsParalelo.length > 0 && totalParalelo > 0 ? formatRes(getClosestE12(totalParalelo)) : '--';
   }
@@ -346,15 +400,12 @@
   function updateTargetSuggestions() {
     const val = parseFloat(targetValInput.value);
     const mult = parseFloat(targetUnitSelect.value);
-    
     if (isNaN(val) || val <= 0) return;
     const targetOhms = val * mult;
 
-    // Actualizar Labels generales
     targetLabels.forEach(el => el.textContent = formatRes(targetOhms));
     targetE12Label.textContent = formatRes(getClosestE12(targetOhms));
 
-    // Sugerencia Serie (Repartir: Target / Cantidad)
     const lenSerie = listSerie.children.length;
     countSerieLabel.textContent = lenSerie;
     if (lenSerie > 0) {
@@ -369,7 +420,6 @@
       btnApplySerie.parentElement.style.display = 'none';
     }
 
-    // Sugerencia Paralelo (Multiplicar: Target * Cantidad)
     const lenParalelo = listParalelo.children.length;
     countParaleloLabel.textContent = lenParalelo;
     if (lenParalelo > 0) {
@@ -389,19 +439,16 @@
     const btn = type === 'serie' ? btnApplySerie : btnApplyParalelo;
     const reqVal = parseFloat(btn.dataset.val);
     if (isNaN(reqVal)) return;
-
     const best = getBestUnit(reqVal);
     const list = type === 'serie' ? listSerie : listParalelo;
-    
     list.querySelectorAll('.res-row').forEach(row => {
       row.querySelector('.res-val').value = parseFloat(best.val.toFixed(3));
       row.querySelector('.res-unit').value = best.unit;
+      if (row._syncUnit) row._syncUnit();
     });
-    
     calculateTotals();
   }
 
-  // --- Generador de Filas ---
   function createRow(type, defaultVal, defaultUnit) {
     const isSerie = type === 'serie';
     const container = isSerie ? listSerie : listParalelo;
@@ -412,18 +459,33 @@
     const accentColor = isSerie ? 'text-[#3b82f6]' : 'text-[#60a5fa]';
 
     const div = document.createElement('div');
-    div.className = 'res-row flex flex-col gap-1.5 anim-fade-in bg-[#0f172a] p-2.5 sm:p-3 rounded-lg border border-[#334155]';
+    div.className = 'res-row relative flex flex-col gap-1.5 anim-fade-in bg-[#0f172a] p-2.5 sm:p-3 rounded-md border border-[#334155]';
     
     div.innerHTML = `
       <div class="flex items-center gap-2 sm:gap-3">
         <div class="font-mono text-xs sm:text-sm font-bold ${accentColor} w-8 sm:w-10 shrink-0">${prefix}${id}</div>
-        <input type="number" class="res-val w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white font-mono focus:border-[#3b82f6] transition-colors" value="${defaultVal}" min="0" step="any">
-        <select class="res-unit shrink-0 bg-[#334155] border border-[#334155] rounded px-2 py-2 text-white cursor-pointer focus:border-[#3b82f6] transition-colors">
-          <option value="1" ${defaultUnit==='1'?'selected':''}>Ω</option>
-          <option value="1000" ${defaultUnit==='1000'?'selected':''}>kΩ</option>
-          <option value="1000000" ${defaultUnit==='1000000'?'selected':''}>MΩ</option>
-        </select>
-        <button class="btn-remove shrink-0 text-slate-500 hover:text-[#f0a070] bg-[#1e293b] hover:bg-[#3a2418] transition-colors p-2 rounded" aria-label="Eliminar">
+        <input type="number" class="res-val w-full bg-[#1e293b] border border-[#334155] rounded-md px-3 py-2 text-white font-mono text-base font-semibold focus:border-[#3b82f6] transition-colors" value="${defaultVal}" min="0" step="any">
+        <div class="relative shrink-0">
+          <select class="res-unit hidden">
+            <option value="1" ${defaultUnit==='1'?'selected':''}>Ω</option>
+            <option value="1000" ${defaultUnit==='1000'?'selected':''}>kΩ</option>
+            <option value="1000000" ${defaultUnit==='1000000'?'selected':''}>MΩ</option>
+          </select>
+          <button type="button" data-unit-btn aria-haspopup="listbox" aria-expanded="false" aria-label="Unidad de la resistencia"
+                  class="bg-[#334155] hover:bg-[#475569] border border-[#475569] hover:border-[#3b82f6] rounded-md pl-3 pr-2 py-2 text-white font-mono font-extrabold text-base tracking-wide flex items-center gap-1.5 transition-colors cursor-pointer min-w-[72px] justify-between">
+            <span data-unit-label>kΩ</span>
+            <svg class="w-3.5 h-3.5 text-slate-300 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div data-unit-menu role="listbox"
+               class="hidden absolute top-full right-0 mt-1.5 z-50 bg-[#1e293b] border border-[#475569] rounded-md p-1 shadow-2xl shadow-black/60 space-y-0.5 min-w-[92px]">
+            <button type="button" data-unit-opt data-value="1"       class="w-full text-left px-3.5 py-2 text-sm font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-sm transition-colors whitespace-nowrap border border-transparent">Ω</button>
+            <button type="button" data-unit-opt data-value="1000"    class="w-full text-left px-3.5 py-2 text-sm font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-sm transition-colors whitespace-nowrap border border-transparent">kΩ</button>
+            <button type="button" data-unit-opt data-value="1000000" class="w-full text-left px-3.5 py-2 text-sm font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-sm transition-colors whitespace-nowrap border border-transparent">MΩ</button>
+          </div>
+        </div>
+        <button class="btn-remove shrink-0 text-slate-500 hover:text-[#f0a070] bg-[#1e293b] hover:bg-[#3a2418] transition-colors p-2 rounded-md" aria-label="Eliminar">
           <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
@@ -432,6 +494,18 @@
       </div>
     `;
     
+    const dd = setupUnitDropdown(
+      div.querySelector('.res-unit'),
+      div.querySelector('[data-unit-btn]'),
+      div.querySelector('[data-unit-menu]'),
+      div.querySelector('[data-unit-label]'),
+      {
+        activeClass: 'w-full text-left px-3.5 py-2 text-sm font-mono font-bold text-white bg-[#3b82f6] rounded-sm transition-colors whitespace-nowrap shadow-sm',
+        idleClass:   'w-full text-left px-3.5 py-2 text-sm font-mono font-semibold text-white hover:bg-[#3b82f6] hover:text-white rounded-sm transition-colors whitespace-nowrap border border-transparent'
+      }
+    );
+    div._syncUnit = dd ? dd.sync : null;
+
     div.querySelector('.res-val').addEventListener('input', calculateTotals);
     div.querySelector('.res-unit').addEventListener('change', calculateTotals);
     div.querySelector('.btn-remove').addEventListener('click', () => {
@@ -452,7 +526,6 @@
     const container = isSerie ? listSerie : listParalelo;
     const prefix = isSerie ? 'Rs' : 'Rp';
     const rows = container.querySelectorAll('.res-row');
-    
     rows.forEach((row, i) => {
       row.querySelector('div.font-mono').textContent = `${prefix}${i + 1}`;
       const btn = row.querySelector('.btn-remove');
@@ -460,7 +533,6 @@
     });
   }
 
-  // --- Listeners y Arranque ---
   targetValInput.addEventListener('input', updateTargetSuggestions);
   targetUnitSelect.addEventListener('change', updateTargetSuggestions);
 
@@ -470,7 +542,6 @@
   btnApplySerie.addEventListener('click', () => applySuggestion('serie'));
   btnApplyParalelo.addEventListener('click', () => applySuggestion('paralelo'));
 
-  // Inicio por defecto con 2 resistencias cada lado
   createRow('serie', 10, '1000');
   createRow('serie', 10, '1000');
   createRow('paralelo', 10, '1000');
