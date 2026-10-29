@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0f172a">
-<title>Cuenta Gotas & Generador de Paletas</title>
+<title>Cuenta Gotas</title>
 <link rel="icon" type="image/svg+xml" href="/iconos/cuentagotas.svg" sizes="any">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -51,10 +51,17 @@
   .btn-action-uniform { height: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
-  input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-  input[type="number"] { -moz-appearance: textfield; }
+  input[type="number"]::-webkit-inner-spin-button, 
+  input[type="number"]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    appearance: none; 
+    margin: 0; 
+  }
+  input[type="number"] { 
+    -moz-appearance: textfield; 
+    appearance: textfield; 
+  }
 
-  /* Variables dinámicas para los Mockups UI */
   #mockup-ui {
     --c1: #1e293b; --tc1: #ffffff;
     --c2: #0f172a; --tc2: #ffffff;
@@ -76,18 +83,25 @@
     </a>
     <div class="hidden sm:flex items-center space-x-2 text-xs text-slate-400 bg-slate-950/60 px-3 py-1.5 rounded-full border border-slate-800">
       <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-      <span class="font-medium text-slate-300">Sistema Interactivo Listo</span>
+      <span class="font-medium text-slate-300">Imagen listas
+      </span>
     </div>
   </div>
 </header>
 
-<main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+<main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6">
+  
+  <!-- CONTENEDOR DESKTOP (Inyectado por JS si la pantalla es ancha) -->
+  <div id="desktop-layout" class="hidden lg:grid lg:grid-cols-12 gap-5 xl:gap-6">
+    <div id="col-left" class="lg:col-span-7 xl:col-span-8 flex flex-col gap-5 xl:gap-6"></div>
+    <div id="col-right" class="lg:col-span-5 xl:col-span-4 flex flex-col gap-5 xl:gap-6"></div>
+  </div>
 
-  <!-- ==================== CONTENEDOR IZQUIERDO ==================== -->
-  <div class="contents lg:flex lg:flex-col lg:col-span-7 xl:col-span-8 gap-5 sm:gap-6">
-
-    <!-- 1. BARRA DE HERRAMIENTAS Y DROPZONE -->
-    <div class="order-1 lg:order-1 bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-md flex flex-col space-y-4">
+  <!-- CONTENEDOR MÓVIL (Orden Nativo 100% blindado) -->
+  <div id="mobile-layout" class="flex flex-col gap-5 sm:gap-6 lg:hidden">
+    
+    <!-- 1. IMAGEN -->
+    <div id="card-img" class="bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-md flex flex-col space-y-4">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         <label class="btn-action-uniform cursor-pointer bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 rounded-xl text-xs font-semibold transition-all shadow-md shadow-cyan-600/20 active:scale-95 space-x-2 w-full select-none" tabindex="0">
           <i class="fa-solid fa-upload text-sm"></i><span class="truncate">Cargar Imagen</span>
@@ -133,7 +147,7 @@
     </div>
 
     <!-- 2. PALETA DOMINANTE -->
-    <div class="order-2 lg:order-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-md space-y-3">
+    <div id="card-palette" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-md space-y-3">
       <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
         <div class="flex items-center space-x-2">
           <i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-sm"></i><h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Paleta Dominante Extraída</h2>
@@ -146,103 +160,14 @@
       <div id="palette-swatches" class="grid grid-cols-4 sm:grid-cols-8 gap-2"><div class="col-span-full text-center py-3 text-xs text-slate-500 italic">Carga una imagen para extraer automáticamente sus tonos principales.</div></div>
     </div>
 
-    <!-- 5. ESTUDIO DE PALETAS (Orden 5 en Móvil, Orden 3 en PC Izquierda) -->
-    <div class="order-5 lg:order-3 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col space-y-4">
-      
-      <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-        <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-swatchbook text-pink-400 text-sm"></i>
-          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Estudio de Paletas</h2>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button id="btn-gen-minus" class="w-8 h-8 rounded-lg bg-slate-950 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors shadow-sm flex items-center justify-center font-bold" title="Quitar un color"><i class="fa-solid fa-minus text-[10px]"></i></button>
-          <button id="btn-gen-plus" class="w-8 h-8 rounded-lg bg-slate-950 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors shadow-sm flex items-center justify-center font-bold" title="Añadir un color"><i class="fa-solid fa-plus text-[10px]"></i></button>
-          
-          <button id="btn-gen-random" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold shadow-md transition-colors flex items-center gap-1.5 ml-1" title="O presiona la tecla Espacio">
-            <i class="fa-solid fa-shuffle"></i> Aleatorio (Espacio)
-          </button>
-        </div>
-      </div>
-
-      <!-- Bandas de Paleta -->
-      <div id="gen-palette-bands" class="flex flex-col sm:flex-row w-full min-h-[420px] lg:min-h-[350px] rounded-xl overflow-hidden shadow-inner border border-slate-800">
-        <!-- Rellenado dinámico por JS -->
-      </div>
-      
-      <!-- Botón Exportar Imagen -->
-      <button id="btn-gen-export-png" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-2 shadow-sm">
-        <i class="fa-regular fa-image text-cyan-400"></i> Exportar Paleta a Imagen (PNG)
-      </button>
-
-      <!-- Mockups: En la Práctica -->
-      <div class="pt-4 border-t border-slate-800/80">
-        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 ml-1 flex items-center gap-2">
-          <i class="fa-solid fa-laptop-code text-cyan-400"></i> Vista Previa en la Práctica
-        </h3>
-        
-        <div id="mockup-ui" class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-           <!-- Card 1: Dashboard -->
-           <div class="rounded-xl p-3 flex flex-col gap-2 shadow-md transition-colors duration-500 border border-slate-800/50" style="background: var(--c1); color: var(--tc1);">
-              <div class="h-6 rounded bg-black/20 w-1/2 flex items-center px-2 shadow-inner">
-                 <div class="w-2 h-2 rounded-full bg-white/40"></div>
-              </div>
-              <div class="flex gap-2 flex-1 mt-1">
-                 <div class="w-[30%] rounded-lg shadow-inner opacity-90 transition-colors duration-500 flex flex-col gap-2 p-1.5" style="background: var(--c2); color: var(--tc2);">
-                    <div class="h-1.5 w-full rounded-full bg-current opacity-30"></div>
-                    <div class="h-1.5 w-full rounded-full bg-current opacity-30"></div>
-                    <div class="h-1.5 w-3/4 rounded-full bg-current opacity-30"></div>
-                 </div>
-                 <div class="flex-1 rounded-lg p-2 transition-colors duration-500 flex flex-col justify-between shadow-sm" style="background: var(--c3); color: var(--tc3);">
-                    <div class="text-[8px] font-bold uppercase opacity-80">Dashboard</div>
-                    <div class="h-4 w-full rounded bg-current opacity-20"></div>
-                 </div>
-              </div>
-           </div>
-
-           <!-- Card 2: Chat UI -->
-           <div class="rounded-xl p-3 flex flex-col justify-end gap-2 shadow-md transition-colors duration-500 border border-slate-800/50" style="background: var(--c2); color: var(--tc2);">
-              <div class="text-[8px] font-bold uppercase opacity-60 text-center mb-auto pt-1">Mensajes</div>
-              <div class="self-start px-2.5 py-1.5 rounded-2xl rounded-bl-sm max-w-[85%] text-[10px] shadow-sm transition-colors duration-500 font-medium" style="background: var(--c1); color: var(--tc1);">
-                 ¡Hola! ¿Qué tal la paleta?
-              </div>
-              <div class="self-end px-2.5 py-1.5 rounded-2xl rounded-br-sm max-w-[85%] text-[10px] shadow-sm transition-colors duration-500 font-medium" style="background: var(--c4); color: var(--tc4);">
-                 Se ve muy bien y moderna.
-              </div>
-              <div class="mt-1 h-6 rounded-full flex items-center px-2 transition-colors duration-500 opacity-80" style="background: var(--c1);">
-                 <div class="h-1 w-1/3 rounded-full bg-current opacity-40" style="color: var(--tc1);"></div>
-              </div>
-           </div>
-
-           <!-- Card 3: Pricing/Product -->
-           <div class="rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-md transition-colors duration-500 border border-slate-800/50" style="background: var(--c1); color: var(--tc1);">
-              <div class="px-2.5 py-0.5 text-[8px] uppercase font-bold rounded-full mb-2 tracking-widest shadow-sm transition-colors duration-500" style="background: var(--c3); color: var(--tc3);">
-                 Premium
-              </div>
-              <h4 class="font-black text-sm mb-1">$29<span class="text-[9px] opacity-60">/mes</span></h4>
-              <div class="h-1 w-12 rounded-full mb-3 transition-colors duration-500" style="background: var(--c4);"></div>
-              <button class="w-full py-1.5 rounded-lg shadow-sm text-[10px] font-bold transition-transform hover:scale-105 active:scale-95 duration-500" style="background: var(--c2); color: var(--tc2);">
-                 Suscribirse
-              </button>
-           </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ==================== CONTENEDOR DERECHO ==================== -->
-  <div class="contents lg:flex lg:flex-col lg:col-span-5 xl:col-span-4 gap-5 sm:gap-6">
-
-    <!-- 3. COLOR ACTIVO (Orden 3 en Móvil, Orden 1 en PC Derecha) -->
-    <div class="order-3 lg:order-1 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+    <!-- 3. COLOR ACTIVO -->
+    <div id="card-active" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
           <i class="fa-solid fa-droplet text-cyan-400"></i> Color Seleccionado
         </span>
         <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-semibold">Activo</span>
       </div>
-
       <div class="flex items-center space-x-4">
         <button id="active-swatch" type="button" class="w-16 h-16 rounded-2xl border-2 border-slate-700 shadow-inner flex-shrink-0 cursor-pointer group relative overflow-hidden transition-all duration-200" style="background-color: #3B82F6;" title="Clic para copiar HEX">
           <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><i class="fa-regular fa-copy text-white text-xs"></i></div>
@@ -253,7 +178,6 @@
           <div id="active-rgb-preview" class="text-xs text-slate-400 font-mono mt-0.5">rgb(59, 130, 246)</div>
         </div>
       </div>
-
       <div class="space-y-2 pt-1" id="format-rows">
         <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80"><div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HEX</span><span id="fmt-hex" class="text-xs font-mono font-semibold text-slate-200 truncate">#3B82F6</span></div><button data-copy-target="fmt-hex" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400"><i class="fa-regular fa-copy text-xs"></i></button></div>
         <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80"><div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">RGB</span><span id="fmt-rgb" class="text-xs font-mono font-semibold text-slate-200 truncate">rgb(59, 130, 246)</span></div><button data-copy-target="fmt-rgb" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400"><i class="fa-regular fa-copy text-xs"></i></button></div>
@@ -261,7 +185,6 @@
         <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80"><div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">HSV</span><span id="fmt-hsv" class="text-xs font-mono font-semibold text-slate-200 truncate">hsv(217, 76%, 96%)</span></div><button data-copy-target="fmt-hsv" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400"><i class="fa-regular fa-copy text-xs"></i></button></div>
         <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800/80"><div class="flex items-center space-x-2 min-w-0"><span class="w-12 text-[10px] font-bold text-slate-500 uppercase">CMYK</span><span id="fmt-cmyk" class="text-xs font-mono font-semibold text-slate-200 truncate">cmyk(76%, 47%, 0%, 4%)</span></div><button data-copy-target="fmt-cmyk" class="btn-copy p-1.5 text-slate-400 hover:text-cyan-400"><i class="fa-regular fa-copy text-xs"></i></button></div>
       </div>
-
       <div class="pt-2 border-t border-slate-800 space-y-2">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Accesibilidad WCAG</span>
@@ -280,8 +203,8 @@
       </div>
     </div>
 
-    <!-- 6. HISTORIAL (Orden 6 en Móvil, Orden 2 en PC Derecha) -->
-    <div class="order-6 lg:order-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+    <!-- 4. HISTORIAL RECIENTE (¡Garantizado sobre Conversor de forma nativa!) -->
+    <div id="card-hist" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
           <i class="fa-solid fa-clock-rotate-left text-purple-400"></i><span>Historial Reciente</span>
@@ -294,11 +217,11 @@
       <div id="history-swatches" class="grid grid-cols-7 gap-2 min-h-[40px]" role="list"></div>
     </div>
 
-    <!-- 4. CONVERSOR (Orden 4 en Móvil, Orden 3 en PC Derecha) -->
-    <div class="order-4 lg:order-3 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+    <!-- 5. CONVERSOR INTERACTIVO -->
+    <div id="card-conv" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
-          <i class="fa-solid fa-right-left text-emerald-400"></i><span>Conversor Interactivo</span>
+          <i class="fa-solid fa-right-left text-emerald-400"></i><span>Conversor</span>
         </span>
         <span class="text-[10px] text-slate-500 italic">Presiona Enter</span>
       </div>
@@ -310,6 +233,62 @@
         <div class="flex items-center p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 focus-within:border-cyan-500 transition-colors group">
           <label for="conv-rgb" class="w-12 text-[10px] font-bold text-slate-500 uppercase px-1 group-focus-within:text-cyan-400 transition-colors">RGB</label>
           <input type="text" id="conv-rgb" class="flex-1 bg-transparent border-none text-sm font-mono font-semibold text-white focus:outline-none focus:ring-0 px-2" placeholder="0, 0, 0" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. ESTUDIO DE PALETAS (Generador) -->
+    <div id="card-gen" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-swatchbook text-pink-400 text-sm"></i>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Estudio de Paletas</h2>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btn-gen-minus" class="w-8 h-8 rounded-lg bg-slate-950 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors shadow-sm flex items-center justify-center font-bold" title="Quitar un color"><i class="fa-solid fa-minus text-[10px]"></i></button>
+          <button id="btn-gen-plus" class="w-8 h-8 rounded-lg bg-slate-950 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors shadow-sm flex items-center justify-center font-bold" title="Añadir un color"><i class="fa-solid fa-plus text-[10px]"></i></button>
+          <button id="btn-gen-random" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold shadow-md transition-colors flex items-center gap-1.5 ml-1" title="O presiona la tecla Espacio">
+            <i class="fa-solid fa-shuffle"></i> Aleatorio (Espacio)
+          </button>
+        </div>
+      </div>
+      <div id="gen-palette-bands" class="flex flex-col sm:flex-row w-full min-h-[420px] lg:min-h-[350px] rounded-xl overflow-hidden shadow-inner border border-slate-800"></div>
+      <button id="btn-gen-export-png" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-2 shadow-sm">
+        <i class="fa-regular fa-image text-cyan-400"></i> Exportar Paleta a Imagen (PNG)
+      </button>
+      <div class="pt-4 border-t border-slate-800/80">
+        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 ml-1 flex items-center gap-2">
+          <i class="fa-solid fa-laptop-code text-cyan-400"></i> Vista Previa en la Práctica
+        </h3>
+        <div id="mockup-ui" class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
+           <!-- Dashboard -->
+           <div class="rounded-xl p-3 flex flex-col gap-2 shadow-md transition-colors duration-500 border border-slate-800/50" style="background: var(--c1); color: var(--tc1);">
+              <div class="h-6 rounded bg-black/20 w-1/2 flex items-center px-2 shadow-inner"><div class="w-2 h-2 rounded-full bg-white/40"></div></div>
+              <div class="flex gap-2 flex-1 mt-1">
+                 <div class="w-[30%] rounded-lg shadow-inner opacity-90 transition-colors duration-500 flex flex-col gap-2 p-1.5" style="background: var(--c2); color: var(--tc2);">
+                    <div class="h-1.5 w-full rounded-full bg-current opacity-30"></div><div class="h-1.5 w-full rounded-full bg-current opacity-30"></div><div class="h-1.5 w-3/4 rounded-full bg-current opacity-30"></div>
+                 </div>
+                 <div class="flex-1 rounded-lg p-2 transition-colors duration-500 flex flex-col justify-between shadow-sm" style="background: var(--c3); color: var(--tc3);">
+                    <div class="text-[8px] font-bold uppercase opacity-80">Dashboard</div><div class="h-4 w-full rounded bg-current opacity-20"></div>
+                 </div>
+              </div>
+           </div>
+           <!-- Chat -->
+           <div class="rounded-xl p-3 flex flex-col justify-end gap-2 shadow-md transition-colors duration-500 border border-slate-800/50" style="background: var(--c2); color: var(--tc2);">
+              <div class="text-[8px] font-bold uppercase opacity-60 text-center mb-auto pt-1">Mensajes</div>
+              <div class="self-start px-2.5 py-1.5 rounded-2xl rounded-bl-sm max-w-[85%] text-[10px] shadow-sm transition-colors duration-500 font-medium" style="background: var(--c1); color: var(--tc1);">¡Hola! ¿Qué tal la paleta?</div>
+              <div class="self-end px-2.5 py-1.5 rounded-2xl rounded-br-sm max-w-[85%] text-[10px] shadow-sm transition-colors duration-500 font-medium" style="background: var(--c4); color: var(--tc4);">Se ve muy bien.</div>
+              <div class="mt-1 h-6 rounded-full flex items-center px-2 transition-colors duration-500 opacity-80" style="background: var(--c1);">
+                 <div class="h-1 w-1/3 rounded-full bg-current opacity-40" style="color: var(--tc1);"></div>
+              </div>
+           </div>
+           <!-- Pricing -->
+           <div class="rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-md transition-colors duration-500 border border-slate-800/50" style="background: var(--c1); color: var(--tc1);">
+              <div class="px-2.5 py-0.5 text-[8px] uppercase font-bold rounded-full mb-2 tracking-widest shadow-sm transition-colors duration-500" style="background: var(--c3); color: var(--tc3);">Premium</div>
+              <h4 class="font-black text-sm mb-1">$29<span class="text-[9px] opacity-60">/mes</span></h4>
+              <div class="h-1 w-12 rounded-full mb-3 transition-colors duration-500" style="background: var(--c4);"></div>
+              <button class="w-full py-1.5 rounded-lg shadow-sm text-[10px] font-bold transition-transform hover:scale-105 active:scale-95 duration-500" style="background: var(--c2); color: var(--tc2);">Suscribirse</button>
+           </div>
         </div>
       </div>
     </div>
@@ -359,10 +338,56 @@
 (() => {
   'use strict';
 
+  /* =========================================================
+     GESTOR DE LAYOUT DINÁMICO (Garantiza el orden absoluto)
+     ========================================================= */
+  const $ = (id) => document.getElementById(id);
+  
+  function applyLayout() {
+    const isDesktop = window.innerWidth >= 1024; // Punto de corte de lg en Tailwind
+    const mobileLayout = $('mobile-layout');
+    const colLeft = $('col-left');
+    const colRight = $('col-right');
+    
+    // Referencia directa a cada tarjeta
+    const cImg = $('card-img');
+    const cPal = $('card-palette');
+    const cAct = $('card-active');
+    const cHist = $('card-hist');
+    const cConv = $('card-conv');
+    const cGen = $('card-gen');
+
+    if (isDesktop) {
+      // Orden en Escritorio (PC)
+      colLeft.appendChild(cImg);
+      colLeft.appendChild(cPal);
+      colLeft.appendChild(cGen);
+      
+      colRight.appendChild(cAct);
+      colRight.appendChild(cHist); // Historial ARRIBA
+      colRight.appendChild(cConv); // Conversor ABAJO
+    } else {
+      // Orden en Celulares y Tablets
+      mobileLayout.appendChild(cImg);
+      mobileLayout.appendChild(cPal);
+      mobileLayout.appendChild(cAct);
+      mobileLayout.appendChild(cHist); // Historial ARRIBA
+      mobileLayout.appendChild(cConv); // Conversor ABAJO
+      mobileLayout.appendChild(cGen);
+    }
+  }
+  
+  // Ejecutar al inicio y al redimensionar la ventana
+  window.addEventListener('resize', applyLayout);
+  applyLayout();
+
+  /* =========================================================
+     LÓGICA PRINCIPAL (Cuentagotas, Generador, Colores)
+     ========================================================= */
   const CONFIG = { MAX_CANVAS_DIM: 4096, PALETTE_SIZE: 8, PALETTE_SAMPLE: 100, PALETTE_MIN_DIST: 42, HISTORY_MAX: 14, MAX_TOASTS: 4, LOUPE_SIZE: 11, LOUPE_OFFSET_GAP: 6 };
   const SAMPLE_URLS = { neon: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1000&q=80', nature: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1000&q=80', city: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80' };
 
-  /* MATH COLOR */
+  /* MATEMÁTICAS DE COLOR */
   const hexByte = (x) => { const h = Math.min(255, Math.max(0, Math.round(x))).toString(16); return h.length === 1 ? '0' + h : h; };
   const rgbToHex = (r, g, b) => '#' + hexByte(r) + hexByte(g) + hexByte(b);
   const HEX_CACHE = new Map();
@@ -387,16 +412,14 @@
   function getLuminance(r, g, b) { const ch = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return ch(r) * 0.2126 + ch(g) * 0.7152 + ch(b) * 0.0722; }
   const getContrastRatio = (l1, l2) => (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
   
-  // Nuevo Aleatorizador HSL para cubrir toda la gama visual con mayor riqueza
   function getRandomHex() { 
     const h = Math.floor(Math.random() * 360);
-    const s = Math.floor(Math.random() * 61) + 40; // 40-100% de saturación
-    const l = Math.floor(Math.random() * 61) + 20; // 20-80% de luminosidad (evita pure black/white)
+    const s = Math.floor(Math.random() * 61) + 40; 
+    const l = Math.floor(Math.random() * 61) + 20; 
     const rgb = hslToRgb(h, s, l);
     return rgbToHex(rgb.r, rgb.g, rgb.b);
   }
 
-  const $ = (id) => document.getElementById(id);
   const dom = {
     dropzone: $('dropzone'), emptyState: $('empty-state'), dragOverlay: $('drag-overlay'), mainCanvas: $('main-canvas'), loupe: $('loupe-container'), loupeCanvas: $('loupe-canvas'), loupeHexTag: $('loupe-hex-tag'),
     activeSwatch: $('active-swatch'), activeHex: $('active-hex'), activeRgbPreview: $('active-rgb-preview'), imgDims: $('img-dimensions'),
@@ -415,30 +438,21 @@
   let currentImg = null; let activeColor = { r: 59, g: 130, b: 246, hex: '#3B82F6' };
   let historyColors = []; let extractedPalette = []; let exportFmt = 'css';
   
-  // Paleta generadora base (5 colores profesionales)
   let genPaletteState = [
     { hex: '#264653', locked: false }, { hex: '#2A9D8F', locked: false },
     { hex: '#E9C46A', locked: false }, { hex: '#F4A261', locked: false }, { hex: '#E76F51', locked: false }
   ];
 
-  /* =========================================================
-     GENERADOR DE PALETA Y MOCKUP (Actualizado)
-     ========================================================= */
+  /* GENERADOR DE PALETAS */
   function renderGeneratorPalette() {
     dom.genBands.innerHTML = '';
+    for(let i = 1; i <= 8; i++) { dom.mockupUi.style.setProperty(`--c${i}`, '#1e293b'); dom.mockupUi.style.setProperty(`--tc${i}`, '#ffffff'); }
     
-    // Primero, pre-llenar las variables de CSS con la paleta para que los mockups no fallen si hay menos de 8
-    for(let i = 1; i <= 8; i++) {
-        dom.mockupUi.style.setProperty(`--c${i}`, '#1e293b');
-        dom.mockupUi.style.setProperty(`--tc${i}`, '#ffffff');
-    }
-
     genPaletteState.forEach((item, idx) => {
       const rgb = hexToRgb(item.hex);
       const lum = getLuminance(rgb.r, rgb.g, rgb.b);
       const txtCol = lum > 0.5 ? '#0f172a' : '#ffffff';
       
-      // Actualizar Mockups UI dinámicamente
       dom.mockupUi.style.setProperty(`--c${idx+1}`, item.hex);
       dom.mockupUi.style.setProperty(`--tc${idx+1}`, txtCol);
       
@@ -459,9 +473,7 @@
             <i class="fa-solid fa-copy text-xs sm:text-base"></i>
           </button>
         </div>
-        <div class="mt-auto mb-3 sm:mb-4 font-black text-[11px] sm:text-lg tracking-widest uppercase z-10 drop-shadow-md cursor-pointer btn-text-copy text-center w-full px-1 truncate" title="Copiar HEX">
-          ${item.hex.replace('#', '')}
-        </div>
+        <div class="mt-auto mb-3 sm:mb-4 font-black text-[11px] sm:text-lg tracking-widest uppercase z-10 drop-shadow-md cursor-pointer btn-text-copy text-center w-full px-1 truncate" title="Copiar HEX">${item.hex.replace('#', '')}</div>
       `;
 
       block.querySelector('.btn-lock').onclick = () => { item.locked = !item.locked; renderGeneratorPalette(); };
@@ -474,53 +486,32 @@
     });
   }
 
-  function randomizeUnlocked() {
-    genPaletteState.forEach(c => { if (!c.locked) c.hex = getRandomHex(); });
-    renderGeneratorPalette();
-  }
-
+  function randomizeUnlocked() { genPaletteState.forEach(c => { if (!c.locked) c.hex = getRandomHex(); }); renderGeneratorPalette(); }
   dom.btnGenRandom.onclick = randomizeUnlocked;
   
-  // Tecla espacio para randomizar sin accionar inputs
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && !e.target.closest('button')) {
       e.preventDefault(); randomizeUnlocked();
     }
   });
 
-  dom.btnGenPlus.onclick = () => {
-    if (genPaletteState.length >= 8) return showToast('Máximo 8 colores permitidos', 'warning');
-    genPaletteState.push({ hex: getRandomHex(), locked: false }); renderGeneratorPalette();
-  };
-  
-  dom.btnGenMinus.onclick = () => {
-    if (genPaletteState.length <= 2) return showToast('Mínimo 2 colores permitidos', 'warning');
-    genPaletteState.pop(); renderGeneratorPalette();
-  };
+  dom.btnGenPlus.onclick = () => { if (genPaletteState.length >= 8) return showToast('Máximo 8 colores permitidos', 'warning'); genPaletteState.push({ hex: getRandomHex(), locked: false }); renderGeneratorPalette(); };
+  dom.btnGenMinus.onclick = () => { if (genPaletteState.length <= 2) return showToast('Mínimo 2 colores permitidos', 'warning'); genPaletteState.pop(); renderGeneratorPalette(); };
 
-  // Exportar paleta generada a Imagen PNG perfecta y autocentrada
   dom.btnGenExport.onclick = () => {
     const canvas = document.createElement('canvas');
     canvas.width = 1200; canvas.height = 800;
     const ctx = canvas.getContext('2d');
-    const cols = genPaletteState.length;
-    const colW = canvas.width / cols;
+    const cols = genPaletteState.length, colW = canvas.width / cols;
     
     genPaletteState.forEach((item, idx) => {
       ctx.fillStyle = item.hex;
       ctx.fillRect(idx * colW, 0, colW, canvas.height);
-      
       const rgb = hexToRgb(item.hex);
       ctx.fillStyle = getLuminance(rgb.r, rgb.g, rgb.b) > 0.5 ? '#000000' : '#ffffff';
       
-      // Cálculo dinámico de fuente para que nunca se salga de su columna
-      const maxFontSize = 36;
-      const calcFontSize = Math.min(maxFontSize, Math.max(14, Math.floor(colW / 4.5)));
-      
-      ctx.font = `bold ${calcFontSize}px sans-serif`; 
-      ctx.textAlign = 'center';
-      
-      // fillText(texto, x, y, maxWidth) garantiza que se quede en su lugar
+      const calcFontSize = Math.min(36, Math.max(14, Math.floor(colW / 4.5)));
+      ctx.font = `bold ${calcFontSize}px sans-serif`; ctx.textAlign = 'center';
       ctx.fillText(item.hex.toUpperCase(), idx * colW + colW/2, canvas.height - 60, colW - 20);
     });
     
@@ -529,9 +520,7 @@
     showToast('Imagen PNG de tu paleta descargada con éxito');
   };
 
-  /* =========================================================
-     SISTEMA CUENTAGOTAS BASE Y CONVERSOR
-     ========================================================= */
+  /* GESTIÓN DE COLOR ACTIVO Y WCAG */
   function updateActiveColor(r, g, b, saveHist = true, updateConvInputs = true) {
     const hex = rgbToHex(r, g, b); activeColor = { r, g, b, hex };
     dom.activeSwatch.style.backgroundColor = hex; dom.activeHex.textContent = hex; dom.activeRgbPreview.textContent = `rgb(${r}, ${g}, ${b})`;
@@ -577,9 +566,7 @@
   });
   dom.convRgb.addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
 
-  /* =========================================================
-     CANVAS, IMAGEN Y EXTRACCIÓN DOMINANTE
-     ========================================================= */
+  /* CANVA Y HERRAMIENTA CUENTAGOTAS */
   let loupeRafId = 0, loupePendingEvent = null;
   function scheduleLoupe(clientX, clientY) { loupePendingEvent = { clientX, clientY }; if (loupeRafId) return; loupeRafId = requestAnimationFrame(() => { loupeRafId = 0; if (loupePendingEvent) { renderLoupe(loupePendingEvent.clientX, loupePendingEvent.clientY); loupePendingEvent = null; }}); }
   function renderLoupe(clientX, clientY) {
@@ -602,10 +589,33 @@
     try { const px = mainCtx.getImageData(imgX, imgY, 1, 1).data; const hex = rgbToHex(px[0], px[1], px[2]); dom.loupeHexTag.textContent = hex; return { r: px[0], g: px[1], b: px[2], hex }; } catch (e) { return null; }
   }
 
-  dom.mainCanvas.addEventListener('pointermove', (e) => { if (e.pointerType !== 'touch') scheduleLoupe(e.clientX, e.clientY); }, { passive: true });
-  dom.mainCanvas.addEventListener('pointerleave', () => dom.loupe.classList.add('hidden'), { passive: true });
-  dom.mainCanvas.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') { e.preventDefault(); scheduleLoupe(e.clientX, e.clientY); } }, { passive: false });
-  dom.mainCanvas.addEventListener('pointerup', (e) => { const sampled = renderLoupe(e.clientX, e.clientY); dom.loupe.classList.add('hidden'); if (sampled) { updateActiveColor(sampled.r, sampled.g, sampled.b); showToast(`Color ${sampled.hex} capturado`); } });
+  let isTouchDragging = false;
+  
+  dom.mainCanvas.addEventListener('pointerdown', (e) => { 
+    if (e.pointerType === 'touch') isTouchDragging = true;
+    scheduleLoupe(e.clientX, e.clientY); 
+  });
+  
+  dom.mainCanvas.addEventListener('pointermove', (e) => { 
+    if (e.pointerType === 'touch' && !isTouchDragging) return;
+    scheduleLoupe(e.clientX, e.clientY);
+  });
+  
+  dom.mainCanvas.addEventListener('pointerup', (e) => { 
+    isTouchDragging = false;
+    const sampled = renderLoupe(e.clientX, e.clientY); 
+    dom.loupe.classList.add('hidden'); 
+    if (sampled) { updateActiveColor(sampled.r, sampled.g, sampled.b); showToast(`Color ${sampled.hex} capturado`); } 
+  });
+
+  dom.mainCanvas.addEventListener('pointercancel', () => { 
+    isTouchDragging = false;
+    dom.loupe.classList.add('hidden'); 
+  });
+  
+  dom.mainCanvas.addEventListener('pointerleave', (e) => { 
+    if (e.pointerType !== 'touch') dom.loupe.classList.add('hidden'); 
+  });
   
   let kbX = 0, kbY = 0;
   dom.mainCanvas.addEventListener('keydown', (e) => {
@@ -662,14 +672,12 @@
   $('btn-reextract').addEventListener('click', () => { if (!currentImg) return showToast('Carga una imagen primero', 'warning'); extractPalette(); showToast('Reanalizada'); });
   $('btn-copy-palette').addEventListener('click', () => { if (!extractedPalette.length) return showToast('No hay paleta extraída', 'warning'); copyToClipboard(extractedPalette.join('\n')); });
 
-  // Archivos
   dom.fileInput.addEventListener('change', (e) => { const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = ev => loadImage(ev.target.result); r.readAsDataURL(f); } e.target.value = ''; });
   const dragOvl = dom.dragOverlay; ['dragenter', 'dragover'].forEach(ev => dom.dropzone.addEventListener(ev, e => { e.preventDefault(); dragOvl.classList.remove('hidden'); }));
   ['dragleave', 'drop'].forEach(ev => dom.dropzone.addEventListener(ev, e => { e.preventDefault(); dragOvl.classList.add('hidden'); }));
   dom.dropzone.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if(f) { const r = new FileReader(); r.onload = ev => loadImage(ev.target.result); r.readAsDataURL(f); } });
   window.addEventListener('paste', e => { const items = e.clipboardData?.items; if (!items) return; for (const item of items) if (item.type.startsWith('image/')) { const r = new FileReader(); r.onload = ev => loadImage(ev.target.result); r.readAsDataURL(item.getAsFile()); showToast('Imagen pegada'); break; } });
   
-  // URL Modal
   $('btn-samples-toggle').addEventListener('click', (e) => { e.stopPropagation(); const isOpen = !$('samples-menu').classList.contains('hidden'); $('samples-menu').classList.toggle('hidden', isOpen); $('btn-samples-toggle').setAttribute('aria-expanded', String(!isOpen)); });
   document.addEventListener('click', () => { if (!$('samples-menu').classList.contains('hidden')) { $('samples-menu').classList.add('hidden'); $('btn-samples-toggle').setAttribute('aria-expanded', 'false'); } });
   $('samples-menu').addEventListener('click', (e) => { const btn = e.target.closest('.sample-btn'); if (!btn) return; $('samples-menu').classList.add('hidden'); $('btn-samples-toggle').setAttribute('aria-expanded', 'false'); const url = SAMPLE_URLS[btn.getAttribute('data-sample')]; if (url) loadImage(url); });
@@ -677,9 +685,7 @@
   $('btn-confirm-url').addEventListener('click', () => { const u = $('input-url').value.trim(); if (!u) return; loadImage(u); closeModal(dom.modalUrl); $('input-url').value = ''; });
   $('input-url').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btn-confirm-url').click(); });
 
-  /* =========================================================
-     HISTORIAL & EXPORTACIÓN TEXTO
-     ========================================================= */
+  /* HISTORIAL & EXPORTACIÓN TEXTO */
   function addToHistory(hex) { if (historyColors[0] === hex) return; historyColors = [hex, ...historyColors.filter(c => c !== hex)].slice(0, CONFIG.HISTORY_MAX); try { localStorage.setItem('cuentagotas_hist', JSON.stringify(historyColors)); } catch (e) {} renderHistory(); }
   function renderHistory() {
     dom.history.innerHTML = '';
@@ -705,9 +711,7 @@
     tab.classList.add('bg-cyan-600', 'text-white'); tab.classList.remove('text-slate-400'); exportFmt = tab.getAttribute('data-format'); updateExportText();
   });
 
-  /* =========================================================
-     UTILIDADES GENERALES
-     ========================================================= */
+  /* UTILIDADES GENERALES */
   async function copyToClipboard(txt) {
     try { if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(txt);
       else { const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }

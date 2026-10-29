@@ -187,6 +187,40 @@
 
   .info-value.ok { color: #22c55e; }
 
+  /* ===================== BOTÓN EXPORTAR ===================== */
+  .btn-export {
+    width: 100%;
+    background-color: var(--accent);
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color var(--tr), opacity var(--tr), transform 0.1s;
+    margin-top: 12px;
+  }
+
+  .btn-export:hover:not(:disabled) {
+    background-color: #2563eb;
+  }
+  
+  .btn-export:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  .btn-export:disabled {
+    background-color: var(--border-strong);
+    color: var(--text-dim);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
   /* ===================== VIEWPORT ===================== */
   .viewport-container {
     flex: 1;
@@ -342,6 +376,7 @@
     .upload-box { min-height: 65px; padding: 8px; }
     .upload-box svg { width: 20px; height: 20px; }
     .upload-box span { font-size: 11px; }
+    .btn-export { padding: 8px; font-size: 12px; margin-top: 8px; }
 
     #viewcube-wrapper { width: 110px; height: 110px; top: 8px; right: 8px; }
   }
@@ -378,7 +413,7 @@
 <header class="header">
   <a href="/index.html" class="header-title" title="Ir a inicio">
     <img src="/iconos/visualizador3d.svg" alt="" class="header-icon" aria-hidden="true">
-    <span>Visualizador 3D</span>
+    <span>Visualizador 3D & Conversor</span>
   </a>
 </header>
 
@@ -407,6 +442,16 @@
       <div class="info-row"><span class="info-label">Volumen:</span><span class="info-value" id="info-volume">—</span></div>
       <div class="info-row"><span class="info-label">Triángulos / Entidades:</span><span class="info-value" id="info-triangles">—</span></div>
       <div class="info-row"><span class="info-label">Asentamiento Base:</span><span class="info-value ok" id="info-z-ground">—</span></div>
+      
+      <!-- NUEVO: Botón de Exportación GLB -->
+      <button type="button" class="btn-export" id="btn-export" disabled aria-label="Exportar modelo cargado a formato GLB">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Exportar a GLB
+      </button>
     </section>
   </aside>
 
@@ -428,10 +473,13 @@
   </div>
 </div>
 
+<!-- Scripts Base -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GCodeLoader.js"></script>
+<!-- NUEVO: Script del exportador a formato GLTF/GLB -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js"></script>
 
 <script>
 (() => {
@@ -471,6 +519,7 @@ const dom = {
   dropZone:    $('drop-zone'),
   fileInput:   $('file-input'),
   btnReset:    $('btn-reset'),
+  btnExport:   $('btn-export'), // Ref botón
   loading:     $('loading'),
   info: {
     name:      $('info-name'),
@@ -531,6 +580,48 @@ const resetInfo = () => {
 };
 
 /* ============================================================
+   EXPORTACIÓN A GLB (Lógica Inyectada)
+   ============================================================ */
+dom.btnExport.addEventListener('click', () => {
+  if (!currentObject) return;
+  setLoading(true);
+
+  const exporter = new THREE.GLTFExporter();
+  
+  // Realiza el empaquetado binario de manera asíncrona
+  exporter.parse(
+    currentObject,
+    (result) => {
+      if (result instanceof ArrayBuffer) {
+        // Formato original quitando la extensión anterior
+        const originalName = dom.info.name.textContent;
+        const baseName = originalName !== '—' ? originalName.replace(/\.[^/.]+$/, "") : "modelo_3d";
+        saveArrayBuffer(result, `${baseName}.glb`);
+      }
+      setLoading(false);
+    },
+    (error) => {
+      console.error('Error durante la exportación a GLB:', error);
+      alert('Hubo un error al exportar el modelo a GLB.');
+      setLoading(false);
+    },
+    { binary: true } // {binary: true} fuerza a ArrayBuffer (.glb en lugar de .gltf)
+  );
+});
+
+function saveArrayBuffer(buffer, filename) {
+  const blob = new Blob([buffer], { type: 'application/octet-stream' });
+  const link = document.createElement('a');
+  link.style.display = 'none';
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+}
+
+/* ============================================================
    PARSER STL (ASCII + BINARIO)
    ============================================================ */
 function parseSTLEmbedded(buffer) {
@@ -545,7 +636,6 @@ function parseSTLEmbedded(buffer) {
     const numTriangles = dataView.getUint32(80, true);
     const expectedSize = 84 + numTriangles * 50;
     if (buffer.byteLength < expectedSize || numTriangles === 0) {
-      // Heurística adicional: ¿empieza con "solid"? → probablemente ASCII
       const headerStr = new TextDecoder().decode(buffer.slice(0, Math.min(80, buffer.byteLength)));
       if (headerStr.trim().toLowerCase().startsWith('solid')) isBinary = false;
     }
@@ -635,10 +725,8 @@ function init() {
     isMobile ? CONFIG.MAX_PIXEL_RATIO_MOBILE : CONFIG.MAX_PIXEL_RATIO
   ));
 
-  // Context loss handling (importante en móviles)
   dom.canvas.addEventListener('webglcontextlost', (e) => e.preventDefault(), false);
   dom.canvas.addEventListener('webglcontextrestored', () => {
-    // Re-render básico; three.js ya gestiona la restauración de recursos
     if (renderer) renderer.setSize(viewport.clientWidth, viewport.clientHeight);
   }, false);
 
@@ -789,7 +877,6 @@ function initViewCube() {
   );
   cubeScene.add(cubeMesh);
 
-  // Ejes del viewcube
   const h = CONFIG.CUBE_SIZE / 2;
   const origin = new THREE.Vector3(-h, -h, -h);
   const axisLen = CONFIG.CUBE_SIZE * 1.05;
@@ -815,7 +902,6 @@ function initViewCube() {
   addAxis('y', 0x22c55e, 'Y', new THREE.Vector3(-h, -h + axisLen, -h));
   addAxis('z', 0x3b82f6, 'Z', new THREE.Vector3(-h, -h, -h + axisLen));
 
-  // Highlight
   const cellSize = CONFIG.CUBE_SIZE / 3;
   highlightBlock = new THREE.Mesh(
     new THREE.BoxGeometry(cellSize * 0.98, cellSize * 0.98, cellSize * 0.98),
@@ -953,7 +1039,7 @@ function updateInfo(object, fileName, ext) {
 
     try {
       totalVolume += calculateVolume(child.geometry);
-    } catch (_) { /* geometría no triangular */ }
+    } catch (_) { }
   });
 
   setInfo('volume', totalVolume > 0 ? `${totalVolume.toFixed(2)} mm³` : 'N/A');
@@ -966,7 +1052,6 @@ function disposeMaterial(material) {
     material.forEach(disposeMaterial);
     return;
   }
-  // Texturas
   for (const key of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap']) {
     if (material[key] && typeof material[key].dispose === 'function') {
       material[key].dispose();
@@ -985,6 +1070,7 @@ function removeCurrentObject() {
   });
   currentObject = null;
   resetInfo();
+  dom.btnExport.disabled = true; // Desactivar exportación
 }
 
 /* ============================================================
@@ -1038,6 +1124,7 @@ async function processFile(file) {
     scene.add(currentObject);
     centerAndGroundObject(currentObject);
     updateInfo(currentObject, file.name, ext);
+    dom.btnExport.disabled = false; // Habilitar exportación con éxito
 
   } catch (err) {
     console.error('[processFile]', err);
@@ -1055,7 +1142,6 @@ async function processFile(file) {
 function setupFileHandlers() {
   const { dropZone, fileInput, viewport } = dom;
 
-  // Click / teclado en drop-zone
   dropZone.addEventListener('click', () => fileInput.click());
   dropZone.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -1068,7 +1154,6 @@ function setupFileHandlers() {
     if (e.target.files.length) processFile(e.target.files[0]);
   });
 
-  // Prevenir navegación por drag sobre toda la ventana
   const prevent = (e) => { e.preventDefault(); e.stopPropagation(); };
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((ev) =>
     document.addEventListener(ev, prevent, { passive: false })
@@ -1080,7 +1165,6 @@ function setupFileHandlers() {
     viewport.classList.add('dragover');
   };
   const onDragLeave = (e) => {
-    // Solo quitar si salimos del viewport/dropzone (relatedTarget fuera)
     if (!e.relatedTarget || !viewport.contains(e.relatedTarget)) {
       dropZone.classList.remove('dragover');
       viewport.classList.remove('dragover');
@@ -1103,7 +1187,6 @@ function setupFileHandlers() {
 }
 
 function setupKeyboardShortcuts() {
-  // Tecla "R" o "0" reencuadra; Escape resetea la cámara
   window.addEventListener('keydown', (e) => {
     if (e.target.matches('input, textarea')) return;
     if (e.key === 'r' || e.key === 'R' || e.key === '0') {
@@ -1114,7 +1197,6 @@ function setupKeyboardShortcuts() {
 
   dom.btnReset.addEventListener('click', refocusCamera);
 
-  // Doble clic en el viewport = reencuadrar
   dom.canvas.addEventListener('dblclick', (e) => {
     e.preventDefault();
     refocusCamera();
@@ -1164,14 +1246,13 @@ function animate() {
   if (isAnimatingCamera) {
     animProgress += CONFIG.CAM_ANIM_SPEED;
     if (animProgress >= 1) { animProgress = 1; isAnimatingCamera = false; }
-    const t = animProgress * animProgress * (3 - 2 * animProgress); // smoothstep
+    const t = animProgress * animProgress * (3 - 2 * animProgress);
     camera.position.lerpVectors(animStartPos, animEndPos, t);
     camera.lookAt(controls.target);
   }
 
   controls.update();
 
-  // Orientar la cámara del viewcube
   cubeCamera.position.copy(camera.position).sub(controls.target).setLength(CONFIG.CUBE_CAM_DIST);
   cubeCamera.lookAt(0, 0, 0);
 

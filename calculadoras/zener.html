@@ -6,34 +6,36 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0f172a">
 <title>Calculadora Diodo Zener</title>
-<link rel="icon" type="image/svg+xml" href="iconos/union.svg">
+<link rel="icon" type="image/svg+xml" href="/iconos/zener.svg">
 
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <script>
   tailwind.config = {
     darkMode: 'class',
     theme: {
       extend: {
         colors: {
-          navyBg: '#0f172a',
-          navyCard: '#1e293b',
-          navyBorder: '#334155',
-          cyanAccent: '#3b82f6',
-          cyanGlow: '#60a5fa',
-          amberGlow: '#f0a070',
-        },
-        fontFamily: {
-          sans: ['Inter', 'system-ui', 'sans-serif'],
-          mono: ['JetBrains Mono', 'Consolas', 'Monaco', 'monospace'],
+          slate: {
+            700: '#475569',
+            800: '#334155',
+            850: '#1e293b',
+            900: '#1e293b',
+            950: '#0f172a'
+          },
+          cyan: {
+            300: '#93c5fd',
+            400: '#60a5fa',
+            500: '#3b82f6',
+            600: '#2563eb',
+            700: '#1d4ed8'
+          }
         }
       }
     }
   };
 </script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
   *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
@@ -46,23 +48,42 @@
     border-radius: 8px;
   }
 
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: #0f172a; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-  /* Ocultar flechas numéricas y definir appearance estándar */
+  /* Ocultar flechas numéricas */
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none; appearance: none; margin: 0;
   }
   input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 
-  .glow-svg { filter: drop-shadow(0 0 12px rgba(96,165,250,0.3)); }
-  .glow-green { filter: drop-shadow(0 0 12px rgba(52,211,153,0.3)); }
-  .glow-red { filter: drop-shadow(0 0 12px rgba(248,113,113,0.4)); }
+  /* Input transparente para resultados editables (Naikkaten ti biddut a 'ring: 0;') */
+  .input-ghost {
+    background: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    width: 100%;
+  }
+  .input-ghost:focus { outline: none; }
+
+  /* Sombras para esquema SVG */
+  .glow-cyan { filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4)); }
+  .glow-green { filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.4)); }
+  .glow-orange { filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.4)); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 </style>
 </head>
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ESQB0M5W6R"></script>
 <script>
@@ -71,139 +92,137 @@
   gtag('js', new Date());
   gtag('config', 'G-ESQB0M5W6R');
 </script>
-<body class="bg-[#0f172a] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#3b82f6] selection:text-[#0f172a]">
 
-<header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
-  <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <a href="index.html" class="inline-flex items-center gap-3.5 group">
-      <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
-        <img src="iconos/union.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
-      </div>
-      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
-        Regulador Zener
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-cyan-500 selection:text-white">
+
+<!-- ==================== HEADER ==================== -->
+<header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+    <a href="/index.html" class="flex items-center space-x-3 group p-1 rounded-lg min-w-0">
+      <img src="/iconos/zener.svg" alt="Logo Zener" class="w-7 h-7 object-contain transition-transform group-hover:scale-110 duration-200 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)] flex-shrink-0" onerror="this.style.display='none'">
+      <h1 class="text-lg sm:text-2xl font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors truncate">
+        Calculadora Diodo Zener
       </h1>
     </a>
   </div>
 </header>
 
-<main class="flex-grow w-full max-w-[1400px] mx-auto px-4 py-8 sm:px-8 flex flex-col items-center">
+<!-- ==================== MAIN ==================== -->
+<main class="flex-grow w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6">
 
-  <div class="w-full bg-[#1e293b] border border-[#334155] rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/40">
+  <div class="w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl">
     
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
 
-      <!-- ================= COL 1: INPUTS ================= -->
-      <div class="lg:col-span-3 flex flex-col gap-5">
-        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-[#334155] pb-2">Parámetros de Diseño</h2>
+      <!-- COL 1: INPUTS BASE -->
+      <div class="lg:col-span-3 flex flex-col gap-4">
+        <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-800 pb-2">Parámetros de Diseño</h2>
         
         <div class="space-y-1.5">
-          <label class="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> Voltaje Entrada (Vin)
+          <label class="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-cyan-500"></span> Voltaje Entrada (Vin)
           </label>
           <div class="relative">
-            <input type="number" id="val-vin" value="12" min="0" step="any" class="w-full bg-[#0f172a] border border-[#334155] rounded-xl pl-3 pr-10 py-2.5 text-white font-mono text-base focus:border-[#3b82f6] transition-colors">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">V</span>
+            <input type="number" id="val-vin" value="12" min="0" step="any" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-3 pr-10 py-2.5 text-white font-mono text-sm focus:border-cyan-500 transition-colors">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">V</span>
           </div>
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-[#f0a070]"></span> Voltaje Zener (Vz)
+          <label class="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-orange-400"></span> Voltaje Zener (Vz)
           </label>
           <div class="relative">
-            <input type="number" id="val-vz" value="5.1" min="0" step="any" class="w-full bg-[#0f172a] border border-[#334155] rounded-xl pl-3 pr-10 py-2.5 text-white font-mono text-base focus:border-[#3b82f6] transition-colors">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">V</span>
+            <input type="number" id="val-vz" value="5.1" min="0" step="any" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-3 pr-10 py-2.5 text-white font-mono text-sm focus:border-cyan-500 transition-colors">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">V</span>
           </div>
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-[#4ade80]"></span> Corriente Carga (IL)
+          <label class="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Corriente Carga (IL)
           </label>
           <div class="relative">
-            <input type="number" id="val-il" value="20" min="0" step="any" class="w-full bg-[#0f172a] border border-[#334155] rounded-xl pl-3 pr-12 py-2.5 text-white font-mono text-base focus:border-[#3b82f6] transition-colors">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">mA</span>
+            <input type="number" id="val-il" value="20" min="0" step="any" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-3 pr-10 py-2.5 text-white font-mono text-sm focus:border-cyan-500 transition-colors">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">mA</span>
           </div>
         </div>
 
-        <div class="space-y-1.5">
-          <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+        <div class="space-y-1.5 pt-2 border-t border-slate-800/50">
+          <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
             Corriente Mín. Zener (Iz min)
           </label>
           <div class="relative">
-            <input type="number" id="val-izmin" value="5" min="0" step="any" class="w-full bg-[#0f172a] border border-[#334155] rounded-xl pl-3 pr-12 py-2.5 text-slate-300 font-mono text-sm focus:border-[#3b82f6] transition-colors">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">mA</span>
+            <input type="number" id="val-izmin" value="5" min="0" step="any" class="w-full bg-slate-950/50 border border-slate-800 rounded-xl pl-3 pr-10 py-2.5 text-slate-300 font-mono text-xs focus:border-cyan-500 transition-colors">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-[10px]">mA</span>
           </div>
-          <p class="text-[9.5px] text-slate-500 leading-tight">Mínima corriente necesaria para mantener la regulación (típicamente 1mA - 5mA).</p>
+          <p class="text-[10px] text-slate-500 leading-tight">Define la meta de regulación. Modificar esto recalcula Rs automáticamente.</p>
         </div>
       </div>
 
-      <!-- ================= COL 2: ESQUEMA CENTRAL ================= -->
-      <div class="lg:col-span-6 flex flex-col justify-center bg-[#0f172a] rounded-2xl border border-[#334155] p-6 shadow-inner h-full min-h-[350px] relative overflow-hidden">
+      <!-- COL 2: ESQUEMA CENTRAL SVG -->
+      <div class="lg:col-span-6 flex flex-col justify-center bg-slate-950 rounded-2xl border border-slate-800 p-4 shadow-inner relative overflow-hidden min-h-[300px]">
         
-        <svg viewBox="0 0 500 350" class="w-full h-auto max-h-[320px] mx-auto text-[#60a5fa] transition-opacity duration-300">
-          
-          <!-- Nodos y Rails -->
+        <svg viewBox="0 0 540 350" class="w-full h-auto max-h-[300px] mx-auto transition-opacity duration-300">
           <!-- V_in Left -->
-          <circle cx="40" cy="80" r="5" fill="#3b82f6" class="glow-svg"/>
+          <circle cx="40" cy="80" r="5" fill="#3b82f6" class="glow-cyan"/>
           <text x="30" y="70" fill="#60a5fa" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">Vin</text>
           
           <!-- GND Rails -->
-          <circle cx="40" cy="270" r="5" fill="#4ade80"/>
-          <text x="30" y="275" fill="#4ade80" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">GND</text>
-          <path d="M 40,270 L 460,270" fill="none" stroke="#4ade80" stroke-width="4"/>
+          <circle cx="40" cy="270" r="5" fill="#34d399"/>
+          <text x="30" y="275" fill="#34d399" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">GND</text>
+          <path d="M 40,270 L 460,270" fill="none" stroke="#34d399" stroke-width="4"/>
 
           <!-- Top Rail a Rs -->
           <path d="M 40,80 L 120,80" fill="none" stroke="#3b82f6" stroke-width="4"/>
           
           <!-- Resistencia Serie Rs -->
-          <rect x="120" y="65" width="80" height="30" fill="#1e293b" stroke="#f0a070" stroke-width="3" class="glow-orange"/>
+          <rect x="120" y="65" width="80" height="30" fill="#1e293b" stroke="#10b981" stroke-width="3" class="glow-green"/>
           <text x="160" y="50" fill="#ffffff" font-size="18" font-family="monospace" font-weight="bold" text-anchor="middle">Rs</text>
-          <text id="svg-rs-val" x="160" y="86" fill="#f0a070" font-size="14" font-family="monospace" font-weight="bold" text-anchor="middle">-- Ω</text>
+          <text id="svg-rs-val" x="160" y="86" fill="#34d399" font-size="14" font-family="monospace" font-weight="bold" text-anchor="middle">-- Ω</text>
 
           <!-- Top Rail de Rs a Vout -->
-          <path d="M 200,80 L 460,80" fill="none" stroke="#f0a070" stroke-width="4"/>
-          <circle cx="280" cy="80" r="5" fill="#f0a070"/> <!-- Nodo Zener -->
-          <circle cx="400" cy="80" r="5" fill="#f0a070"/> <!-- Nodo Load -->
+          <path d="M 200,80 L 460,80" fill="none" stroke="#f97316" stroke-width="4"/>
+          <circle cx="280" cy="80" r="5" fill="#f97316"/> 
+          <circle cx="400" cy="80" r="5" fill="#f97316"/> 
 
-          <!-- Diodo Zener (Centro) -->
-          <path d="M 280,80 L 280,140" fill="none" stroke="currentColor" stroke-width="3"/>
-          <path d="M 280,270 L 280,180" fill="none" stroke="currentColor" stroke-width="3"/>
-          <circle cx="280" cy="270" r="5" fill="#4ade80"/> <!-- Nodo GND Zener -->
+          <!-- Rama Zener -->
+          <path d="M 280,80 L 280,140" fill="none" stroke="#94a3b8" stroke-width="3"/>
+          <path d="M 280,270 L 280,180" fill="none" stroke="#94a3b8" stroke-width="3"/>
+          <circle cx="280" cy="270" r="5" fill="#34d399"/>
           
           <!-- Símbolo Zener -->
-          <!-- Triángulo (Cátodo arriba) -->
-          <path d="M 255,180 L 305,180 L 280,140 Z" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
-          <!-- Barra Zener con aletas -->
-          <path d="M 250,140 L 310,140" fill="none" stroke="currentColor" stroke-width="3"/>
-          <path d="M 250,140 L 250,125" fill="none" stroke="currentColor" stroke-width="3"/>
-          <path d="M 310,140 L 310,155" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M 255,180 L 305,180 L 280,140 Z" fill="#1e293b" stroke="#94a3b8" stroke-width="3"/>
+          <path d="M 250,140 L 310,140" fill="none" stroke="#94a3b8" stroke-width="3"/>
+          <path d="M 250,140 L 250,125" fill="none" stroke="#94a3b8" stroke-width="3"/>
+          <path d="M 310,140 L 310,155" fill="none" stroke="#94a3b8" stroke-width="3"/>
           
           <text x="235" y="165" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">Dz</text>
-          <text id="svg-vz-val" x="235" y="185" fill="#94a3b8" font-size="12" font-family="monospace" text-anchor="end">-- V</text>
+          <text id="svg-iz-val" x="235" y="185" fill="#94a3b8" font-size="12" font-family="monospace" text-anchor="end">Iz: -- mA</text>
 
-          <!-- Carga (Load RL) -->
-          <path d="M 400,80 L 400,120" fill="none" stroke="#4ade80" stroke-width="3"/>
-          <path d="M 400,270 L 400,230" fill="none" stroke="#4ade80" stroke-width="3"/>
-          <circle cx="400" cy="270" r="5" fill="#4ade80"/> <!-- Nodo GND Carga -->
+          <!-- Rama Carga -->
+          <path d="M 400,80 L 400,120" fill="none" stroke="#34d399" stroke-width="3"/>
+          <path d="M 400,270 L 400,230" fill="none" stroke="#34d399" stroke-width="3"/>
+          <circle cx="400" cy="270" r="5" fill="#34d399"/>
           
-          <rect x="385" y="120" width="30" height="110" fill="#1e293b" stroke="#4ade80" stroke-width="3" class="glow-green"/>
+          <rect x="385" y="120" width="30" height="110" fill="#1e293b" stroke="#34d399" stroke-width="3" class="glow-green"/>
           <text x="430" y="170" fill="#ffffff" font-size="16" font-family="monospace" font-weight="bold">Load</text>
-          <text id="svg-il-val" x="430" y="190" fill="#4ade80" font-size="12" font-family="monospace">-- mA</text>
+          <text id="svg-il-val" x="430" y="190" fill="#34d399" font-size="12" font-family="monospace">-- mA</text>
 
-          <!-- Terminales Salida (Vout) -->
-          <circle cx="460" cy="80" r="5" fill="#f0a070" class="glow-orange"/>
-          <text x="475" y="75" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold">Vout</text>
+          <!-- Vout -->
+          <circle cx="460" cy="80" r="5" fill="#f97316" class="glow-orange"/>
+          <text x="475" y="75" fill="#fb923c" font-size="16" font-family="monospace" font-weight="bold">Vout</text>
+          <text id="svg-vz-val" x="475" y="95" fill="#fb923c" font-size="12" font-family="monospace">-- V</text>
           
-          <!-- Flechas de corriente (Estéticas) -->
+          <!-- Flechas -->
           <path d="M 80,65 L 95,80 L 80,95" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.6"/>
-          <path d="M 230,65 L 245,80 L 230,95" fill="none" stroke="#f0a070" stroke-width="2" opacity="0.6"/>
-          <path d="M 265,100 L 280,115 L 295,100" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+          <path d="M 230,65 L 245,80 L 230,95" fill="none" stroke="#f97316" stroke-width="2" opacity="0.6"/>
+          <path d="M 265,100 L 280,115 L 295,100" fill="none" stroke="#94a3b8" stroke-width="2" opacity="0.6"/>
 
         </svg>
 
-        <!-- Mensaje de Error en Overlay -->
-        <div id="error-overlay" class="hidden absolute inset-0 bg-[#0f172a]/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-10 transition-opacity">
+        <!-- Overlay de Error -->
+        <div id="error-overlay" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-10 transition-opacity">
           <i class="fa-solid fa-triangle-exclamation text-rose-500 text-3xl mb-3"></i>
           <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-1">Configuración Inválida</h3>
           <p id="error-msg" class="text-xs text-slate-400">El voltaje de entrada debe ser mayor al voltaje Zener.</p>
@@ -211,49 +230,58 @@
 
       </div>
 
-      <!-- ================= COL 3: RESULTADOS ================= -->
+      <!-- COL 3: RESULTADOS BIDIRECCIONALES -->
       <div class="lg:col-span-3 flex flex-col gap-4">
-        <h2 class="text-xs font-bold text-[#10b981] uppercase tracking-widest border-b border-[#334155] pb-2">Resultados (Comercial)</h2>
+        <h2 class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest border-b border-slate-800 pb-2">Resultados Dinámicos</h2>
 
-        <!-- Resistor Card -->
-        <div class="bg-[#0f172a] border border-[#10b981]/50 rounded-2xl p-4 shadow-[0_0_15px_rgba(16,185,129,0.1)] flex flex-col">
+        <!-- Resistencia Serie Editable con referencias -->
+        <div class="bg-slate-950 border border-emerald-500/40 rounded-2xl p-4 shadow-[0_0_15px_rgba(16,185,129,0.08)] flex flex-col relative focus-within:border-emerald-400 transition-colors">
           <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span> Resistencia Serie (Rs)
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Resistencia Serie (Rs)
           </span>
-          <div class="flex items-baseline gap-2">
-            <span id="out-rs-e12" class="text-3xl font-mono font-black text-white tracking-tight">--</span>
+          <div class="flex items-center gap-1">
+            <input type="number" id="val-rs" class="input-ghost text-3xl sm:text-4xl font-mono font-black text-emerald-400 tracking-tight" placeholder="0" min="0" step="any">
+            <span class="text-xl sm:text-2xl text-emerald-500/50 font-bold">Ω</span>
           </div>
-          <div class="flex justify-between items-center mt-2 border-t border-[#334155] pt-2">
-            <span class="text-[10px] text-slate-500">Calculado exacto:</span>
-            <span id="out-rs-exact" class="text-[11px] font-mono text-slate-300">-- Ω</span>
+          
+          <div class="flex flex-col gap-1.5 mt-3 border-t border-slate-800/80 pt-3">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] text-slate-500">Comercial sugerido (E24):</span>
+              <button type="button" id="btn-use-suggested" class="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded hover:bg-emerald-900/50 transition-colors" title="Clic para usar este valor">
+                <span id="out-rs-suggested">-- Ω</span>
+              </button>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] text-slate-500">Valor teórico ideal:</span>
+              <span id="out-rs-exact" class="text-[11px] font-mono text-slate-300">-- Ω</span>
+            </div>
           </div>
+          <p class="text-[9px] text-emerald-500/70 mt-2 leading-tight">Puedes editar el valor principal arriba para analizar el circuito con una resistencia específica.</p>
         </div>
 
-        <!-- Potencia Resistor Card -->
-        <div class="bg-[#0f172a] border border-[#334155] rounded-2xl p-4 flex flex-col">
-          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-1">
-            <i class="fa-solid fa-fire text-amber-500/80"></i> Potencia en Rs (PR)
+        <!-- Corriente Zener Real -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col">
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between mb-1">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-trend-down text-cyan-400"></i> Corriente Zener (Iz)</span>
           </span>
           <div class="flex items-baseline gap-2">
-            <span id="out-pr" class="text-xl font-mono font-bold text-[#f0a070]">-- mW</span>
+            <span id="out-iz-real" class="text-xl font-mono font-bold text-white">-- mA</span>
           </div>
-          <div class="mt-1">
-            <span class="text-[10px] text-slate-500">Mínimo sugerido:</span>
-            <span id="out-pr-watt" class="text-xs font-bold text-white ml-1 bg-[#1e293b] px-2 py-0.5 rounded-md border border-[#334155]">-- W</span>
-          </div>
-        </div>
-
-        <!-- Potencia Zener Card -->
-        <div class="bg-[#0f172a] border border-[#334155] rounded-2xl p-4 flex flex-col">
-          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-1">
-            <i class="fa-solid fa-bolt text-[#60a5fa]/80"></i> Potencia Zener Máx. (Pz)
-          </span>
-          <div class="flex items-baseline gap-2">
-            <span id="out-pz" class="text-xl font-mono font-bold text-[#60a5fa]">-- mW</span>
-          </div>
-          <p class="text-[9.5px] text-slate-500 leading-tight mt-1.5">
-            Potencia que disipa el Zener si se desconecta la carga (IL = 0).
+          <p id="iz-warning" class="hidden text-[10px] text-rose-400 leading-tight mt-1 font-semibold">
+            ⚠️ Corriente insuficiente. El Zener podría no regular.
           </p>
+        </div>
+
+        <!-- Potencias -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 flex flex-col">
+            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1"><i class="fa-solid fa-fire text-orange-400"></i> PR (Mínimo)</span>
+            <span id="out-pr-watt" class="text-xs font-mono font-bold text-orange-400">-- W</span>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 flex flex-col">
+            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1"><i class="fa-solid fa-bolt text-cyan-400"></i> Pz Máx.</span>
+            <span id="out-pz" class="text-xs font-mono font-bold text-cyan-400">-- mW</span>
+          </div>
         </div>
 
       </div>
@@ -262,35 +290,29 @@
   </div>
 </main>
 
-<!-- Load FontAwesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <script>
 (() => {
   'use strict';
 
-  // Lógica Serie E12
-  const e12Base = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
-  
-  // Para Zener, es más seguro elegir la resistencia E12 INMEDIATA INFERIOR para garantizar la corriente,
-  // pero el estándar general usa la más cercana. Usaremos la más cercana para mantener consistencia.
-  function getClosestE12Val(val) {
+  function getLowerStandardVal(val) {
     if (!val || val <= 0 || !isFinite(val)) return 0;
+    const e24 = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
+    
     let mag = Math.pow(10, Math.floor(Math.log10(val)));
     let norm = val / mag;
+    let chosen = e24[0];
     
-    let closest = e12Base[0];
-    let minDiff = Math.abs(norm - closest);
-    for (let i = 1; i < e12Base.length; i++) {
-        let diff = Math.abs(norm - e12Base[i]);
-        if (diff < minDiff) {
-            minDiff = diff;
-            closest = e12Base[i];
+    for (let i = e24.length - 1; i >= 0; i--) {
+        if (e24[i] <= norm + 0.001) {
+            chosen = e24[i];
+            break;
         }
     }
-    if (Math.abs(norm - 10.0) < minDiff) closest = 10.0;
-    
-    return closest * mag;
+    if (norm < e24[0] - 0.001) {
+        mag /= 10;
+        chosen = e24[e24.length - 1];
+    }
+    return chosen * mag;
   }
 
   function formatResistor(ohms) {
@@ -299,119 +321,126 @@
     return ohms.toFixed(1).replace(/\.0$/, '') + ' Ω';
   }
 
-  function formatPower(watts) {
-    if (watts < 1) return (watts * 1000).toFixed(1) + ' mW';
-    return watts.toFixed(2) + ' W';
-  }
-
-  function getStandardWattage(watts) {
-    const standards = [0.25, 0.5, 1, 2, 3, 5, 10, 20];
-    // Se recomienda un margen de seguridad del 50% al 100% sobre la potencia calculada
-    const safeWatts = watts * 1.5; 
-    for (let w of standards) {
-      if (w >= safeWatts) return w >= 1 ? w + ' W' : '1/' + (1/w) + ' W';
-    }
-    return Math.ceil(safeWatts) + ' W';
-  }
-
-  // DOM Elements
-  const inputs = {
+  const dom = {
     vin: document.getElementById('val-vin'),
     vz: document.getElementById('val-vz'),
     il: document.getElementById('val-il'),
-    izmin: document.getElementById('val-izmin')
-  };
+    izmin: document.getElementById('val-izmin'),
+    rs: document.getElementById('val-rs'), 
 
-  const outputs = {
-    rs_e12: document.getElementById('out-rs-e12'),
     rs_exact: document.getElementById('out-rs-exact'),
-    pr: document.getElementById('out-pr'),
+    rs_suggested: document.getElementById('out-rs-suggested'),
+    btn_use_suggested: document.getElementById('btn-use-suggested'),
+    iz_real: document.getElementById('out-iz-real'),
+    iz_warning: document.getElementById('iz-warning'),
     pr_watt: document.getElementById('out-pr-watt'),
-    pz: document.getElementById('out-pz')
+    pz: document.getElementById('out-pz'),
+
+    svg_rs: document.getElementById('svg-rs-val'),
+    svg_vz: document.getElementById('svg-vz-val'),
+    svg_il: document.getElementById('svg-il-val'),
+    svg_iz: document.getElementById('svg-iz-val'),
+
+    overlay: document.getElementById('error-overlay'),
+    errorMsg: document.getElementById('error-msg')
   };
 
-  const svgText = {
-    rs: document.getElementById('svg-rs-val'),
-    vz: document.getElementById('svg-vz-val'),
-    il: document.getElementById('svg-il-val')
-  };
-
-  const errorOverlay = document.getElementById('error-overlay');
-  const errorMsg = document.getElementById('error-msg');
+  let lastCalculatedSuggestedRs = 0;
 
   function showError(msg) {
-    errorMsg.textContent = msg;
-    errorOverlay.classList.remove('hidden');
-    
-    // Clear outputs
-    outputs.rs_e12.textContent = '--';
-    outputs.rs_exact.textContent = '-- Ω';
-    outputs.pr.textContent = '-- mW';
-    outputs.pr_watt.textContent = '-- W';
-    outputs.pz.textContent = '-- mW';
-    svgText.rs.textContent = '-- Ω';
+    dom.errorMsg.textContent = msg;
+    dom.overlay.classList.remove('hidden');
   }
 
   function hideError() {
-    errorOverlay.classList.add('hidden');
+    dom.overlay.classList.add('hidden');
   }
 
-  function calculateZener() {
-    const vin = parseFloat(inputs.vin.value);
-    const vz = parseFloat(inputs.vz.value);
-    const il = parseFloat(inputs.il.value) / 1000; // a Amperes
-    const izmin = parseFloat(inputs.izmin.value) / 1000; // a Amperes
+  function calculateRsFromBase() {
+    const vin = parseFloat(dom.vin.value);
+    const vz = parseFloat(dom.vz.value);
+    const il = parseFloat(dom.il.value) / 1000;
+    const izmin = parseFloat(dom.izmin.value) / 1000;
 
-    // Update SVG Text purely visual
-    svgText.vz.textContent = (vz || 0) + ' V';
-    svgText.il.textContent = (inputs.il.value || 0) + ' mA';
+    dom.svg_vz.textContent = (vz || 0) + ' V';
+    dom.svg_il.textContent = (dom.il.value || 0) + ' mA';
 
-    // Validations
     if (isNaN(vin) || isNaN(vz) || isNaN(il) || isNaN(izmin)) return hideError();
-    if (vin <= vz) return showError('El voltaje de entrada (Vin) debe ser estrictamente mayor al voltaje Zener (Vz).');
+    if (vin <= vz) return showError('Vin debe ser mayor a Vz.');
     if (vin <= 0 || vz <= 0) return showError('Los voltajes deben ser mayores a 0.');
-    
     hideError();
 
-    // 1. Calcular Rs Exacta
-    const iTotal = il + izmin;
-    const rsExact = (vin - vz) / iTotal;
+    const rsExact = (vin - vz) / (il + izmin);
+    dom.rs_exact.textContent = formatResistor(rsExact);
 
-    // 2. Obtener Rs Comercial E12
-    const rsE12 = getClosestE12Val(rsExact);
-
-    // 3. Recalcular corrientes reales con la Rs Comercial
-    // Corriente máxima de Zener ocurre cuando la carga se desconecta (IL = 0)
-    const izMax = (vin - vz) / rsE12; 
+    lastCalculatedSuggestedRs = getLowerStandardVal(rsExact);
+    dom.rs_suggested.textContent = formatResistor(lastCalculatedSuggestedRs);
     
-    // Corriente total real fluyendo por Rs
-    const currentThroughRs = izMax; // (Vin - Vz) / RsE12
-
-    // 4. Calcular Potencias
-    const prReal = Math.pow(vin - vz, 2) / rsE12; // PR = V^2 / R
-    const pzMax = vz * izMax; // PZ = Vz * Iz_max
-
-    // Update UI
-    const strE12 = formatResistor(rsE12);
-    outputs.rs_e12.textContent = strE12;
-    outputs.rs_exact.textContent = formatResistor(rsExact);
+    dom.rs.value = lastCalculatedSuggestedRs; 
     
-    outputs.pr.textContent = formatPower(prReal);
-    outputs.pr_watt.textContent = getStandardWattage(prReal);
-    
-    outputs.pz.textContent = formatPower(pzMax);
-    
-    // Update SVG
-    svgText.rs.textContent = strE12;
+    analyzeCircuitWithRs();
   }
 
-  // Event Listeners
-  Object.values(inputs).forEach(input => {
-    input.addEventListener('input', calculateZener);
+  function analyzeCircuitWithRs() {
+    const vin = parseFloat(dom.vin.value);
+    const vz = parseFloat(dom.vz.value);
+    const il = parseFloat(dom.il.value) / 1000;
+    const izmin = parseFloat(dom.izmin.value) / 1000;
+    const rsUser = parseFloat(dom.rs.value);
+
+    dom.svg_vz.textContent = (vz || 0) + ' V';
+    dom.svg_il.textContent = (dom.il.value || 0) + ' mA';
+
+    if (isNaN(vin) || isNaN(vz) || isNaN(rsUser) || rsUser <= 0) return;
+
+    const izReal = ((vin - vz) / rsUser) - il;
+    
+    const prReal = Math.pow(vin - vz, 2) / rsUser; 
+    const izMax = (vin - vz) / rsUser;
+    const pzMax = vz * izMax;
+
+    const izRealmA = izReal * 1000;
+    dom.iz_real.textContent = izRealmA.toFixed(1) + ' mA';
+    
+    if (izReal < izmin) {
+        dom.iz_real.classList.replace('text-white', 'text-rose-400');
+        dom.iz_warning.classList.remove('hidden');
+    } else {
+        dom.iz_real.classList.replace('text-rose-400', 'text-white');
+        dom.iz_warning.classList.add('hidden');
+    }
+
+    const standards = [0.25, 0.5, 1, 2, 3, 5, 10, 20];
+    const safeWatts = prReal * 1.5;
+    let standardWattStr = Math.ceil(safeWatts) + ' W';
+    for (let w of standards) {
+      if (w >= safeWatts) {
+        standardWattStr = w >= 1 ? w + ' W' : '1/' + (1/w) + ' W';
+        break;
+      }
+    }
+
+    dom.pr_watt.textContent = standardWattStr;
+    dom.pz.textContent = (pzMax * 1000).toFixed(0) + ' mW';
+    
+    dom.svg_rs.textContent = formatResistor(rsUser);
+    dom.svg_iz.textContent = 'Iz: ' + izRealmA.toFixed(1) + ' mA';
+  }
+
+  ['vin', 'vz', 'il', 'izmin'].forEach(id => {
+    dom[id].addEventListener('input', calculateRsFromBase);
   });
 
-  // Init
-  calculateZener();
+  dom.rs.addEventListener('input', analyzeCircuitWithRs);
+
+  dom.btn_use_suggested.addEventListener('click', () => {
+    if (lastCalculatedSuggestedRs > 0) {
+      dom.rs.value = lastCalculatedSuggestedRs;
+      analyzeCircuitWithRs();
+    }
+  });
+
+  calculateRsFromBase();
 
 })();
 </script>

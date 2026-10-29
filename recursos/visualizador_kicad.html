@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f172a">
+<title>Lector KiCad</title>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Motor KiCanvas (Importación nativa por módulo) -->
+<script type="module" src="https://kicanvas.org/kicanvas/kicanvas.js"></script>
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          slate: { 950: '#0f172a', 900: '#1e293b', 800: '#334155', 700: '#475569' },
+          cyan: { 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb' },
+        }
+      }
+    }
+  };
+</script>
+
+<style>
+  *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+  html { scrollbar-color: #334155 #0f172a; scrollbar-width: thin; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+  /* Estilos específicos para sobreescribir el contenedor de KiCanvas si es necesario */
+  kicanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    outline: none;
+  }
+</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased flex flex-col overflow-hidden">
+
+<!-- HEADER -->
+<header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md flex-shrink-0 z-20">
+  <div class="px-4 sm:px-6 h-14 flex items-center justify-between">
+    <div class="flex items-center space-x-3 group cursor-pointer transition-all">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+        <i class="fa-solid fa-microchip text-white text-sm"></i>
+      </div>
+      <h1 class="text-sm font-extrabold text-white tracking-tight">Lector KiCad</h1>
+    </div>
+    <div class="hidden sm:flex items-center space-x-2 text-[10px] text-slate-400 bg-slate-950/60 px-2.5 py-1 rounded-full border border-slate-800">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span class="font-bold uppercase tracking-wider">Motor WebGL Activo</span>
+    </div>
+  </div>
+</header>
+
+<!-- LAYOUT PRINCIPAL -->
+<main class="flex-1 flex flex-col md:flex-row w-full h-[calc(100vh-3.5rem)] overflow-hidden">
+  
+  <!-- PANEL LATERAL -->
+  <aside class="w-full md:w-80 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 z-10 overflow-y-auto">
+    <div class="p-4 space-y-4">
+      
+      <!-- ZONA DE CARGA -->
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 shadow-inner">
+        <h2 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Cargar Archivo</h2>
+        <label id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-cyan-500 bg-slate-900 hover:bg-slate-800 transition-all rounded-lg min-h-[100px] flex flex-col items-center justify-center p-4 cursor-pointer group">
+          <i class="fa-solid fa-file-import text-2xl text-slate-500 group-hover:text-cyan-400 mb-2 transition-colors"></i>
+          <span class="text-xs font-semibold text-slate-300 text-center">Selecciona o arrastra tu archivo</span>
+          <span class="text-[10px] text-slate-500 mt-1">.kicad_sch o .kicad_pcb</span>
+          <input type="file" id="file-input" accept=".kicad_sch,.kicad_pcb" class="hidden">
+        </label>
+      </div>
+
+      <!-- INFORMACIÓN DEL ARCHIVO -->
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 shadow-inner space-y-2">
+        <h2 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Detalles del Proyecto</h2>
+        <div class="flex justify-between items-center border-b border-slate-800/80 pb-2">
+          <span class="text-[11px] text-slate-500">Nombre:</span>
+          <span id="info-name" class="text-[11px] font-mono font-bold text-slate-200 truncate max-w-[150px]">—</span>
+        </div>
+        <div class="flex justify-between items-center border-b border-slate-800/80 pb-2">
+          <span class="text-[11px] text-slate-500">Tipo:</span>
+          <span id="info-type" class="text-[11px] font-mono font-bold text-cyan-400">—</span>
+        </div>
+        <div class="flex justify-between items-center pb-1">
+          <span class="text-[11px] text-slate-500">Tamaño:</span>
+          <span id="info-size" class="text-[11px] font-mono font-bold text-slate-200">—</span>
+        </div>
+      </div>
+
+      <!-- CONTROLES EXTRA (Guía) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-keyboard mr-1.5"></i>Controles</h3>
+        <ul class="text-[10px] text-slate-400 space-y-1.5 ml-1">
+          <li>• <strong class="text-slate-300">Rueda del ratón:</strong> Zoom In/Out</li>
+          <li>• <strong class="text-slate-300">Clic Izquierdo + Arrastrar:</strong> Desplazar</li>
+          <li>• <strong class="text-slate-300">Panel inferior:</strong> Gestión de Capas</li>
+        </ul>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- CONTENEDOR DEL VISOR (KiCanvas) -->
+  <div class="flex-1 relative bg-[#0f172a] shadow-inner overflow-hidden flex items-center justify-center" id="viewer-container">
+    
+    <!-- Estado vacío -->
+    <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 transition-opacity">
+      <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-3 shadow-xl">
+        <i class="fa-solid fa-route text-3xl text-slate-600"></i>
+      </div>
+      <p class="text-sm font-bold text-slate-400">Esperando archivo KiCad...</p>
+    </div>
+
+    <!-- El elemento personalizado de KiCanvas. controls="bottom" ancla el menú de capas abajo. theme="dark" fuerza el modo oscuro. -->
+    <kicanvas id="kicad-viewer" controls="bottom" theme="dark" class="opacity-0 transition-opacity duration-300 z-0"></kicanvas>
+    
+  </div>
+
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  const dom = {
+    fileInput: document.getElementById('file-input'),
+    dropZone: document.getElementById('drop-zone'),
+    viewer: document.getElementById('kicad-viewer'),
+    emptyState: document.getElementById('empty-state'),
+    infoName: document.getElementById('info-name'),
+    infoType: document.getElementById('info-type'),
+    infoSize: document.getElementById('info-size'),
+  };
+
+  let currentObjectUrl = null;
+
+  // Formatear tamaño de bytes a KB/MB
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Cargar el archivo en el visor
+  const loadFile = (file) => {
+    if (!file) return;
+
+    // Extraer extensión
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext !== 'kicad_sch' && ext !== 'kicad_pcb') {
+      alert('Por favor, selecciona un archivo válido de KiCad (.kicad_sch o .kicad_pcb)');
+      return;
+    }
+
+    // Actualizar UI
+    dom.infoName.textContent = file.name;
+    dom.infoName.title = file.name;
+    dom.infoType.textContent = ext === 'kicad_sch' ? 'Esquema (SCH)' : 'Placa (PCB)';
+    dom.infoSize.textContent = formatBytes(file.size);
+
+    dom.emptyState.classList.add('opacity-0');
+    
+    // Limpiar URL anterior en memoria para evitar fugas
+    if (currentObjectUrl) {
+      URL.revokeObjectURL(currentObjectUrl);
+    }
+
+    // Crear un Blob URL local del archivo cargado y pasarlo a KiCanvas
+    currentObjectUrl = URL.createObjectURL(file);
+    dom.viewer.setAttribute('src', currentObjectUrl);
+    
+    // Mostrar el canvas
+    setTimeout(() => {
+      dom.viewer.classList.remove('opacity-0');
+      dom.viewer.classList.add('opacity-100');
+    }, 150);
+  };
+
+  // Evento: Input File
+  dom.fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      loadFile(e.target.files[0]);
+    }
+  });
+
+  // Eventos: Drag & Drop
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    document.body.addEventListener(eventName, (e) => e.preventDefault(), false);
+  });
+
+  dom.dropZone.addEventListener('dragover', () => dom.dropZone.classList.add('border-cyan-500', 'bg-slate-800'));
+  dom.dropZone.addEventListener('dragleave', () => dom.dropZone.classList.remove('border-cyan-500', 'bg-slate-800'));
+  dom.dropZone.addEventListener('drop', (e) => {
+    dom.dropZone.classList.remove('border-cyan-500', 'bg-slate-800');
+    if (e.dataTransfer.files.length > 0) {
+      loadFile(e.dataTransfer.files[0]);
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
