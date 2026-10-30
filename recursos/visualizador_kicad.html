@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0f172a">
-<title>Lector KiCad | RobCorp</title>
+<title>Lector KiCad</title>
 
 <!-- Favicon apuntando a tu archivo de icono -->
-<link id="favicon" rel="icon" type="image/svg+xml" href="/iconos/lectorkicad.svg">
+<link id="favicon" rel="icon" type="image/svg+xml" href="/iconos/kicad.svg">
 
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -39,15 +39,22 @@
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-  kicanvas {
-    display: block;
+  kicanvas-embed {
     width: 100%;
     height: 100%;
     outline: none;
   }
 </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased flex flex-col overflow-hidden">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ESQB0M5W6R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ESQB0M5W6R');
+</script><body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased flex flex-col overflow-hidden">
 
 <!-- HEADER -->
 <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30 flex-shrink-0">
@@ -55,7 +62,7 @@
     
     <!-- Título y Logo dependiente del archivo -->
     <a href="/index.html" class="flex items-center space-x-3 group rounded-xl p-1 transition-all" title="Ir a inicio">
-      <img src="/iconos/lectorkicad.svg" alt="" class="w-8 h-8 group-hover:scale-105 transition-transform duration-200" aria-hidden="true">
+      <img src="/iconos/kicad.svg" alt="" class="w-8 h-8 group-hover:scale-105 transition-transform duration-200" aria-hidden="true">
       <h1 class="text-xl font-extrabold text-white tracking-tight group-hover:text-cyan-300 transition-colors">Lector KiCad</h1>
     </a>
 
@@ -180,26 +187,28 @@
     const oldCanvas = document.getElementById('kicad-viewer');
     if (oldCanvas) oldCanvas.remove();
 
-    // Leer el archivo como texto plano para la inyección por template
+    // Leer el archivo como texto plano
     const reader = new FileReader();
     
     reader.onload = (e) => {
       const fileContent = e.target.result;
-      
-      // Sanitizamos el contenido para evitar que rompa el HTML interno
-      const safeContent = fileContent.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      
-      // Creamos el visor
-      const newViewer = document.createElement('kicanvas');
-      newViewer.id = 'kicad-viewer';
-      newViewer.setAttribute('controls', 'bottom');
-      newViewer.setAttribute('theme', 'dark');
-      newViewer.className = 'opacity-0 transition-opacity duration-700 z-0 w-full h-full';
-      
-      // EL TRUCO OFICIAL: Inyectar un <template> con el tipo correcto
       const type = ext === 'kicad_pcb' ? 'board' : 'schematic';
-      newViewer.innerHTML = `<template type="${type}">${safeContent}</template>`;
-      
+
+      // Se construye con el parser (template) y no con createElement():
+      // evita el error "custom element must not have attributes".
+      const tpl = document.createElement('template');
+      tpl.innerHTML =
+        '<kicanvas-embed id="kicad-viewer" controls="full" controlslist="nooverlay" theme="kicad" ' +
+        'class="opacity-0 transition-opacity duration-700 z-0 w-full h-full">' +
+        '<kicanvas-source></kicanvas-source></kicanvas-embed>';
+      const newViewer = tpl.content.firstElementChild;
+
+      // El contenido entra como texto plano: no hay nada que escapar
+      const source = newViewer.querySelector('kicanvas-source');
+      source.setAttribute('type', type);
+      source.setAttribute('name', file.name);
+      source.textContent = fileContent;
+
       dom.viewerContainer.appendChild(newViewer);
       
       // Le damos un respiro al Web Worker de KiCanvas para que parsee los nodos
@@ -210,6 +219,12 @@
       }, 1500);
     };
     
+    reader.onerror = () => {
+      dom.loadingState.classList.add('hidden');
+      if (dom.emptyState) dom.emptyState.classList.remove('hidden');
+      alert('No se pudo leer el archivo seleccionado.');
+    };
+
     reader.readAsText(file);
   };
 
@@ -218,6 +233,7 @@
      ========================================================= */
   dom.fileInput.addEventListener('change', (e) => {
     if (e.target.files.length > 0) loadFile(e.target.files[0]);
+    e.target.value = ''; // permite volver a seleccionar el mismo archivo
   });
 
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
