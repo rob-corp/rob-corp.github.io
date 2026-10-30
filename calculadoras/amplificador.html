@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f172a">
+<title>Amplificadores operacionales</title>
+<link rel="icon" type="image/svg+xml" href="iconos/union.svg">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          navyBg: '#0f172a',
+          navyCard: '#1e293b',
+          navyBorder: '#334155',
+          cyanAccent: '#3b82f6',
+          cyanGlow: '#60a5fa',
+          amberGlow: '#f0a070',
+          roseGlow: '#f43f5e',
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'Consolas', 'Monaco', 'monospace'],
+        }
+      }
+    }
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 12px; 
+  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none; appearance: none; margin: 0;
+  }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+  }
+  select::-ms-expand { display: none; }
+
+  .glow-svg { filter: drop-shadow(0 0 12px rgba(96,165,250,0.3)); }
+  .glow-orange { filter: drop-shadow(0 0 12px rgba(240,160,112,0.4)); }
+
+  .tab-btn { transition: all 0.3s ease; }
+  .tab-active { background-color: #3b82f6; color: #0f172a; border-color: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.3); }
+  .tab-inactive { background-color: #1e293b; color: #94a3b8; border-color: #334155; }
+  .tab-inactive:hover { background-color: #334155; color: #f8fafc; }
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ESQB0M5W6R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-ESQB0M5W6R');
+</script>
+<body class="bg-[#0f172a] text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-[#3b82f6] selection:text-[#0f172a]">
+
+<header class="bg-[#0f172a] border-b border-[#334155] sticky top-0 z-50 px-4 py-3.5 sm:px-8 shadow-lg shadow-black/30">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="/index.html" class="inline-flex items-center gap-3.5 group">
+      <div class="w-10 h-10 flex items-center justify-center bg-[#1e293b] border border-[#3b82f6]/60 rounded-xl p-1.5 transition-colors group-hover:border-[#3b82f6]">
+        <img src="iconos/union.svg" alt="" class="w-full h-full object-contain" aria-hidden="true" width="40" height="40">
+      </div>
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#60a5fa] transition-colors">
+        Amplificadores operacionales
+      </h1>
+    </a>
+  </div>
+</header>
+
+<main class="flex-grow w-full max-w-[1400px] mx-auto px-4 py-8 sm:px-8 flex flex-col items-center">
+
+  <div class="w-full bg-[#1e293b] border border-[#334155] rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/40">
+    
+    <!-- Selector de Topología -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 border-b border-[#334155] pb-8">
+      <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mr-0 sm:mr-4">Topología:</h2>
+      <div class="flex bg-[#0f172a] p-1.5 rounded-2xl border border-[#334155] w-full sm:w-auto">
+        <button id="btn-inv" class="tab-btn tab-active flex-1 sm:w-48 py-2.5 rounded-xl text-sm font-bold tracking-wide uppercase">
+          Inversor
+        </button>
+        <button id="btn-noninv" class="tab-btn tab-inactive flex-1 sm:w-48 py-2.5 rounded-xl text-sm font-bold tracking-wide uppercase">
+          No Inversor
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- ================= COL 1: ENTRADAS ================= -->
+      <div class="lg:col-span-3 flex flex-col gap-5">
+        
+        <div class="flex items-center gap-2 border-b border-[#334155] pb-2">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Señal y Salida</h2>
+          <span class="bg-[#3b82f6]/20 text-[#60a5fa] text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Bidireccional</span>
+        </div>
+        
+        <!-- Vin -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> Voltaje Entrada (Vin)
+          </label>
+          <div class="relative">
+            <input type="number" id="val-vin" value="1.5" step="any" class="w-full bg-[#0f172a] border border-[#334155] rounded-xl pl-3.5 pr-10 py-2.5 text-white font-mono text-base focus:border-[#3b82f6] transition-colors outline-none">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">V</span>
+          </div>
+        </div>
+
+        <!-- Vout -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#f0a070]"></span> Voltaje Salida (Vout)
+          </label>
+          <div class="relative group">
+            <input type="number" id="val-vout" value="-3.0" step="any" class="w-full bg-[#0f172a] border border-[#334155] rounded-xl pl-3.5 pr-10 py-2.5 text-white font-mono text-base focus:border-[#3b82f6] hover:border-[#60a5fa]/50 transition-colors outline-none">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">V</span>
+          </div>
+          <p class="text-[9.5px] text-slate-500 leading-tight">Editá la salida deseada y Rf se ajustará automáticamente.</p>
+        </div>
+
+        <!-- Resistencias -->
+        <div class="flex items-center gap-2 border-b border-[#334155] pb-2 mt-2">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Red de Resistencias</h2>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+            Resistencia Entrada (R1/Rin)
+          </label>
+          <div class="flex gap-2">
+            <input type="number" id="val-rin" value="10" min="0.001" step="any" class="w-full bg-[#0f172a] border border-[#334155] rounded-xl pl-3.5 pr-3 py-2.5 text-slate-300 font-mono text-sm focus:border-[#3b82f6] transition-colors outline-none">
+            <select id="unit-rin" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl pl-3 pr-8 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors outline-none">
+              <option value="1">Ω</option>
+              <option value="1000" selected>kΩ</option>
+            </select>
+          </div>
+          <div class="text-[10px] text-slate-400 font-medium ml-1">E12: <span id="e12-rin" class="text-[#60a5fa] font-mono">--</span></div>
+        </div>
+
+        <div class="space-y-1 p-3 bg-[#1e293b] border border-[#3b82f6]/30 rounded-xl">
+          <label class="text-[11px] font-bold text-[#60a5fa] uppercase tracking-wider flex items-center gap-2">
+            Resistencia Feedback (Rf)
+          </label>
+          <div class="flex gap-2 mb-1">
+            <input type="number" id="val-rf" value="20" min="0" step="any" class="w-full bg-[#0f172a] border border-[#3b82f6]/50 rounded-xl pl-3.5 pr-3 py-2.5 text-white font-mono text-base focus:border-[#3b82f6] focus:bg-[#1e293b] hover:border-[#60a5fa]/80 transition-colors outline-none">
+            <select id="unit-rf" class="shrink-0 bg-[#334155] border border-[#334155] rounded-xl pl-3 pr-8 py-2.5 text-white font-bold focus:border-[#3b82f6] transition-colors outline-none">
+              <option value="1">Ω</option>
+              <option value="1000" selected>kΩ</option>
+            </select>
+          </div>
+          <div class="text-[10px] text-slate-300 font-medium ml-1">E12: <span id="e12-rf" class="text-emerald-400 font-mono">--</span></div>
+        </div>
+
+      </div>
+
+      <!-- ================= COL 2: ESQUEMA CENTRAL ================= -->
+      <div class="lg:col-span-6 flex flex-col justify-center bg-[#0f172a] rounded-2xl border border-[#334155] p-6 shadow-inner h-full min-h-[420px] relative overflow-hidden">
+        
+        <div class="absolute top-4 left-6 z-10 flex flex-col gap-2">
+          <div class="flex items-center gap-2 bg-[#1e293b] border border-[#ef4444]/40 px-2 py-1 rounded-lg">
+            <span class="text-[9px] font-bold text-[#ef4444] uppercase tracking-widest">+Vcc</span>
+            <input type="number" id="val-vcc" value="15" class="w-12 bg-transparent text-white font-mono text-xs outline-none text-right">
+            <span class="text-[9px] text-slate-400">V</span>
+          </div>
+          <div class="flex items-center gap-2 bg-[#1e293b] border border-[#3b82f6]/40 px-2 py-1 rounded-lg">
+            <span class="text-[9px] font-bold text-[#3b82f6] uppercase tracking-widest">-Vee</span>
+            <input type="number" id="val-vee" value="-15" class="w-12 bg-transparent text-white font-mono text-xs outline-none text-right">
+            <span class="text-[9px] text-slate-400">V</span>
+          </div>
+        </div>
+
+        <!-- SVG INVERSOR -->
+        <svg id="svg-inv" viewBox="0 0 550 350" class="w-full h-auto max-h-[350px] mx-auto text-[#60a5fa] transition-opacity duration-300 mt-2">
+          <!-- OpAmp Triangle -->
+          <path d="M 220,120 L 220,240 L 340,180 Z" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
+          <text x="260" y="185" fill="#ffffff" font-size="16" font-family="sans-serif" font-weight="bold">Op-Amp</text>
+          
+          <path d="M 230,150 L 245,150" fill="none" stroke="#94a3b8" stroke-width="2"/>
+          <path d="M 230,210 L 245,210" fill="none" stroke="#94a3b8" stroke-width="2"/>
+          <path d="M 237.5,202.5 L 237.5,217.5" fill="none" stroke="#94a3b8" stroke-width="2"/>
+
+          <path d="M 260,140 L 260,110" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.6"/>
+          <text x="260" y="100" fill="#ef4444" font-size="10" text-anchor="middle" font-family="monospace">+Vcc</text>
+          <path d="M 260,220 L 260,250" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.6"/>
+          <text x="260" y="265" fill="#3b82f6" font-size="10" text-anchor="middle" font-family="monospace">-Vee</text>
+
+          <path d="M 220,210 L 180,210 L 180,270" fill="none" stroke="currentColor" stroke-width="3"/>
+          
+          <!-- GND Corregido (Punto limpio) -->
+          <circle cx="180" cy="270" r="4" fill="#4ade80"/>
+          <text x="170" y="275" fill="#4ade80" font-size="12" font-family="monospace" text-anchor="end">GND</text>
+
+          <circle cx="40" cy="150" r="5" fill="#3b82f6" class="glow-svg"/>
+          <text x="30" y="155" fill="#60a5fa" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">Vin</text>
+          <text id="lbl-inv-vin" x="40" y="130" fill="#60a5fa" font-size="12" font-family="monospace" text-anchor="middle">1.5 V</text>
+
+          <path d="M 40,150 L 90,150" fill="none" stroke="#3b82f6" stroke-width="3"/>
+          <rect x="90" y="135" width="60" height="30" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
+          <path d="M 150,150 L 220,150" fill="none" stroke="currentColor" stroke-width="3"/>
+          
+          <text x="120" y="125" fill="#ffffff" font-size="14" font-family="monospace" font-weight="bold" text-anchor="middle">Rin</text>
+          <text id="lbl-inv-rin" x="120" y="155" fill="#60a5fa" font-size="11" font-family="monospace" text-anchor="middle">10 kΩ</text>
+
+          <circle cx="180" cy="150" r="4" fill="currentColor"/>
+          <path d="M 180,150 L 180,70 L 250,70" fill="none" stroke="currentColor" stroke-width="3"/>
+          
+          <rect x="250" y="55" width="60" height="30" fill="#1e293b" stroke="#f0a070" stroke-width="3" class="glow-orange"/>
+          <text x="280" y="45" fill="#ffffff" font-size="14" font-family="monospace" font-weight="bold" text-anchor="middle">Rf</text>
+          <text id="lbl-inv-rf" x="280" y="75" fill="#f0a070" font-size="11" font-family="monospace" text-anchor="middle">20 kΩ</text>
+
+          <path d="M 310,70 L 380,70 L 380,180" fill="none" stroke="#f0a070" stroke-width="3"/>
+          <circle cx="380" cy="180" r="4" fill="#f0a070"/>
+
+          <path d="M 340,180 L 460,180" fill="none" stroke="#f0a070" stroke-width="4"/>
+          <circle cx="460" cy="180" r="5" fill="#f0a070" class="glow-orange"/>
+          <text x="475" y="175" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold">Vout</text>
+          <text id="lbl-inv-vout" x="475" y="195" fill="#f0a070" font-size="14" font-family="monospace">-3.00 V</text>
+        </svg>
+
+        <!-- SVG NO INVERSOR -->
+        <svg id="svg-noninv" viewBox="0 0 550 350" class="w-full h-auto max-h-[350px] mx-auto text-[#60a5fa] hidden transition-opacity duration-300 mt-2">
+          <!-- OpAmp Triangle -->
+          <path d="M 220,120 L 220,240 L 340,180 Z" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
+          <text x="260" y="185" fill="#ffffff" font-size="16" font-family="sans-serif" font-weight="bold">Op-Amp</text>
+          
+          <path d="M 230,150 L 245,150" fill="none" stroke="#94a3b8" stroke-width="2"/>
+          <path d="M 237.5,142.5 L 237.5,157.5" fill="none" stroke="#94a3b8" stroke-width="2"/>
+          <path d="M 230,210 L 245,210" fill="none" stroke="#94a3b8" stroke-width="2"/>
+
+          <path d="M 260,140 L 260,110" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.6"/>
+          <text x="260" y="100" fill="#ef4444" font-size="10" text-anchor="middle" font-family="monospace">+Vcc</text>
+          <path d="M 260,220 L 260,250" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.6"/>
+          <text x="260" y="265" fill="#3b82f6" font-size="10" text-anchor="middle" font-family="monospace">-Vee</text>
+
+          <circle cx="40" cy="150" r="5" fill="#3b82f6" class="glow-svg"/>
+          <text x="30" y="155" fill="#60a5fa" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">Vin</text>
+          <text id="lbl-noninv-vin" x="40" y="130" fill="#60a5fa" font-size="12" font-family="monospace" text-anchor="middle">1.5 V</text>
+          <path d="M 40,150 L 220,150" fill="none" stroke="#3b82f6" stroke-width="3"/>
+
+          <path d="M 220,210 L 180,210" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="180" cy="210" r="4" fill="currentColor"/>
+          <rect x="80" y="195" width="60" height="30" fill="#1e293b" stroke="currentColor" stroke-width="3"/>
+          <path d="M 180,210 L 140,210" fill="none" stroke="currentColor" stroke-width="3"/>
+          <path d="M 80,210 L 40,210 L 40,270" fill="none" stroke="currentColor" stroke-width="3"/>
+          
+          <!-- GND Corregido (Punto limpio) -->
+          <circle cx="40" cy="270" r="4" fill="#4ade80"/>
+          <text x="30" y="275" fill="#4ade80" font-size="12" font-family="monospace" text-anchor="end">GND</text>
+          
+          <text x="110" y="185" fill="#ffffff" font-size="14" font-family="monospace" font-weight="bold" text-anchor="middle">R1</text>
+          <text id="lbl-noninv-rin" x="110" y="215" fill="#60a5fa" font-size="11" font-family="monospace" text-anchor="middle">10 kΩ</text>
+
+          <!-- Rf Loop Movido hacia abajo para evitar superposición con -Vee -->
+          <path d="M 180,210 L 180,310 L 250,310" fill="none" stroke="currentColor" stroke-width="3"/>
+          
+          <rect x="250" y="295" width="60" height="30" fill="#1e293b" stroke="#f0a070" stroke-width="3" class="glow-orange"/>
+          <text x="280" y="285" fill="#ffffff" font-size="14" font-family="monospace" font-weight="bold" text-anchor="middle">Rf</text>
+          <text id="lbl-noninv-rf" x="280" y="315" fill="#f0a070" font-size="11" font-family="monospace" text-anchor="middle">20 kΩ</text>
+
+          <path d="M 310,310 L 380,310 L 380,180" fill="none" stroke="#f0a070" stroke-width="3"/>
+          <circle cx="380" cy="180" r="4" fill="#f0a070"/>
+
+          <path d="M 340,180 L 460,180" fill="none" stroke="#f0a070" stroke-width="4"/>
+          <circle cx="460" cy="180" r="5" fill="#f0a070" class="glow-orange"/>
+          <text x="475" y="175" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold">Vout</text>
+          <text id="lbl-noninv-vout" x="475" y="195" fill="#f0a070" font-size="14" font-family="monospace">4.50 V</text>
+        </svg>
+
+      </div>
+
+      <!-- ================= COL 3: RESULTADOS ================= -->
+      <div class="lg:col-span-3 flex flex-col gap-4">
+        
+        <h2 class="text-xs font-bold text-[#60a5fa] uppercase tracking-widest border-b border-[#334155] pb-2">Análisis de Señal</h2>
+
+        <!-- Ganancia -->
+        <div class="bg-[#0f172a] border border-[#3b82f6]/40 rounded-2xl p-4 flex flex-col">
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-2">
+            <i class="fa-solid fa-wave-square text-[#3b82f6]"></i> Ganancia (Av)
+          </span>
+          <div class="flex items-end gap-2">
+            <span id="out-gain" class="text-3xl font-mono font-black text-white tracking-tight">--</span>
+            <span class="text-sm font-bold text-slate-500 mb-1">V/V</span>
+          </div>
+          <p id="out-eq" class="text-[10px] font-mono text-slate-400 mt-2 border-t border-[#334155] pt-2">
+            Eq: Av = -Rf / Rin
+          </p>
+        </div>
+
+        <!-- Estado -->
+        <div id="panel-status" class="bg-[#1e293b] border border-emerald-500/30 rounded-2xl p-4 flex flex-col transition-colors">
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-2">
+            <i id="icon-status" class="fa-solid fa-circle-check text-emerald-500"></i> Estado Operativo
+          </span>
+          <p id="txt-status" class="text-xs font-medium text-emerald-400 leading-snug">
+            Operando en zona lineal. Sin recortes de señal.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script>
+(() => {
+  'use strict';
+
+  const e12Base = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
+  
+  function getClosestE12Val(val) {
+    if (!val || val <= 0 || !isFinite(val)) return 0;
+    let mag = Math.pow(10, Math.floor(Math.log10(val)));
+    let norm = val / mag;
+    
+    let closest = e12Base[0];
+    let minDiff = Math.abs(norm - closest);
+    for (let i = 1; i < e12Base.length; i++) {
+        let diff = Math.abs(norm - e12Base[i]);
+        if (diff < minDiff) {
+            minDiff = diff;
+            closest = e12Base[i];
+        }
+    }
+    if (Math.abs(norm - 10.0) < minDiff) closest = 10.0;
+    return closest * mag;
+  }
+
+  function formatRes(val) {
+    if (!val || isNaN(val) || val <= 0) return '-- Ω';
+    if (val >= 1e6) return (val / 1e6).toFixed(2).replace(/\.00$/, '') + ' MΩ';
+    if (val >= 1e3) return (val / 1e3).toFixed(2).replace(/\.00$/, '') + ' kΩ';
+    return val.toFixed(1).replace(/\.0$/, '') + ' Ω';
+  }
+
+  const btnInv = document.getElementById('btn-inv');
+  const btnNonInv = document.getElementById('btn-noninv');
+  const svgInv = document.getElementById('svg-inv');
+  const svgNonInv = document.getElementById('svg-noninv');
+
+  const inVin = document.getElementById('val-vin');
+  const inVout = document.getElementById('val-vout');
+  const inRin = document.getElementById('val-rin');
+  const unitRin = document.getElementById('unit-rin');
+  const inRf = document.getElementById('val-rf');
+  const unitRf = document.getElementById('unit-rf');
+  
+  const inVcc = document.getElementById('val-vcc');
+  const inVee = document.getElementById('val-vee');
+
+  const lblE12Rin = document.getElementById('e12-rin');
+  const lblE12Rf = document.getElementById('e12-rf');
+  const outGain = document.getElementById('out-gain');
+  const outEq = document.getElementById('out-eq');
+
+  const panelStatus = document.getElementById('panel-status');
+  const iconStatus = document.getElementById('icon-status');
+  const txtStatus = document.getElementById('txt-status');
+
+  const svgInvVin = document.getElementById('lbl-inv-vin');
+  const svgInvVout = document.getElementById('lbl-inv-vout');
+  const svgInvRin = document.getElementById('lbl-inv-rin');
+  const svgInvRf = document.getElementById('lbl-inv-rf');
+
+  const svgNonInvVin = document.getElementById('lbl-noninv-vin');
+  const svgNonInvVout = document.getElementById('lbl-noninv-vout');
+  const svgNonInvRin = document.getElementById('lbl-noninv-rin');
+  const svgNonInvRf = document.getElementById('lbl-noninv-rf');
+
+  let topologia = 'inversor';
+  let isUpdating = false;
+  let lastSource = 'rf';
+
+  function updateStatus(vout, vcc, vee) {
+    if (vout >= vcc || vout <= vee) {
+      panelStatus.className = 'bg-[#1e293b] border border-rose-500/50 rounded-2xl p-4 flex flex-col transition-colors shadow-[0_0_15px_rgba(244,63,94,0.15)]';
+      iconStatus.className = 'fa-solid fa-triangle-exclamation text-rose-500';
+      txtStatus.className = 'text-xs font-bold text-rose-400 leading-snug';
+      txtStatus.innerHTML = `¡Saturación detectada!<br><span class="text-[10px] font-normal">El Op-Amp recorta la señal a los límites de la fuente de alimentación (${vcc}V / ${vee}V).</span>`;
+    } else {
+      panelStatus.className = 'bg-[#1e293b] border border-emerald-500/30 rounded-2xl p-4 flex flex-col transition-colors';
+      iconStatus.className = 'fa-solid fa-circle-check text-emerald-500';
+      txtStatus.className = 'text-xs font-medium text-emerald-400 leading-snug';
+      txtStatus.textContent = 'Operando en zona lineal. Sin recortes de señal.';
+    }
+  }
+
+  function solver() {
+    if (isUpdating) return;
+    isUpdating = true;
+
+    const vin = parseFloat(inVin.value);
+    const vcc = parseFloat(inVcc.value) || 15;
+    const vee = parseFloat(inVee.value) || -15;
+
+    if (isNaN(vin)) { isUpdating = false; return; }
+
+    let vout = parseFloat(inVout.value);
+    let rin = parseFloat(inRin.value) * parseFloat(unitRin.value);
+    let rf = parseFloat(inRf.value) * parseFloat(unitRf.value);
+
+    if (isNaN(rin) || rin <= 0) rin = 1000;
+    if (isNaN(rf) || rf <= 0) rf = 1000;
+
+    let ganancia = 0;
+
+    if (topologia === 'inversor') {
+      outEq.textContent = 'Eq: Av = - (Rf / Rin)';
+      
+      if (lastSource === 'vout') {
+        if (!isNaN(vout) && vin !== 0) {
+          let needed_rf = -(vout / vin) * rin;
+          if (needed_rf < 0) {
+             txtStatus.textContent = "Error: Un op-amp inversor invierte el signo de Vin. El Vout deseado es físicamente imposible.";
+             iconStatus.className = 'fa-solid fa-triangle-exclamation text-rose-500';
+             panelStatus.className = 'bg-[#1e293b] border border-rose-500/50 rounded-2xl p-4 flex flex-col';
+             isUpdating = false; return;
+          }
+          rf = needed_rf;
+          inRf.value = (rf / parseFloat(unitRf.value)).toFixed(2);
+        }
+      } else {
+        vout = -vin * (rf / rin);
+        inVout.value = vout.toFixed(2);
+      }
+      ganancia = -(rf / rin);
+
+    } else {
+      outEq.textContent = 'Eq: Av = 1 + (Rf / R1)';
+      
+      if (lastSource === 'vout') {
+        if (!isNaN(vout) && vin !== 0) {
+          let needed_rf = rin * ((vout / vin) - 1);
+          if (needed_rf < 0) {
+             txtStatus.textContent = "Error: Un op-amp no inversor tiene ganancia ≥ 1. El Vout es menor al esperado.";
+             iconStatus.className = 'fa-solid fa-triangle-exclamation text-rose-500';
+             panelStatus.className = 'bg-[#1e293b] border border-rose-500/50 rounded-2xl p-4 flex flex-col';
+             isUpdating = false; return;
+          }
+          rf = needed_rf;
+          inRf.value = (rf / parseFloat(unitRf.value)).toFixed(2);
+        }
+      } else {
+        vout = vin * (1 + (rf / rin));
+        inVout.value = vout.toFixed(2);
+      }
+      ganancia = 1 + (rf / rin);
+    }
+
+    outGain.textContent = ganancia.toFixed(2);
+    lblE12Rin.textContent = formatRes(getClosestE12Val(rin));
+    lblE12Rf.textContent = formatRes(getClosestE12Val(rf));
+
+    let txtVin = vin.toFixed(2) + ' V';
+    let txtVout = vout.toFixed(2) + ' V';
+    let txtRin = formatRes(rin);
+    let txtRf = formatRes(rf);
+
+    svgInvVin.textContent = txtVin; svgInvVout.textContent = txtVout;
+    svgInvRin.textContent = txtRin; svgInvRf.textContent = txtRf;
+
+    svgNonInvVin.textContent = txtVin; svgNonInvVout.textContent = txtVout;
+    svgNonInvRin.textContent = txtRin; svgNonInvRf.textContent = txtRf;
+
+    updateStatus(vout, vcc, vee);
+    isUpdating = false;
+  }
+
+  inVout.addEventListener('input', () => { lastSource = 'vout'; solver(); });
+  inRin.addEventListener('input', () => { lastSource = 'rin'; solver(); });
+  unitRin.addEventListener('change', () => { lastSource = 'rin'; solver(); });
+  inRf.addEventListener('input', () => { lastSource = 'rf'; solver(); });
+  unitRf.addEventListener('change', () => { lastSource = 'rf'; solver(); });
+
+  inVin.addEventListener('input', () => { if(lastSource === 'vout') lastSource = 'rf'; solver(); });
+  inVcc.addEventListener('input', solver);
+  inVee.addEventListener('input', solver);
+
+  function setTopologia(mode) {
+    topologia = mode;
+    lastSource = 'rf';
+    if (mode === 'inversor') {
+      btnInv.classList.replace('tab-inactive', 'tab-active');
+      btnNonInv.classList.replace('tab-active', 'tab-inactive');
+      svgInv.classList.remove('hidden');
+      svgNonInv.classList.add('hidden');
+      
+      inVin.value = "1.5"; inRf.value = "20"; inRin.value = "10";
+    } else {
+      btnNonInv.classList.replace('tab-inactive', 'tab-active');
+      btnInv.classList.replace('tab-active', 'tab-inactive');
+      svgNonInv.classList.remove('hidden');
+      svgInv.classList.add('hidden');
+      
+      inVin.value = "1.5"; inRf.value = "20"; inRin.value = "10";
+    }
+    solver();
+  }
+
+  btnInv.addEventListener('click', () => setTopologia('inversor'));
+  btnNonInv.addEventListener('click', () => setTopologia('noninv'));
+
+  solver();
+
+})();
+</script>
+</body>
+</html>

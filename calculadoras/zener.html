@@ -60,7 +60,7 @@
   }
   input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 
-  /* Input transparente para resultados editables (Naikkaten ti biddut a 'ring: 0;') */
+  /* Input transparente para resultados editables */
   .input-ghost {
     background: transparent;
     border: none;
@@ -230,9 +230,9 @@
 
       </div>
 
-      <!-- COL 3: RESULTADOS BIDIRECCIONALES -->
+      <!-- COL 3: RESULTADOS -->
       <div class="lg:col-span-3 flex flex-col gap-4">
-        <h2 class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest border-b border-slate-800 pb-2">Resultados Dinámicos</h2>
+        <h2 class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest border-b border-slate-800 pb-2">Resultados</h2>
 
         <!-- Resistencia Serie Editable con referencias -->
         <div class="bg-slate-950 border border-emerald-500/40 rounded-2xl p-4 shadow-[0_0_15px_rgba(16,185,129,0.08)] flex flex-col relative focus-within:border-emerald-400 transition-colors">
@@ -250,10 +250,6 @@
               <button type="button" id="btn-use-suggested" class="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded hover:bg-emerald-900/50 transition-colors" title="Clic para usar este valor">
                 <span id="out-rs-suggested">-- Ω</span>
               </button>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-[10px] text-slate-500">Valor teórico ideal:</span>
-              <span id="out-rs-exact" class="text-[11px] font-mono text-slate-300">-- Ω</span>
             </div>
           </div>
           <p class="text-[9px] text-emerald-500/70 mt-2 leading-tight">Puedes editar el valor principal arriba para analizar el circuito con una resistencia específica.</p>
@@ -321,6 +317,15 @@
     return ohms.toFixed(1).replace(/\.0$/, '') + ' Ω';
   }
 
+  function getStandardWattage(watts) {
+    const standards = [0.25, 0.5, 1, 2, 3, 5, 10, 20];
+    const safeWatts = watts * 1.5; 
+    for (let w of standards) {
+      if (w >= safeWatts) return w >= 1 ? w + ' W' : '1/' + (1/w) + ' W';
+    }
+    return Math.ceil(safeWatts) + ' W';
+  }
+
   const dom = {
     vin: document.getElementById('val-vin'),
     vz: document.getElementById('val-vz'),
@@ -328,7 +333,6 @@
     izmin: document.getElementById('val-izmin'),
     rs: document.getElementById('val-rs'), 
 
-    rs_exact: document.getElementById('out-rs-exact'),
     rs_suggested: document.getElementById('out-rs-suggested'),
     btn_use_suggested: document.getElementById('btn-use-suggested'),
     iz_real: document.getElementById('out-iz-real'),
@@ -370,14 +374,17 @@
     if (vin <= 0 || vz <= 0) return showError('Los voltajes deben ser mayores a 0.');
     hideError();
 
+    // 1. Calcular el teórico ideal
     const rsExact = (vin - vz) / (il + izmin);
-    dom.rs_exact.textContent = formatResistor(rsExact);
 
+    // 2. Calcular y guardar el sugerido comercial (E24)
     lastCalculatedSuggestedRs = getLowerStandardVal(rsExact);
     dom.rs_suggested.textContent = formatResistor(lastCalculatedSuggestedRs);
     
-    dom.rs.value = lastCalculatedSuggestedRs; 
+    // 3. Setear el input principal al valor teórico ideal (redondeado a 2 decimales para evitar inputs feos)
+    dom.rs.value = Number(rsExact.toFixed(2)); 
     
+    // 4. Analizar el circuito con el valor recién insertado en el input
     analyzeCircuitWithRs();
   }
 
@@ -433,6 +440,7 @@
 
   dom.rs.addEventListener('input', analyzeCircuitWithRs);
 
+  // Al hacer clic en el botón comercial sugerido, reescribimos el valor del input grande
   dom.btn_use_suggested.addEventListener('click', () => {
     if (lastCalculatedSuggestedRs > 0) {
       dom.rs.value = lastCalculatedSuggestedRs;

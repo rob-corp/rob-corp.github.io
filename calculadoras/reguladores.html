@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0f172a">
-<title>Calculadora de Regulador de Voltaje</title>
+<title>Regulador de Voltaje</title>
 <link rel="icon" type="image/svg+xml" href="iconos/union.svg">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -249,12 +249,14 @@
           <span id="chip-badge" class="bg-[#1e293b] border border-[#60a5fa]/40 text-[#60a5fa] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">LM317</span>
         </div>
 
-        <!-- SVG MODO VOLTAJE (Ampliamos viewBox a 580 para evitar cortes en Vout) -->
+        <!-- SVG MODO VOLTAJE -->
         <svg id="svg-voltage" viewBox="-20 0 580 320" class="w-full h-auto max-h-[350px] mx-auto text-[#60a5fa] transition-opacity duration-300 mt-6">
+          <!-- Vin Rail -->
           <circle cx="40" cy="60" r="5" fill="#3b82f6" class="glow-svg"/>
           <text x="30" y="50" fill="#60a5fa" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">Vin</text>
           <path d="M 40,60 L 160,60" fill="none" stroke="#3b82f6" stroke-width="4"/>
           
+          <!-- GND Rail -->
           <circle cx="40" cy="280" r="5" fill="#4ade80"/>
           <text x="30" y="285" fill="#4ade80" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">GND</text>
           <path d="M 40,280 L 460,280" fill="none" stroke="#4ade80" stroke-width="4"/>
@@ -267,17 +269,20 @@
           <text x="245" y="45" fill="#94a3b8" font-size="12" font-family="monospace">OUT</text>
           <text x="205" y="90" fill="#94a3b8" font-size="12" font-family="monospace">ADJ</text>
 
-          <!-- Pines Extra para Reguladores de 5 pines -->
+          <!-- Pines Extra 5-Pin (Conectados a la placa) -->
           <g class="extra-pins hidden" stroke="currentColor" stroke-width="3">
-            <path d="M 180,100 L 180,135" fill="none" />
-            <text x="180" y="150" fill="#94a3b8" font-size="10" font-family="monospace" text-anchor="middle" stroke="none">EN</text>
-            <path d="M 260,100 L 260,135" fill="none" />
-            <text x="260" y="150" fill="#94a3b8" font-size="10" font-family="monospace" text-anchor="middle" stroke="none">GND</text>
+            <!-- EN pin a Vin -->
+            <path d="M 180,100 L 180,120 L 130,120 L 130,60" fill="none" />
+            <circle cx="130" cy="60" r="4" fill="#3b82f6" stroke="none" />
+            <text x="185" y="115" fill="#94a3b8" font-size="10" font-family="monospace" text-anchor="start" stroke="none">EN</text>
+            <!-- GND pin a GND -->
+            <path d="M 260,100 L 260,280" fill="none" />
+            <circle cx="260" cy="280" r="4" fill="#4ade80" stroke="none" />
+            <text x="265" y="115" fill="#94a3b8" font-size="10" font-family="monospace" text-anchor="start" stroke="none">GND</text>
           </g>
 
           <path d="M 280,60 L 460,60" fill="none" stroke="#f0a070" stroke-width="4"/>
           <circle cx="460" cy="60" r="5" fill="#f0a070" class="glow-orange"/>
-          <!-- Ajuste de Vout para evitar cortes -->
           <text x="475" y="55" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold" text-anchor="start">Vout</text>
           <text id="svg-vol-vout" x="475" y="75" fill="#f0a070" font-size="14" font-family="monospace" text-anchor="start">5.00 V</text>
 
@@ -304,10 +309,12 @@
 
         <!-- SVG MODO CORRIENTE -->
         <svg id="svg-current" viewBox="-20 0 580 320" class="w-full h-auto max-h-[350px] mx-auto text-[#60a5fa] hidden transition-opacity duration-300 mt-6">
+          <!-- Vin Rail -->
           <circle cx="40" cy="120" r="5" fill="#3b82f6" class="glow-svg"/>
           <text x="30" y="110" fill="#60a5fa" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">Vin</text>
           <path d="M 40,120 L 160,120" fill="none" stroke="#3b82f6" stroke-width="4"/>
           
+          <!-- GND Rail -->
           <circle cx="40" cy="280" r="5" fill="#4ade80"/>
           <text x="30" y="285" fill="#4ade80" font-size="16" font-family="monospace" font-weight="bold" text-anchor="end">GND</text>
           <path d="M 40,280 L 460,280" fill="none" stroke="#4ade80" stroke-width="4"/>
@@ -320,12 +327,15 @@
           <text x="245" y="105" fill="#94a3b8" font-size="12" font-family="monospace">OUT</text>
           <text x="205" y="150" fill="#94a3b8" font-size="12" font-family="monospace">ADJ</text>
 
-          <!-- Pines Extra -->
+          <!-- Pines Extra 5-Pin -->
           <g class="extra-pins hidden" stroke="currentColor" stroke-width="3">
-            <path d="M 180,160 L 180,195" fill="none" />
-            <text x="180" y="210" fill="#94a3b8" font-size="10" font-family="monospace" text-anchor="middle" stroke="none">EN</text>
-            <path d="M 260,160 L 260,195" fill="none" />
-            <text x="260" y="210" fill="#94a3b8" font-size="10" font-family="monospace" text-anchor="middle" stroke="none">GND</text>
+            <path d="M 180,160 L 180,180 L 130,180 L 130,120" fill="none" />
+            <circle cx="130" cy="120" r="4" fill="#3b82f6" stroke="none" />
+            <text x="185" y="175" fill="#94a3b8" font-size="10" font-family="monospace" text-anchor="start" stroke="none">EN</text>
+
+            <path d="M 260,160 L 260,280" fill="none" />
+            <circle cx="260" cy="280" r="4" fill="#4ade80" stroke="none" />
+            <text x="265" y="175" fill="#94a3b8" font-size="10" font-family="monospace" text-anchor="start" stroke="none">GND</text>
           </g>
 
           <path d="M 280,120 L 320,120" fill="none" stroke="currentColor" stroke-width="3"/>
@@ -336,7 +346,6 @@
           <text x="360" y="95" fill="#ffffff" font-size="14" font-family="monospace" font-weight="bold" text-anchor="middle">R</text>
           <text id="svg-cur-r" x="360" y="125" fill="#f0a070" font-size="12" font-family="monospace" text-anchor="middle">2.5 Ω</text>
 
-          <!-- Nodos recorridos 20px a la izq para dar margen -->
           <path d="M 400,190 L 460,190" fill="none" stroke="#f0a070" stroke-width="4"/>
           <circle cx="460" cy="190" r="5" fill="#f0a070" class="glow-orange"/>
           <text x="475" y="185" fill="#f0a070" font-size="16" font-family="monospace" font-weight="bold" text-anchor="start">Iout</text>
@@ -365,7 +374,7 @@
           </p>
         </div>
 
-        <!-- Potencia Disipada LM317 -->
+        <!-- Potencia Disipada -->
         <div id="panel-power" class="bg-[#0f172a] border border-[#334155] rounded-2xl p-4 flex flex-col transition-colors relative overflow-hidden">
           <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-1 relative z-10">
             <i class="fa-solid fa-temperature-arrow-up text-[#f0a070]"></i> Disipación de Calor (Pd)
@@ -473,8 +482,8 @@
 
   let mode = 'voltage';
   let isUpdating = false; 
-  let lastVoltSource = 'vout'; // 'vout', 'r2', 'r1'
-  let lastCurrSource = 'iout'; // 'iout', 'r'
+  let lastVoltSource = 'vout';
+  let lastCurrSource = 'iout'; 
 
   function updateStatus(isError, msg) {
     if (isError) {
@@ -561,7 +570,7 @@
 
       // Chequeos Lógicos
       if (vin - vout < limits.drop) { isError = true; errMsg = `DropOut: Vin debe ser al menos ${limits.drop}V mayor que Vout para operar.`; }
-      else if (vin - vout > 40) { isError = true; errMsg = 'Diferencia Vin-Vout excede el límite del regulador (40V max).'; }
+      else if (vin - vout > 40) { isError = true; errMsg = 'Diferencia Vin-Vout excede el límite del regulador.'; }
       else if (iload > limits.imax) { isError = true; errMsg = `La carga (${(iload*1000).toFixed(0)}mA) excede el máximo del ${limits.name} (${limits.imax*1000}mA).`; }
 
     } else {
@@ -594,7 +603,7 @@
 
       // Chequeos Lógicos
       if (vdrop < limits.drop) { isError = true; errMsg = `Caída insuficiente. Necesitás Vin de al menos ${(vload + limits.vref + limits.drop).toFixed(1)}V.`; }
-      else if (vdrop > 40) { isError = true; errMsg = 'Diferencia de voltaje excede límite de aislación del regulador.'; }
+      else if (vdrop > 40) { isError = true; errMsg = 'Diferencia de voltaje excede límite del regulador.'; }
       else if (iout > limits.imax) { isError = true; errMsg = `Corriente (${(iout*1000).toFixed(0)}mA) excede máximo de ${limits.name}.`; }
     }
 
@@ -637,7 +646,6 @@
   inIload.addEventListener('input', solver);
   inVload.addEventListener('input', solver);
   
-  // Al cambiar chip, mantenemos la prioridad de conservar el voltaje/corriente objetivo
   selCatalog.addEventListener('change', () => {
     lastVoltSource = 'vout'; 
     lastCurrSource = 'iout';
