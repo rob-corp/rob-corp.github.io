@@ -25,6 +25,10 @@
     padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 "IBM Plex Sans", system-ui, sans-serif; }
 
@@ -32,7 +36,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 "IBM
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 18px; }
 
 .topbar { border-bottom: 1px solid var(--line); background: #0f172a; }
-.home { display: flex; align-items: center; gap: 12px; width: fit-content; padding: 14px 0; color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; user-select: none; outline: none !important; }
+.home { display: flex; align-items: center; gap: 12px; width: fit-content; padding: 14px 0; color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; user-select: none; }
 .home h1 { font-size: clamp(19px, 4.6vw, 26px); line-height: 1.2; margin: 0; font-weight: 600; letter-spacing: -.01em; }
 .logo { width: 38px; height: 38px; flex: none; object-fit: contain; -webkit-user-drag: none; }
 
@@ -42,9 +46,12 @@ header p.lead { max-width: 80ch; color: var(--mute); margin: 0 0 14px; font-size
 nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
 nav .wrap { display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 nav .wrap::-webkit-scrollbar { display: none; }
-nav button { font: 500 15px "IBM Plex Sans", sans-serif; padding: 13px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--mute); cursor: pointer; white-space: nowrap; outline: none !important; -webkit-tap-highlight-color: transparent; transition: color 0.2s, border-color 0.2s; }
+nav button { font: 500 15px "IBM Plex Sans", sans-serif; padding: 13px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--mute); cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; transition: color 0.2s, border-color 0.2s; }
 nav button[aria-selected=true] { color: var(--acc); border-bottom-color: var(--acc); }
 nav button:hover { color: var(--ink); }
+.home:focus-visible { outline: 2px solid var(--acc); outline-offset: 4px; border-radius: 8px; }
+nav button:focus-visible { outline: 2px solid var(--acc); outline-offset: -3px; border-radius: 6px; }
+section:focus-visible { outline: 2px solid var(--acc); outline-offset: 4px; border-radius: 8px; }
 
 section { display: none; padding: 26px 0 48px; animation: fadeIn 0.3s ease; }
 section.on { display: block; }
@@ -58,7 +65,7 @@ p { margin: 0 0 14px; max-width: 85ch; }
 .tw { overflow-x: auto; margin: 10px 0 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); -webkit-overflow-scrolling: touch; }
 table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 15px; }
 th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-weight: 600; background: var(--accbg); color: var(--acc); }
+th { font-weight: 600; background: var(--accbg); color: var(--ink); }
 tr:hover td { background: rgba(255,255,255,0.03); }
 tr:last-child td { border-bottom: 0; }
 code, .m { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .92em; color: #60a5fa; background: rgba(96, 165, 250, 0.1); padding: 2px 6px; border-radius: 4px; }
@@ -112,7 +119,6 @@ li { margin-bottom: 8px; }
     .models svg { max-width: 200px; }
 }
 </style>
-</head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ESQB0M5W6R"></script>
 <script>
@@ -122,9 +128,10 @@ li { margin-bottom: 8px; }
 
   gtag('config', 'G-ESQB0M5W6R');
 </script>
+</head>
 <body>
 <div class="topbar"><div class="wrap">
-<a class="home" href="/index.html" aria-label="Ir al inicio">
+<a class="home" href="/index.html#pin-outs" aria-label="Ir al inicio">
 <img class="logo" src="/iconos/usb.svg" alt="" width="38" height="38">
 <h1>Puerto USB</h1>
 </a>
@@ -133,18 +140,19 @@ li { margin-bottom: 8px; }
 <p class="lead">Referencia técnica de los conectores USB: modelo gráfico de cada tipo, función de cada pin, velocidad, potencia y Power Delivery.</p>
 </div></header>
 
-<nav><div class="wrap" role="tablist">
-<button role="tab" aria-selected="true" data-t="ver">Versiones</button>
-<button role="tab" aria-selected="false" data-t="a">USB-A</button>
-<button role="tab" aria-selected="false" data-t="b">USB-B</button>
-<button role="tab" aria-selected="false" data-t="mm">Mini / Micro</button>
-<button role="tab" aria-selected="false" data-t="c">USB-C</button>
-<button role="tab" aria-selected="false" data-t="pd">Power Delivery</button>
+<nav aria-label="Secciones del documento"><div class="wrap" role="tablist">
+<button role="tab" id="tab-ver" aria-selected="true" aria-controls="ver" tabindex="0" data-t="ver">Versiones</button>
+<button role="tab" id="tab-a" aria-selected="false" aria-controls="a" tabindex="-1" data-t="a">USB-A</button>
+<button role="tab" id="tab-b" aria-selected="false" aria-controls="b" tabindex="-1" data-t="b">USB-B</button>
+<button role="tab" id="tab-mm" aria-selected="false" aria-controls="mm" tabindex="-1" data-t="mm">Mini / Micro</button>
+<button role="tab" id="tab-c" aria-selected="false" aria-controls="c" tabindex="-1" data-t="c">USB-C</button>
+<button role="tab" id="tab-pd" aria-selected="false" aria-controls="pd" tabindex="-1" data-t="pd">Power Delivery</button>
 </div></nav>
 
 <main class="wrap">
+<noscript><div class="note warn">Esta página necesita JavaScript para mostrar los modelos y las tablas de pines de cada conector.</div></noscript>
 
-<section id="ver" class="on">
+<section id="ver" class="on" role="tabpanel" aria-labelledby="tab-ver" tabindex="0">
 <h2>Versiones y conectores</h2>
 <p class="sub">La velocidad depende de la versión del protocolo; la forma física, del conector. Son dos cosas independientes.</p>
 <h3>Velocidad y potencia base por versión</h3>
@@ -154,11 +162,12 @@ li { margin-bottom: 8px; }
 <tr><td>USB 2.0</td><td>480 Mbps (High-Speed)</td><td>A, B, Mini, Micro, C</td><td>500 mA, 2,5 W</td></tr>
 <tr><td>USB 3.2 Gen 1 (ex 3.0 / 3.1 Gen 1)</td><td>5 Gbps (SuperSpeed)</td><td>A, B, Micro-B, C</td><td>900 mA, 4,5 W</td></tr>
 <tr><td>USB 3.2 Gen 2 (ex 3.1 Gen 2)</td><td>10 Gbps (SuperSpeed+)</td><td>A, C</td><td>900 mA, 4,5 W</td></tr>
-<tr><td>USB 3.2 Gen 2×2</td><td>20 Gbps</td><td>Solo C</td><td>Hasta 100 W con PD</td></tr>
-<tr><td>USB4 (40 Gbps)</td><td>40 Gbps; túneles PCIe y DisplayPort</td><td>Solo C</td><td>Hasta 240 W con PD</td></tr>
-<tr><td>USB4 Versión 2.0</td><td>80 Gbps (hasta 120 Gbps asimétrico)</td><td>Solo C</td><td>Hasta 240 W con PD</td></tr>
+<tr><td>USB 3.2 Gen 2×2</td><td>20 Gbps</td><td>Solo C</td><td>900 mA, 4,5 W (más con PD)</td></tr>
+<tr><td>USB4 (40 Gbps)</td><td>40 Gbps; túneles PCIe y DisplayPort</td><td>Solo C</td><td>900 mA, 4,5 W (más con PD)</td></tr>
+<tr><td>USB4 Versión 2.0</td><td>80 Gbps (hasta 120 Gbps asimétrico)</td><td>Solo C</td><td>900 mA, 4,5 W (más con PD)</td></tr>
 </table></div>
 <div class="note">Los nombres comerciales cambiaron varias veces: «USB 3.0», «3.1 Gen 1» y «3.2 Gen 1» describen la misma velocidad de 5 Gbps. Conviene fijarse en la velocidad declarada y no solo en el número de versión.</div>
+<div class="note">La potencia por encima de 5 V no depende de la versión USB sino de Power Delivery sobre USB-C (hasta 240 W). Ver la pestaña Power Delivery.</div>
 <h3>Resumen de conectores</h3>
 <div class="tw"><table>
 <tr><th>Conector</th><th>Pines</th><th>Reversible</th><th>Ciclos de inserción</th><th>Estado</th></tr>
@@ -170,12 +179,12 @@ li { margin-bottom: 8px; }
 </table></div>
 </section>
 
-<section id="a"></section>
-<section id="b"></section>
-<section id="mm"></section>
-<section id="c"></section>
+<section id="a" role="tabpanel" aria-labelledby="tab-a" tabindex="0"></section>
+<section id="b" role="tabpanel" aria-labelledby="tab-b" tabindex="0"></section>
+<section id="mm" role="tabpanel" aria-labelledby="tab-mm" tabindex="0"></section>
+<section id="c" role="tabpanel" aria-labelledby="tab-c" tabindex="0"></section>
 
-<section id="pd">
+<section id="pd" role="tabpanel" aria-labelledby="tab-pd" tabindex="0">
 <h2>Power Delivery (PD)</h2>
 <p class="sub">Negociación de tensión y corriente sobre el conector USB-C, de 5 V hasta 48 V y 240 W.</p>
 <p>USB Power Delivery es un protocolo que permite al cargador (<b>source</b>) y al equipo (<b>sink</b>) acordar la tensión y la corriente antes de aplicar potencia. La conversación viaja por el pin <b>CC</b> y no interfiere con los datos. Solo se define sobre USB-C.</p>
@@ -226,6 +235,9 @@ const svgB2 = df('b2') + shell('b2', 'M44 24H116L136 44V120H24V44Z') + `<path d=
 const svgMicro = df('mi') + shell('mi', 'M30 36H170L184 50V84H16V50Z') + `<path d="M34 43H166L177 54V77H23V54Z" fill="#0b1220"/><rect x="28" y="62" width="144" height="15" rx="2" fill="#cbd5e1"/>` +
     [44, 72, 100, 128, 156].map((x, i) => ct(x - 7, 52, 14, 20, 'mi') + bd(x, 100, String(5 - i))).join('');
 
+/* VERIFICAR: la numeración A12...A1 (arriba) y B1...B12 (abajo) corresponde a la vista frontal del receptáculo.
+   En la figura del plug de la especificación Type-C la fila A va de A1 a A12 (izquierda a derecha).
+   Si este modelo representa el plug, invertir A12<->A1 y B1<->B12 en las cuatro etiquetas bd(...) de abajo. */
 const svgC = df('c1') + `<rect x="14" y="36" width="172" height="54" rx="27" fill="url(#c1m)" stroke="#475569" stroke-width="2"/><rect x="23" y="44" width="154" height="38" rx="19" fill="#1e293b" stroke="#334155"/><rect x="34" y="55" width="132" height="16" rx="8" fill="#020617"/>` +
     Array.from({length: 12}, (_, i) => { const x = 100 + (i - 5.5) * 10.2; return ct(x - 3, 55, 6, 6, 'c1') + ct(x - 3, 65, 6, 6, 'c1'); }).join('') +
     bd(44, 20, 'A12') + bd(156, 20, 'A1') + bd(44, 106, 'B1') + bd(156, 106, 'B12');
@@ -269,25 +281,58 @@ k:[["Velocidad","Hasta 80 Gbps (USB4)"],["Power Delivery","Hasta 240 W (48 V, 5 
 
 T.forEach(o => {
     let h = `<h2>${o.n}</h2><p class="sub">${o.s}</p><p>${o.i}</p><h3>Modelos y pines</h3><div class="models">`;
-    o.m.forEach(m => { h += `<figure><svg viewBox="${m[2]}" role="img">${m[1]}</svg><figcaption>${m[0]}</figcaption></figure>`; });
+    o.m.forEach(m => { h += `<figure><svg viewBox="${m[2]}" role="img" aria-label="Modelo del conector ${m[0]} con pines numerados">${m[1]}</svg><figcaption>${m[0]}</figcaption></figure>`; });
     h += `</div>${o.t}<h3>Velocidad y potencia</h3>${tb(['Característica','Valor'],o.k)}`;
     document.getElementById(o.id).innerHTML = h;
 });
 
-var tabs = document.querySelectorAll("nav button"), ids = ["ver","a","b","mm","c","pd"];
-function show(id) {
-    tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.t === id));
-    document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === id));
-    try{ history.replaceState(null,"","#"+id); } catch(e){}
-}
-tabs.forEach(t => {
-    t.onclick = () => { 
-        show(t.dataset.t); 
-        window.scrollTo({top: document.querySelector("nav").offsetTop - 10, behavior: "smooth"}); 
+var tabs = Array.prototype.slice.call(document.querySelectorAll("nav [role=tab]")),
+    ids = tabs.map(function(t) { return t.dataset.t; }),
+    reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function show(id, opts) {
+    opts = opts || {};
+    var idx = ids.indexOf(id);
+    if (idx < 0) idx = 0;
+    id = ids[idx];
+    tabs.forEach(function(t, i) {
+        t.setAttribute("aria-selected", String(i === idx));
+        t.tabIndex = i === idx ? 0 : -1;
+    });
+    document.querySelectorAll("main > section").forEach(function(sec) {
+        sec.classList.toggle("on", sec.id === id);
+    });
+    if (opts.focus) tabs[idx].focus();
+    if (opts.hash !== false && location.hash !== "#" + id) {
+        try { history.replaceState(null, "", "#" + id); } catch (e) {}
     }
+}
+
+var list = document.querySelector("nav [role=tablist]");
+list.addEventListener("click", function(e) {
+    var btn = e.target.closest("[role=tab]");
+    if (!btn) return;
+    show(btn.dataset.t);
+    window.scrollTo({ top: document.querySelector("nav").offsetTop - 10, behavior: reduceMotion ? "auto" : "smooth" });
+});
+list.addEventListener("keydown", function(e) {
+    var cur = tabs.findIndex(function(t) { return t.getAttribute("aria-selected") === "true"; }), next;
+    switch (e.key) {
+        case "ArrowRight": next = (cur + 1) % tabs.length; break;
+        case "ArrowLeft":  next = (cur - 1 + tabs.length) % tabs.length; break;
+        case "Home":       next = 0; break;
+        case "End":        next = tabs.length - 1; break;
+        default: return;
+    }
+    e.preventDefault();
+    show(ids[next], { focus: true });
+});
+window.addEventListener("hashchange", function() {
+    var h = location.hash.slice(1);
+    if (ids.indexOf(h) >= 0) show(h, { hash: false });
 });
 var hh = location.hash.slice(1);
-if (ids.includes(hh)) show(hh);
+show(ids.indexOf(hh) >= 0 ? hh : ids[0], { hash: false });
 })();
 </script>
 </body>

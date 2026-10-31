@@ -6,6 +6,14 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0f172a">
 <title>RobCorp</title>
+<meta name="description" content="RobCorp: panel de herramientas de electrónica con calculadoras (Ohm, resistencias, NE555, Zener, reguladores), pin-outs de Ethernet/PoE y USB, y recursos para makers.">
+<link rel="canonical" href="https://rob-corp.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_AR">
+<meta property="og:site_name" content="RobCorp">
+<meta property="og:title" content="RobCorp - Panel de herramientas">
+<meta property="og:description" content="Calculadoras de electrónica, pin-outs y recursos para makers.">
+<meta property="og:url" content="https://rob-corp.github.io/">
 <link rel="icon" type="image/svg+xml" href="iconos/y.r.svg" sizes="any">
 <style>
   :root {
@@ -42,6 +50,9 @@
     display: flex;
     flex-direction: column;
     overscroll-behavior: none;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
   }
 
   /* ===================== CABECERA ===================== */
@@ -177,7 +188,7 @@
     width: 100%;
     max-width: 650px;
     height: max-content;
-    padding-bottom: 2rem;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
   }
 
   /* ===================== TARJETAS ===================== */
@@ -283,7 +294,6 @@
     }
   }
 </style>
-</head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ESQB0M5W6R"></script>
 <script>
@@ -292,7 +302,9 @@
   gtag('js', new Date());
 
   gtag('config', 'G-ESQB0M5W6R');
-</script><body>
+</script>
+</head>
+<body>
 
   <header>
     <div class="brand">
@@ -405,7 +417,7 @@
 
         <a href="recursos/codigo_capacitores.html" class="tool-card">
           <div class="card-icon" aria-hidden="true"><img src="iconos/codigo.svg" alt="" loading="lazy" decoding="async" width="24" height="24"></div>
-          <span class="tool-title">Codigo de capacitores ceramicos</span>
+          <span class="tool-title">Código de capacitores cerámicos</span>
         </a>
 
         <a href="recursos/visualizador_html.html" class="tool-card">
@@ -455,7 +467,7 @@
 
         <a href="recursos/fusible.html" class="tool-card">
           <div class="card-icon" aria-hidden="true"><img src="iconos/fusibles.svg" alt="" loading="lazy" decoding="async" width="24" height="24"></div>
-          <span class="tool-title">Codigo de colores de fusibles</span>
+          <span class="tool-title">Código de colores de fusibles</span>
         </a>
       </div>
     </section>
@@ -471,13 +483,32 @@
   const tabsHeader = document.getElementById('tabsHeader');
   const tabs       = Array.from(tabsHeader.querySelectorAll('.tab-btn'));
   const pages      = Array.from(container.querySelectorAll('.tab-page'));
+  const TAB_IDS    = ['calculadoras', 'pin-outs', 'recursos'];
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let currentIndex = 0;
   let resizeTimer;
+  let programmaticScroll = false;
+  let programmaticTimer;
+
+  /* -------- Solo el panel visible es enfocable y accesible -------- */
+  function syncPanels(index) {
+    pages.forEach((p, i) => { p.inert = i !== index; });
+  }
+
+  /* -------- Hash de la URL: #calculadoras, #pin-outs, #recursos -------- */
+  function indexFromHash() {
+    return TAB_IDS.indexOf(location.hash.slice(1));
+  }
+
+  function setHash(index) {
+    const h = '#' + TAB_IDS[index];
+    if (location.hash === h) return;
+    try { history.replaceState(null, '', h); } catch (_) { /* file:// u otros contextos */ }
+  }
 
   /* -------- Actualiza estado visual + ARIA de las pestañas -------- */
-  function updateActiveTab(index) {
+  function updateActiveTab(index, updateHash = true) {
     if (index === currentIndex) return;
     currentIndex = index;
 
@@ -488,17 +519,40 @@
       tabs[i].tabIndex = isActive ? 0 : -1;
     }
     indicator.style.transform = `translateX(${index * 100}%)`;
+    syncPanels(index);
+    if (updateHash) setHash(index);
   }
 
   /* -------- Navegación programática -------- */
+  function endProgrammaticScroll() {
+    programmaticScroll = false;
+    clearTimeout(programmaticTimer);
+  }
+
   function switchTab(index, focus = false) {
     const clamped = Math.max(0, Math.min(pages.length - 1, index));
+    /* Mientras dura el desplazamiento animado se ignora el observer:
+       evita que el indicador "rebote" por las pestañas intermedias. */
+    programmaticScroll = true;
+    clearTimeout(programmaticTimer);
+    programmaticTimer = setTimeout(endProgrammaticScroll, reduceMotion ? 50 : 800);
     container.scrollTo({
       left: container.clientWidth * clamped,
       behavior: reduceMotion ? 'auto' : 'smooth'
     });
     updateActiveTab(clamped);
     if (focus) tabs[clamped].focus();
+  }
+
+  container.addEventListener('scrollend', endProgrammaticScroll);
+
+  /* -------- Salto instantáneo (carga con hash) -------- */
+  function jumpTo(index) {
+    const prev = container.style.scrollBehavior;
+    container.style.scrollBehavior = 'auto';
+    container.scrollLeft = container.clientWidth * index;
+    container.style.scrollBehavior = prev;
+    updateActiveTab(index, false);
   }
 
   /* -------- Click delegado (sin onclick inline) -------- */
@@ -522,8 +576,19 @@
     switchTab(next, true);
   });
 
+  /* -------- Estado inicial (respeta #hash al volver desde una subpágina) -------- */
+  const initial = indexFromHash();
+  syncPanels(Math.max(initial, 0));
+  if (initial > 0) jumpTo(initial);
+
+  window.addEventListener('hashchange', () => {
+    const i = indexFromHash();
+    if (i >= 0 && i !== currentIndex) switchTab(i);
+  });
+
   /* -------- Detección de página visible (sin listener de scroll) -------- */
   const observer = new IntersectionObserver((entries) => {
+    if (programmaticScroll) return;
     for (const entry of entries) {
       if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
         updateActiveTab(pages.indexOf(entry.target));
